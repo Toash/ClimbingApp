@@ -1,0 +1,15 @@
+# .gitignore
+
+# Ignore node_modules in both client and server
+client/node_modules
+server/node_modules
+
+
+# Ignore environment variable files (includes db password)
+client/.env*
+server/.env*
+
+# Miscellaneous
+client/.DS_Store
+server/.DS_Store
+
