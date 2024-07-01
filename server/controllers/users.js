@@ -44,7 +44,7 @@ export const addRemoveFriend = async (req, res) => {
       user.friends = user.friends.filter((id) => id !== friendId);
       friend.friends = friend.friends.filter((id) => id !== id); // id is shadowing? one is from the user
     } else {
-      //add
+      //add, no confirm from other user
       user.friends.push(friendId);
       friend.friends.push(id);
     }

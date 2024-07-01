@@ -22,11 +22,12 @@ export const authSlice = createSlice({
       state.user = null;
       state.token = null;
     },
+    //why are we setting friends list in the state isnt it already stored in the user model?
     setFriends: (state, action) => {
       if (state.user) {
         state.user.friends = action.payload.friends;
       } else {
-        console.error("user friends non existent");
+        console.error("user is non existent");
       }
     },
     setPosts: (state, action) => {
@@ -34,7 +35,7 @@ export const authSlice = createSlice({
     },
     setPost: (state, action) => {
       const updatedPosts = state.posts.map((post) => {
-        if (post._id === action.payload.post_id) return action.payload.post;
+        if (post._id === action.payload.post.id) return action.payload.post;
         return post;
       });
       state.posts = updatedPosts;
