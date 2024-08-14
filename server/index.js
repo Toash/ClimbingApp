@@ -30,7 +30,9 @@ app.use(morgan("common"));
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 app.use(cors());
+
 //dir for assets like images (locally) commerical uses cloud
+// allows us to access files in the public/assets folder with /assets/filename in the url
 app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 
 /*FILE STORAGE */
@@ -46,7 +48,15 @@ const upload = multer({ storage });
 
 /*ROUTES WITH FILES */
 app.post("/auth/register", upload.single("picture"), register);
-app.post("/posts", verifyToken, upload.single("picture"), createPost);
+app.post(
+  "/posts",
+  verifyToken,
+  upload.fields([
+    { name: "picture", maxCount: 1 },
+    { name: "video", maxCount: 1 },
+  ]),
+  createPost
+);
 
 /* ROUTES */
 app.use("/auth", authRoutes);
@@ -61,6 +71,8 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => {
-    app.listen(PORT, () => console.log(`Server Port: ${PORT}`));
+    app.listen(PORT, () =>
+      console.log(`Server started successfully with Server Port: ${PORT}`)
+    );
   })
   .catch((error) => console.log(`${error} did not connect!`));

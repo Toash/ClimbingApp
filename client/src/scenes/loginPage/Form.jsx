@@ -23,8 +23,6 @@ const registerSchema = yup.object().shape({
   lastName: yup.string().required("required"),
   email: yup.string().email("invalid email").required("required"),
   password: yup.string().required("required"),
-  location: yup.string().required("required"),
-  occupation: yup.string().required("required"),
   picture: yup.string().required("required"),
 });
 
@@ -39,8 +37,6 @@ const initialValuesRegister = {
   lastName: "",
   email: "",
   password: "",
-  location: "",
-  occupation: "",
   picture: "",
 };
 
@@ -122,7 +118,7 @@ const Form = () => {
           <Box
             display="grid"
             gap="30px"
-            gridTemplateColumns="repeat(4,minmax(0,1fr))"
+            gridTemplateColumns="repeat(4,minmax(0,1fr))" //this can be 2
             sx={{
               //target div children, span horizontally on mobile
               "&>div": { gridColumn: isNonMobile ? undefined : "span 4" },
@@ -151,28 +147,6 @@ const Form = () => {
                   error={Boolean(touched.lastName) && Boolean(errors.lastName)}
                   helperText={touched.lastName && errors.lastName}
                   sx={{ gridColumn: "span 2" }}
-                ></TextField>
-                <TextField
-                  label="Location"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.location}
-                  name="location"
-                  error={Boolean(touched.location) && Boolean(errors.location)}
-                  helperText={touched.location && errors.location}
-                  sx={{ gridColumn: "span 4" }}
-                ></TextField>
-                <TextField
-                  label="Occupation"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.occupation}
-                  name="occupation"
-                  error={
-                    Boolean(touched.occupation) && Boolean(errors.occupation)
-                  }
-                  helperText={touched.occupation && errors.occupation}
-                  sx={{ gridColumn: "span 4" }}
                 ></TextField>
 
                 {/* INPUTTING PROFILE IMAGE */}

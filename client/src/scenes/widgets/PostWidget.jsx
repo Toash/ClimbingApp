@@ -5,13 +5,26 @@ import {
   ShareOutlined,
 } from "@mui/icons-material";
 
-import { Box, Divider, IconButton, Typography, useTheme } from "@mui/material";
+import { alpha } from "@mui/material/styles";
+
+import DeleteIcon from "@mui/icons-material/Delete";
+
+import {
+  Box,
+  Divider,
+  IconButton,
+  Typography,
+  TextField,
+  Button,
+  useTheme,
+  Avatar,
+} from "@mui/material";
 import FlexBetween from "components/FlexBetween";
 import Friend from "components/Friend";
 import WidgetWrapper from "components/WidgetWrapper";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setPost } from "state";
+import { setPost, setPosts } from "state";
 
 const PostWidget = ({
   postId,
@@ -21,13 +34,16 @@ const PostWidget = ({
   location,
   picturePath,
   userPicturePath,
+  videoPath,
   likes,
   comments,
 }) => {
   const [isComments, setIsComments] = useState(false);
+  const [newComment, setNewComment] = useState("");
   const dispatch = useDispatch();
   const token = useSelector((state) => state.token);
   const loggedInUserId = useSelector((state) => state.user._id);
+  const isCurrentUserPost = loggedInUserId === postUserId;
   const isLiked = Boolean(likes[loggedInUserId]);
   const likeCount = Object.keys(likes).length;
 
@@ -50,17 +66,78 @@ const PostWidget = ({
     dispatch(setPost({ post: updatedPost }));
   };
 
+  const postComment = async () => {
+    if (newComment.trim() === "") return;
+
+    const response = await fetch(
+      `http://localhost:3001/posts/${postId}/comment`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId: loggedInUserId, comment: newComment }),
+      }
+    );
+    console.log("test");
+    const updatedPost = await response.json();
+    dispatch(setPost({ post: updatedPost }));
+    setNewComment("");
+  };
+
+  const deletePost = async () => {
+    if (window.confirm("Are you sure you want to delete this post?")) {
+      try {
+        // Send the DELETE request to the server
+        const response = await fetch(`http://localhost:3001/posts/${postId}/`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          window.location.reload(); // this is inefficient, but deletion happens rarely so should be fine for now
+        } else {
+          console.error("Failed to delete the post");
+        }
+      } catch (error) {
+        console.error("An error occurred while deleting the post:", error);
+      }
+    }
+  };
+
   return (
     <WidgetWrapper m="2rem 0">
-      <Friend
-        friendId={postUserId}
-        name={name}
-        subtitle={location}
-        userPicturePath={userPicturePath}
-      />
+      <Box display="flex">
+        <Box flex="1">
+          <Friend
+            friendId={postUserId}
+            name={name}
+            subtitle={location}
+            userPicturePath={userPicturePath}
+          />
+        </Box>
+        {isCurrentUserPost && (
+          <IconButton
+            sx={{
+              backgroundColor: alpha(palette.error.light, 0.1),
+              color: palette.error.main,
+              height: "2.5rem",
+              width: "2.5rem",
+            }}
+            onClick={() => deletePost()}
+          >
+            <DeleteIcon></DeleteIcon>
+          </IconButton>
+        )}
+      </Box>
       <Typography color={main} sx={{ mt: "1rem" }}>
         {description}
       </Typography>
+
+      {/* PICTURE */}
       {picturePath && (
         <img
           width="100%"
@@ -69,6 +146,21 @@ const PostWidget = ({
           style={{ borderRadius: "0.75rem", marginTop: "0.75rem" }}
           src={`http://localhost:3001/assets/${picturePath}`}
         />
+      )}
+      {/* VIDEO */}
+      {videoPath && (
+        <video
+          width="100%"
+          height="auto"
+          controls
+          style={{ borderRadius: "0.75rem", marginTop: "0.75rem" }}
+        >
+          <source
+            src={`http://localhost:3001/assets/${videoPath}`}
+            type="video/mp4"
+          />
+          Your browser does not support the video tag.
+        </video>
       )}
       <FlexBetween mt="0.25rem">
         <FlexBetween gap="1rem">
@@ -83,7 +175,6 @@ const PostWidget = ({
             </IconButton>
             <Typography>{likeCount}</Typography>
           </FlexBetween>
-
           {/* COMMENT SECTION */}
           <FlexBetween gap="0.3rem">
             <IconButton onClick={() => setIsComments(!isComments)}>
@@ -92,24 +183,51 @@ const PostWidget = ({
             <Typography>{comments.length}</Typography>
           </FlexBetween>
         </FlexBetween>
-
-        <IconButton>
-          <ShareOutlined />
-        </IconButton>
       </FlexBetween>
       {isComments && (
         <Box mt="0.5rem">
           {comments.map((comment, i) => (
-            <Box key={`${name}-${i}`}>
-              <Divider />
-              <Typography sx={{ color: main, m: "0.5rem 0", pl: "1rem" }}>
-                {comment}
-              </Typography>
+            <Box
+              key={`${name}-${i}`}
+              display="flex"
+              alignItems="center"
+              mb="0.5rem"
+            >
+              <Avatar
+                src={`http://localhost:3001/assets/${comment.userPicturePath}`}
+              />
+              <Box ml="1rem">
+                <Typography sx={{ color: main }}>{comment.userName}</Typography>
+                <Typography sx={{ color: main, pl: "1rem" }}>
+                  {comment.comment}
+                </Typography>
+              </Box>
             </Box>
           ))}
           <Divider />
         </Box>
       )}
+
+      {/* COMMENT SOMETHING */}
+      <Divider />
+      <Box mt="1rem">
+        <TextField
+          fullWidth
+          variant="outlined"
+          placeholder="Comment something..."
+          value={newComment}
+          onChange={(e) => setNewComment(e.target.value)}
+        />
+        <Button
+          fullWidth
+          variant="contained"
+          color="primary"
+          sx={{ mt: "0.5rem" }}
+          onClick={postComment}
+        >
+          Post Comment
+        </Button>
+      </Box>
     </WidgetWrapper>
   );
 };

@@ -17,6 +17,7 @@ const postSchema = mongoose.Schema(
     location: String,
     description: String,
     picturePath: String,
+    videoPath: String,
     userPicturePath: String,
     //map is more efficient than array for lookup O(1)
     likes: {

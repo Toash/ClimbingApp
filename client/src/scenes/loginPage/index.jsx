@@ -26,7 +26,7 @@ const LoginPage = () => {
         backgroundColor={theme.palette.background.alt}
       >
         <Typography fontWeight="500" variant="h5" sx={{ mb: "1.5rem" }}>
-          Welcome to Climbing App, bruh
+          Welcome to the Climbing App xD
         </Typography>
         <Form></Form>
       </Box>
