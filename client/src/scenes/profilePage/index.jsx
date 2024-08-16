@@ -51,7 +51,7 @@ const ProfilePage = () => {
           // margin for mobile since widgets are stacked
           mt={isNonMobileScreens ? undefined : "2rem"}
         >
-          <MyPostWidget picturePath={user.picturePath} />
+          {/*<MyPostWidget picturePath={user.picturePath} />*/}
           <Box m="2rem 0" />
           <PostsWidget userId={userId} isProfile />
         </Box>

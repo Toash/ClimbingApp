@@ -4,15 +4,12 @@ import User from "../models/User.js";
 /* CREATE */
 export const createPost = async (req, res) => {
   try {
-    console.log("creating post...");
-    const { userId, description } = req.body;
-    const picturePath = req.files.picture
-      ? req.files.picture[0].filename
-      : null;
-    const videoPath = req.files.video ? req.files.video[0].filename : null;
+    const { userId, title, vGrade, attempts, description } = req.body;
 
+    const mediaPath = req.file ? req.file.filename : null;
+
+    // get user info
     const user = await User.findById(userId);
-
     const firstName = user.firstName;
     const lastName = user.lastName;
     const userPicturePath = user.picturePath;
@@ -21,16 +18,18 @@ export const createPost = async (req, res) => {
       userId,
       firstName,
       lastName,
-      description,
-      picturePath,
       userPicturePath,
-      videoPath,
+
+      title,
+      description,
+      vGrade,
+      attempts,
+
+      mediaPath,
+
       likes: {},
       comments: [],
     };
-
-    console.log("!!!!!");
-    console.log(newPostData);
 
     const newPost = new Post(newPostData);
     await newPost.save();

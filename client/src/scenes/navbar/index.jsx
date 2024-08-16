@@ -58,6 +58,7 @@ const NavBar = () => {
         >
           Climbing App
         </Typography>
+        {/*
         {isNonMobileScreens && (
           <FlexBetween
             backgroundColor={neutralLight}
@@ -71,6 +72,7 @@ const NavBar = () => {
             </IconButton>
           </FlexBetween>
         )}
+          */}
       </FlexBetween>
       {/* DESKTOP NAV */}
       {isNonMobileScreens ? (
@@ -83,9 +85,6 @@ const NavBar = () => {
               <LightMode sx={{ color: dark, fontSize: "25px" }} />
             )}
           </IconButton>
-          <Message sx={{ fontSize: "25px" }} />
-          <Notifications sx={{ fontSize: "25px" }} />
-          <Help sx={{ fontSize: "25px" }} />
           <FormControl variant="standard" value={fullName}>
             <Select
               value={fullName}

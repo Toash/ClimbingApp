@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const postSchema = mongoose.Schema(
   {
+    // ------------- USER ------------
     userId: {
       type: String,
       required: true,
@@ -14,11 +15,17 @@ const postSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    location: String,
-    description: String,
-    picturePath: String,
-    videoPath: String,
     userPicturePath: String,
+
+    // ------------- CLIMBING INFO -------------
+    vGrade: Number,
+    attempts: Number,
+    title: String,
+    description: String,
+
+    // ------------- MEDIA -------------
+    mediaPath: String,
+
     //map is more efficient than array for lookup O(1)
     likes: {
       type: Map,

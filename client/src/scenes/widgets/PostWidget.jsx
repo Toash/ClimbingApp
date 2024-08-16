@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import {
   ChatBubbleOutlineOutlined,
   FavoriteBorderOutlined,
@@ -27,14 +28,21 @@ import { useDispatch, useSelector } from "react-redux";
 import { setPost, setPosts } from "state";
 
 const PostWidget = ({
+  createdAt,
   postId,
   postUserId,
+  //user info
   name,
-  description,
-  location,
-  picturePath,
   userPicturePath,
-  videoPath,
+
+  //climbing info
+  vGrade,
+  attempts,
+  title,
+  description,
+
+  //media
+  mediaPath,
   likes,
   comments,
 }) => {
@@ -47,6 +55,7 @@ const PostWidget = ({
   const isLiked = Boolean(likes[loggedInUserId]);
   const likeCount = Object.keys(likes).length;
 
+  const formattedDate = format(new Date(createdAt), "MMMM d, yyyy");
   const { palette } = useTheme();
 
   const main = palette.neutral.main;
@@ -115,7 +124,7 @@ const PostWidget = ({
           <Friend
             friendId={postUserId}
             name={name}
-            subtitle={location}
+            subtitle={"Subtitle"}
             userPicturePath={userPicturePath}
           />
         </Box>
@@ -133,35 +142,54 @@ const PostWidget = ({
           </IconButton>
         )}
       </Box>
-      <Typography color={main} sx={{ mt: "1rem" }}>
+      {/* TITLE AND GRADE */}
+      <Typography color={main} sx={{ mt: "1rem", fontSize: "2rem" }}>
+        {vGrade !== null ? title + " - V" + vGrade : title}
+      </Typography>
+      {/* ATTEMPTS */}
+      <Typography color={main} sx={{ mt: "1rem", fontSize: "1rem" }}>
+        {attempts
+          ? attempts !== 1
+            ? attempts + " Attempts "
+            : "Flash⚡︎"
+          : null}
+      </Typography>
+
+      {/* MEDIA */}
+      {mediaPath && (
+        <>
+          {mediaPath.endsWith(".mp4") ||
+          mediaPath.endsWith(".mov") ||
+          mediaPath.endsWith(".avi") ? (
+            <video
+              width="100%"
+              height="auto"
+              controls
+              style={{ borderRadius: "0.75rem", marginTop: "0.75rem" }}
+            >
+              <source
+                src={`http://localhost:3001/assets/${mediaPath}`}
+                type="video/mp4"
+              />
+              Your browser does not support the video tag.
+            </video>
+          ) : (
+            <img
+              width="100%"
+              height="auto"
+              alt="post"
+              style={{ borderRadius: "0.75rem", marginTop: "0.75rem" }}
+              src={`http://localhost:3001/assets/${mediaPath}`}
+            />
+          )}
+        </>
+      )}
+
+      {/* DESCRIPTION */}
+      <Typography color={main} sx={{ mt: "1rem", fontSize: "1rem" }}>
         {description}
       </Typography>
 
-      {/* PICTURE */}
-      {picturePath && (
-        <img
-          width="100%"
-          height="auto"
-          alt="post"
-          style={{ borderRadius: "0.75rem", marginTop: "0.75rem" }}
-          src={`http://localhost:3001/assets/${picturePath}`}
-        />
-      )}
-      {/* VIDEO */}
-      {videoPath && (
-        <video
-          width="100%"
-          height="auto"
-          controls
-          style={{ borderRadius: "0.75rem", marginTop: "0.75rem" }}
-        >
-          <source
-            src={`http://localhost:3001/assets/${videoPath}`}
-            type="video/mp4"
-          />
-          Your browser does not support the video tag.
-        </video>
-      )}
       <FlexBetween mt="0.25rem">
         <FlexBetween gap="1rem">
           {/* LIKES */}
@@ -183,6 +211,10 @@ const PostWidget = ({
             <Typography>{comments.length}</Typography>
           </FlexBetween>
         </FlexBetween>
+        {/* DATE */}
+        <Typography color={main} sx={{ fontSize: "0.875rem" }}>
+          {formattedDate}
+        </Typography>
       </FlexBetween>
       {isComments && (
         <Box mt="0.5rem">
