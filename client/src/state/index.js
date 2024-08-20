@@ -32,7 +32,7 @@ export const authSlice = createSlice({
     },
     setPosts: (state, action) => {
       if (!action.payload.posts) return;
-      console.log(action.payload.posts);
+      //console.log(action.payload.posts);
       state.posts = action.payload.posts;
     },
     setPost: (state, action) => {

@@ -80,6 +80,24 @@ export const getUserPosts = async (req, res) => {
   }
 };
 
+export const getHighestVGradePost = async (req, res) => {
+  try {
+    console.log("GETTING HIGHEST V GRADE POST");
+    const { userId } = req.params;
+
+    // get highest v grade
+    const post = await Post.find({ userId }).sort({ vGrade: -1 }).limit(1);
+
+    if (post.length > 0) {
+      res.status(200).json(post[0]);
+    } else {
+      res.status(404).json({ message: "No posts found for this user" });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 /* UPDATE */
 export const likePost = async (req, res) => {
   try {

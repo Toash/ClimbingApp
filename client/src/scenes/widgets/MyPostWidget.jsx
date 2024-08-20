@@ -66,6 +66,7 @@ const MyPostWidget = ({ picturePath }) => {
     setPost("");
     setVGrade(0);
     setAttempts(1);
+    window.location.reload();
   };
 
   const handleAttemptsIncrement = () => {

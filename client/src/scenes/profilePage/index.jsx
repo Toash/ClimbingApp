@@ -1,5 +1,6 @@
 import { Box, useMediaQuery } from "@mui/material";
 import { useEffect, useState } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import NavBar from "scenes/navbar";
@@ -32,30 +33,32 @@ const ProfilePage = () => {
   return (
     <Box>
       <NavBar />
-      <Box
-        width="100%"
-        padding="2rem 6%"
-        // widgets will be on top of eachother on mobile
-        display={isNonMobileScreens ? "flex" : "block"}
-        gap="2rem"
-        justifyContent="center"
-      >
-        <Box flexBasis={isNonMobileScreens ? "26%" : undefined}>
-          <UserWidget userId={userId} picturePath={user.picturePath} />
-          <Box m="2rem 0" />
-          <FriendListWidget userId={userId} />
-        </Box>
-
+      <ErrorBoundary fallback={<div>Something went wrong :(</div>}>
         <Box
-          flexBasis={isNonMobileScreens ? "42%" : undefined}
-          // margin for mobile since widgets are stacked
-          mt={isNonMobileScreens ? undefined : "2rem"}
+          width="100%"
+          padding="2rem 6%"
+          // widgets will be on top of eachother on mobile
+          display={isNonMobileScreens ? "flex" : "block"}
+          gap="2rem"
+          justifyContent="center"
         >
-          {/*<MyPostWidget picturePath={user.picturePath} />*/}
-          <Box m="2rem 0" />
-          <PostsWidget userId={userId} isProfile />
+          <Box flexBasis={isNonMobileScreens ? "26%" : undefined}>
+            <UserWidget userId={userId} picturePath={user.picturePath} />
+            <Box m="2rem 0" />
+            <FriendListWidget userId={userId} />
+          </Box>
+
+          <Box
+            flexBasis={isNonMobileScreens ? "42%" : undefined}
+            // margin for mobile since widgets are stacked
+            mt={isNonMobileScreens ? undefined : "2rem"}
+          >
+            {/*<MyPostWidget picturePath={user.picturePath} />*/}
+            <Box m="2rem 0" />
+            <PostsWidget userId={userId} isProfile />
+          </Box>
         </Box>
-      </Box>
+      </ErrorBoundary>
     </Box>
   );
 };
