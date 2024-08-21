@@ -1,4 +1,5 @@
 import { Box, Divider, Typography, useTheme } from "@mui/material";
+import { isAllOf } from "@reduxjs/toolkit";
 import WidgetWrapper from "components/WidgetWrapper";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -28,7 +29,6 @@ const YourStats = ({ userId }) => {
     }
   };
 
-  // Use effect to fetch the highest V Grade when the component mounts
   useEffect(() => {
     const fetchStats = async () => {
       const post = await getHighestVGradePost(userId);
@@ -37,7 +37,7 @@ const YourStats = ({ userId }) => {
     };
 
     fetchStats();
-  }, [userId, token]); // Dependencies: re-run effect if userId or token changes
+  }, [userId, token]);
   return (
     <WidgetWrapper m="2rem 0">
       <Typography
@@ -51,12 +51,15 @@ const YourStats = ({ userId }) => {
       </Typography>
       <Divider sx={{ marginBottom: "1rem" }}></Divider>
 
-      <Typography>
-        {"Max Grade: "}
-        {vGrade !== null ? "V" + vGrade : "Loading..."}
-        {attempts !== null ? ` (${attempts} attempts)` : "Loading..."}
-      </Typography>
-      <Typography>{"Average Grade: "}</Typography>
+      {vGrade != null ? (
+        <Typography>
+          {"Max Grade: "}
+          {vGrade != null ? "V" + vGrade : "Loading..."}
+          {attempts != null ? ` (${attempts} attempts)` : "Loading..."}
+        </Typography>
+      ) : (
+        <Typography>Post something</Typography>
+      )}
     </WidgetWrapper>
   );
 };

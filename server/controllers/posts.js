@@ -4,7 +4,8 @@ import User from "../models/User.js";
 /* CREATE */
 export const createPost = async (req, res) => {
   try {
-    const { userId, title, vGrade, attempts, description } = req.body;
+    const { userId, title, vGrade, attempts, description, createdAt } =
+      req.body;
 
     const mediaPath = req.file ? req.file.filename : null;
 
@@ -30,6 +31,10 @@ export const createPost = async (req, res) => {
       likes: {},
       comments: [],
     };
+
+    if (createdAt) {
+      newPostData.createdAt = createdAt;
+    }
 
     const newPost = new Post(newPostData);
     await newPost.save();

@@ -8,6 +8,7 @@ import {
 
 import { alpha } from "@mui/material/styles";
 
+import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 import {
@@ -46,6 +47,10 @@ const PostWidget = ({
   likes,
   comments,
 }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTitle, setEditedTitle] = useState(title);
+  const [editedDescription, setEditedDescription] = useState(description);
+
   const [isComments, setIsComments] = useState(false);
   const [newComment, setNewComment] = useState("");
   const dispatch = useDispatch();
@@ -116,6 +121,31 @@ const PostWidget = ({
       }
     }
   };
+  const updatePost = async () => {
+    try {
+      const response = await fetch(`http://localhost:3001/posts/${postId}`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: editedTitle,
+          description: editedDescription,
+        }),
+      });
+
+      if (response.ok) {
+        const updatedPost = await response.json();
+        dispatch(setPost({ post: updatedPost }));
+        setIsEditing(false); // Exit edit mode after saving
+      } else {
+        console.error("Failed to update the post");
+      }
+    } catch (error) {
+      console.error("An error occurred while updating the post:", error);
+    }
+  };
 
   return (
     <WidgetWrapper m="2rem 0">
@@ -124,28 +154,42 @@ const PostWidget = ({
           <Friend
             friendId={postUserId}
             name={name}
-            subtitle={"Subtitle"}
             userPicturePath={userPicturePath}
           />
         </Box>
         {isCurrentUserPost && (
-          <IconButton
-            sx={{
-              backgroundColor: alpha(palette.error.light, 0.1),
-              color: palette.error.main,
-              height: "2.5rem",
-              width: "2.5rem",
-            }}
-            onClick={() => deletePost()}
-          >
-            <DeleteIcon></DeleteIcon>
-          </IconButton>
+          <>
+            <IconButton
+              sx={{
+                backgroundColor: alpha(palette.info.light, 0.1),
+                color: palette.info.main,
+                height: "2.5rem",
+                width: "2.5rem",
+                marginRight: "0.5rem",
+              }}
+              onClick={() => setIsEditing(!isEditing)}
+            >
+              <EditIcon />
+            </IconButton>
+            <IconButton
+              sx={{
+                backgroundColor: alpha(palette.error.light, 0.1),
+                color: palette.error.main,
+                height: "2.5rem",
+                width: "2.5rem",
+              }}
+              onClick={() => deletePost()}
+            >
+              <DeleteIcon />
+            </IconButton>
+          </>
         )}
       </Box>
       {/* TITLE AND GRADE */}
       <Typography color={main} sx={{ mt: "1rem", fontSize: "2rem" }}>
         {vGrade !== null ? title + " - V" + vGrade : title}
       </Typography>
+
       {/* ATTEMPTS */}
       <Typography color={main} sx={{ mt: "1rem", fontSize: "1rem" }}>
         {attempts

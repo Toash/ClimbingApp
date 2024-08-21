@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { setFriends } from "state";
 import FlexBetween from "./FlexBetween";
 import UserImage from "./UserImage";
+import { useState, useEffect } from "react";
 
 const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
   const dispatch = useDispatch();
@@ -21,6 +22,8 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
 
   const isFriend = friends.find((friend) => friend._id === friendId);
 
+  const [vGrade, setVGrade] = useState(null);
+
   const patchFriend = async () => {
     const response = await fetch(
       `http://localhost:3001/users/${_id}/${friendId}`,
@@ -36,6 +39,31 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
     dispatch(setFriends({ friends: data })); // why are we storing friends list in state
   };
 
+  const getHighestVGradePost = async (userId) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3001/posts/${userId}/hiscore`,
+        {
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const data = await response.json();
+      return data;
+    } catch (e) {
+      console.log("Cannot find user or post with hiscore");
+      console.log(e.message);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    const fetchMax = async () => {
+      const post = await getHighestVGradePost(friendId);
+      setVGrade(post.vGrade);
+    };
+    fetchMax();
+  }, [friendId, token]);
   return (
     <FlexBetween>
       <FlexBetween gap="1rem">
@@ -60,7 +88,7 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
             {name}
           </Typography>
           <Typography color={medium} fontSize="0.75rem">
-            {subtitle}
+            {vGrade ? `V${vGrade}` : null}
           </Typography>
         </Box>
       </FlexBetween>

@@ -11,6 +11,7 @@ import {
   TextField,
 } from "@mui/material";
 
+import { DatePicker } from "@mui/x-date-pickers/DatePicker"; // Import DatePicker from MUI
 import Dropzone from "react-dropzone";
 import FlexBetween from "components/FlexBetween";
 import UserImage from "components/UserImage";
@@ -26,6 +27,7 @@ const MyPostWidget = ({ picturePath }) => {
   const [vGrade, setVGrade] = useState(0);
   const [attempts, setAttempts] = useState(1);
   const [description, setDescription] = useState("");
+  const [selectedDate, setSelectedDate] = useState(null); // State for date
   const { palette } = useTheme();
   const { _id } = useSelector((state) => state.user);
   const token = useSelector((state) => state.token);
@@ -40,6 +42,9 @@ const MyPostWidget = ({ picturePath }) => {
     formData.append("vGrade", vGrade);
     formData.append("attempts", attempts);
     formData.append("description", description);
+    if (selectedDate) {
+      formData.append("createdAt", selectedDate.toISOString()); // Add selected date to form data
+    }
     if (media) {
       formData.append("media", media);
       formData.append("mediaPath", media.name);
@@ -66,6 +71,7 @@ const MyPostWidget = ({ picturePath }) => {
     setPost("");
     setVGrade(0);
     setAttempts(1);
+    setSelectedDate(null);
     window.location.reload();
   };
 
@@ -87,6 +93,7 @@ const MyPostWidget = ({ picturePath }) => {
           justifyContent="space-between"
           sx={{ width: "100%" }}
         >
+          {/* TITLE */}
           <InputBase
             placeholder="Enter a title for your climb"
             onChange={(e) => setPost(e.target.value)}
@@ -98,6 +105,7 @@ const MyPostWidget = ({ picturePath }) => {
               padding: "1rem 2rem",
               color: palette.neutral.main,
               fontSize: "1rem", // Optional: ensure consistent font size
+              outline: `1px solid ${palette.neutral.outline}`,
             }}
           />
 
@@ -115,12 +123,13 @@ const MyPostWidget = ({ picturePath }) => {
               value={vGrade}
               onChange={(e) => setVGrade(e.target.value)}
               sx={{
-                width: "150px", // Adjust to make it consistent with the title input
+                width: "150px",
                 backgroundColor: palette.neutral.light,
-                borderRadius: "2rem", // Match the border radius
-                padding: "1rem 2rem", // Match the padding
+                borderRadius: "2rem",
+                padding: "1rem 2rem",
                 color: palette.neutral.main,
-                fontSize: "1rem", // Ensure the font size matches
+                fontSize: "1rem",
+                outline: `1px solid ${palette.neutral.outline}`,
               }}
               inputProps={{ min: 0, max: 17 }}
             />
@@ -129,7 +138,7 @@ const MyPostWidget = ({ picturePath }) => {
       </FlexBetween>
 
       {/* Number of Attempts Input */}
-      <Box display="flex" alignItems="center" sx={{ marginTop: "1rem" }}>
+      <Box display="flex" alignItems="center" sx={{ marginTop: "1.5rem" }}>
         <Button
           onClick={handleAttemptsDecrement}
           sx={{
@@ -174,7 +183,7 @@ const MyPostWidget = ({ picturePath }) => {
           Attempts
         </Typography>
       </Box>
-
+      <Divider sx={{ marginTop: "1.5rem", marginBottom: "2rem" }}></Divider>
       {/* ADD MEDIA  */}
       <Box
         sx={{
@@ -182,6 +191,7 @@ const MyPostWidget = ({ picturePath }) => {
           borderRadius: "2rem", // Match border radius
           padding: "1rem 2rem", // Match padding
           marginTop: "1rem",
+          outline: `1px solid ${palette.neutral.outline}`,
         }}
       >
         <Dropzone
@@ -246,9 +256,24 @@ const MyPostWidget = ({ picturePath }) => {
           padding: "1rem 2rem",
           color: palette.neutral.main,
           marginTop: "1rem",
+          outline: `1px solid ${palette.neutral.outline}`,
         }}
       />
 
+      {/* Date Picker */}
+      <Box
+        sx={{ marginTop: "1rem", display: "flex", justifyContent: "flex-end" }}
+      >
+        <DatePicker
+          label="Select Date (Optional)"
+          value={selectedDate}
+          onChange={(newDate) => setSelectedDate(newDate)}
+          sx={{
+            backgroundColor: palette.neutral.light,
+            color: palette.neutral.main,
+          }}
+        />
+      </Box>
       <Divider sx={{ margin: "1.25rem 0" }} />
 
       <Button
