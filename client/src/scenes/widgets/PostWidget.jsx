@@ -20,6 +20,10 @@ import {
   Button,
   useTheme,
   Avatar,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import FlexBetween from "components/FlexBetween";
 import Friend from "components/Friend";
@@ -121,18 +125,24 @@ const PostWidget = ({
       }
     }
   };
+
+  // replace original fields with "edited" fields
   const updatePost = async () => {
     try {
+      // Create a JSON object with the edited data
+      const updatedData = {
+        title: editedTitle,
+        description: editedDescription,
+      };
+
+      // Send PATCH request with JSON payload
       const response = await fetch(`http://localhost:3001/posts/${postId}`, {
         method: "PATCH",
         headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Authorization header
+          "Content-Type": "application/json", // Content-Type header to indicate JSON
         },
-        body: JSON.stringify({
-          title: editedTitle,
-          description: editedDescription,
-        }),
+        body: JSON.stringify(updatedData), // Convert the object to a JSON string
       });
 
       if (response.ok) {
@@ -304,6 +314,38 @@ const PostWidget = ({
           Post Comment
         </Button>
       </Box>
+      {/* Edit Post Dialog */}
+      <Dialog open={isEditing} onClose={() => setIsEditing(false)}>
+        <DialogTitle>Edit Post</DialogTitle>
+        <DialogContent>
+          <TextField
+            fullWidth
+            variant="outlined"
+            label="Title"
+            value={editedTitle}
+            onChange={(e) => setEditedTitle(e.target.value)}
+            sx={{ mt: 2 }}
+          />
+          <TextField
+            fullWidth
+            variant="outlined"
+            label="Description"
+            value={editedDescription}
+            onChange={(e) => setEditedDescription(e.target.value)}
+            multiline
+            rows={4}
+            sx={{ mt: 2 }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setIsEditing(false)} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={updatePost} color="primary" variant="contained">
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
     </WidgetWrapper>
   );
 };

@@ -146,3 +146,24 @@ export const commentPost = async (req, res) => {
     res.status(404).json({ message: err.message });
   }
 };
+
+export const editPost = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description } = req.body;
+    const post = await Post.findById(id);
+    // TODO: get the edited fields and update the corresponding post.
+    if (post) {
+      post.title = title;
+      post.description = description;
+
+      const updatedPost = await post.save();
+
+      res.json(updatedPost);
+    } else {
+      res.status(404).send("Post not found");
+    }
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+};

@@ -6,6 +6,7 @@ import {
   likePost,
   commentPost,
   deletePost,
+  editPost,
   getHighestVGradePost,
 } from "../controllers/posts.js";
 import { verifyToken } from "../middleware/auth.js";
@@ -18,6 +19,7 @@ router.get("/:userId", verifyToken, getUserPosts);
 router.get("/:userId/hiscore", verifyToken, getHighestVGradePost);
 
 /* UPDATE */
+router.patch("/:id", verifyToken, editPost);
 router.patch("/:id/like", verifyToken, likePost);
 
 // Add a new comment to a post
