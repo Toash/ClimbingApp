@@ -26,7 +26,7 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
 
   const patchFriend = async () => {
     const response = await fetch(
-      `http://localhost:3001/users/${_id}/${friendId}`,
+      process.env.REACT_APP_API_BASE_URL + `/users/${_id}/${friendId}`,
       {
         method: "PATCH",
         headers: {
@@ -42,7 +42,7 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
   const getHighestVGradePost = async (userId) => {
     try {
       const response = await fetch(
-        `http://localhost:3001/posts/${userId}/hiscore`,
+        process.env.REACT_APP_API_BASE_URL + `/posts/${userId}/hiscore`,
         {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },

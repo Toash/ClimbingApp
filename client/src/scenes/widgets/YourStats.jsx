@@ -1,5 +1,4 @@
-import { Box, Divider, Typography, useTheme } from "@mui/material";
-import { isAllOf } from "@reduxjs/toolkit";
+import { Divider, Typography, useTheme } from "@mui/material";
 import WidgetWrapper from "components/WidgetWrapper";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,7 +13,7 @@ const YourStats = ({ userId }) => {
   const getHighestVGradePost = async (userId) => {
     try {
       const response = await fetch(
-        `http://localhost:3001/posts/${userId}/hiscore`,
+        process.env.REACT_APP_API_BASE_URL + `/posts/${userId}/hiscore`,
         {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },

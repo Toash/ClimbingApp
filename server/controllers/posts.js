@@ -1,11 +1,41 @@
 import Post from "../models/Post.js";
 import User from "../models/User.js";
 
+// returns json with errors if there are any int he postData
+const validatePostInput = (postData) => {
+  const errors = {};
+  if (!postData.title || postData.title.trim() === "") {
+    errors.title = "Title is required";
+  }
+  if (isNaN(postData.vGrade) || postData.vGrade < 0 || postData.vGrade > 17) {
+    errors.vGrade = "A valid V-Grade is required";
+  }
+  if (!postData.attempts || isNaN(postData.attempts) || postData.attempts < 0) {
+    errors.attempts = "A valid number of attempts is required";
+  }
+  if (postData.createdAt && isNaN(new Date(postData.createdAt).getTime())) {
+    errors.createdAt = "A valid date is required";
+  }
+  return Object.keys(errors).length > 0 ? errors : null;
+};
+
 /* CREATE */
 export const createPost = async (req, res) => {
   try {
     const { userId, title, vGrade, attempts, description, createdAt } =
       req.body;
+
+    const validationErrors = validatePostInput({
+      title,
+      vGrade,
+      attempts,
+      createdAt,
+    });
+    if (validationErrors) {
+      return res
+        .status(400)
+        .json({ message: "Validation failed", errors: validationErrors });
+    }
 
     const mediaPath = req.file ? req.file.filename : null;
 
@@ -43,6 +73,40 @@ export const createPost = async (req, res) => {
     res.status(201).json(posts); //send posts in res
   } catch (err) {
     res.status(409).json({ message: err.message });
+  }
+};
+
+export const editPost = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description, vGrade, attempts } = req.body;
+
+    const validationErrors = validatePostInput({
+      title,
+      vGrade,
+      attempts,
+    });
+    if (validationErrors) {
+      return res
+        .status(400)
+        .json({ message: "Validation failed", errors: validationErrors });
+    }
+
+    const post = await Post.findById(id);
+    // TODO: get the edited fields and update the corresponding post.
+    if (post) {
+      post.title = title;
+      post.description = description;
+      post.vGrade = vGrade;
+      post.attempts = attempts;
+
+      const updatedPost = await post.save();
+      res.json(updatedPost);
+    } else {
+      res.status(404).send("Post not found");
+    }
+  } catch (err) {
+    res.status(404).json({ message: err.message });
   }
 };
 
@@ -134,31 +198,14 @@ export const commentPost = async (req, res) => {
     const { postId } = req.params;
     const { userId, comment } = req.body;
 
+    const user = await User.findById(userId);
+    const name = user.firstName + " " + user.lastName;
+    const userImage = user.picturePath;
+
     const post = await Post.findById(postId);
     if (post) {
-      post.comments.push({ userId, comment });
+      post.comments.push({ userId, userImage, name, comment });
       const updatedPost = await post.save();
-      res.json(updatedPost);
-    } else {
-      res.status(404).send("Post not found");
-    }
-  } catch (err) {
-    res.status(404).json({ message: err.message });
-  }
-};
-
-export const editPost = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { title, description } = req.body;
-    const post = await Post.findById(id);
-    // TODO: get the edited fields and update the corresponding post.
-    if (post) {
-      post.title = title;
-      post.description = description;
-
-      const updatedPost = await post.save();
-
       res.json(updatedPost);
     } else {
       res.status(404).send("Post not found");

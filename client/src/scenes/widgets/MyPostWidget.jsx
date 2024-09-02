@@ -8,7 +8,6 @@ import {
   Button,
   IconButton,
   useMediaQuery,
-  TextField,
 } from "@mui/material";
 
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"; // Import DatePicker from MUI
@@ -51,18 +50,24 @@ const MyPostWidget = ({ picturePath }) => {
     }
 
     // Update posts
-    const response = await fetch(`http://localhost:3001/posts`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-      body: formData,
-    });
+    const response = await fetch(
+      process.env.REACT_APP_API_BASE_URL + `/posts`,
+      {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      }
+    );
 
     // Sort
     if (response.ok) {
-      const postsResponse = await fetch("http://localhost:3001/posts", {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const postsResponse = await fetch(
+        process.env.REACT_APP_API_BASE_URL + "/posts",
+        {
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       const postsData = await postsResponse.json();
       dispatch(setPosts({ posts: postsData }));
     }
