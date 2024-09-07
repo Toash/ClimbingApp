@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
+import Comment from "./Comment.js";
 
-const postSchema = mongoose.Schema(
+const postSchema = new mongoose.Schema(
   {
     // ------------- USER ------------
     userId: {
@@ -31,10 +32,8 @@ const postSchema = mongoose.Schema(
       type: Map,
       of: Boolean,
     },
-    comments: {
-      type: Array,
-      default: [],
-    },
+    // make sure it is comment schema
+    comments: [Comment.schema],
   },
   {
     timestamps: true,

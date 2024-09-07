@@ -204,13 +204,50 @@ export const commentPost = async (req, res) => {
 
     const post = await Post.findById(postId);
     if (post) {
-      post.comments.push({ userId, userImage, name, comment });
+      const newComment = {
+        userId,
+        userImage,
+        name,
+        comment,
+        likeCount: new Map(),
+      };
+
+      post.comments.push(newComment);
       const updatedPost = await post.save();
       res.json(updatedPost);
     } else {
-      res.status(404).send("Post not found");
+      res.status(404).json({ message: err.message });
     }
   } catch (err) {
     res.status(404).json({ message: err.message });
+  }
+};
+
+export const toggleLikeComment = async (req, res) => {
+  try {
+    const { postId, commentId } = req.params;
+    const { userId } = req.body;
+
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    const comment = post.comments.id(commentId);
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+
+    //toggle like
+    if (comment.likeCount.get(userId)) {
+      comment.likeCount.delete(userId);
+    } else {
+      comment.likeCount.set(userId, true);
+    }
+
+    await post.save();
+    res.json(comment);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };

@@ -5,6 +5,7 @@ import {
   getUserPosts,
   likePost,
   commentPost,
+  toggleLikeComment,
   deletePost,
   editPost,
   getHighestVGradePost,
@@ -21,6 +22,7 @@ router.get("/:userId/hiscore", verifyToken, getHighestVGradePost);
 /* UPDATE */
 router.patch("/:id", verifyToken, editPost);
 router.patch("/:id/like", verifyToken, likePost);
+router.patch("/:postId/:commentId/like", verifyToken, toggleLikeComment);
 
 // Add a new comment to a post
 router.post("/:postId/comment", verifyToken, commentPost);

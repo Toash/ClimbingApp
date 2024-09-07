@@ -113,6 +113,21 @@ const PostWidget = ({
     dispatch(setPost({ post: updatedPost }));
     setNewComment("");
   };
+  const toggleLikeComment = async (commentId) => {
+    const response = await fetch(
+      process.env.REACT_APP_API_BASE_URL + `/posts/${postId}/${commentId}/like`,
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: loggedInUserId,
+        }),
+      }
+    );
+  };
 
   const deletePost = async () => {
     if (window.confirm("Are you sure you want to delete this post?")) {
@@ -331,12 +346,24 @@ const PostWidget = ({
                     ml: "auto",
                   }}
                 >
-                  <IconButton>
-                    <FavoriteBorderOutlined></FavoriteBorderOutlined>
-                  </IconButton>
-                  <IconButton>
-                    <DeleteIcon></DeleteIcon>
-                  </IconButton>
+                  {/* LIKE COMMENT */}
+                  <FlexBetween gap="1rem">
+                    <FlexBetween gap="0rem">
+                      <IconButton
+                        onClick={() => toggleLikeComment(comment._id)}
+                      >
+                        {comment.likeCount[loggedInUserId] ? (
+                          <FavoriteOutlined sx={{ color: primary }} />
+                        ) : (
+                          <FavoriteBorderOutlined />
+                        )}
+                      </IconButton>
+                      <Typography>{comment.likeCount.length}</Typography>
+                    </FlexBetween>
+                    <IconButton>
+                      <DeleteIcon></DeleteIcon>
+                    </IconButton>
+                  </FlexBetween>
                 </Box>
               </Box>
             ))}
