@@ -1,8 +1,15 @@
-import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
+import {
+  Box,
+  Typography,
+  useTheme,
+  useMediaQuery,
+  Button,
+} from "@mui/material";
 import Form from "./Form";
 
 const LoginPage = () => {
   const theme = useTheme();
+  const {palette} = useTheme();
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
 
   return (
@@ -29,6 +36,18 @@ const LoginPage = () => {
           Welcome to the Climbing App xD
         </Typography>
         <Form></Form>
+      </Box>
+
+      <Box
+        width={isNonMobileScreens ? "50%" : "93%"}
+        p="2rem"
+        m="2rem auto"
+        borderRadius="1.5rem"
+        backgroundColor={theme.palette.background.alt}
+      >
+        <Button sx={{                backgroundColor: palette.primary.main,
+                color: palette.background.alt,
+                "&:hover": { color: palette.primary.main },}}> GUEST</Button>
       </Box>
     </Box>
   );

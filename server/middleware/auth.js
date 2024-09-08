@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 
+// middleware for authorization, allows some paths for guests
 export const verifyToken = async (req, res, next) => {
   try {
     let token = req.header("Authorization"); // get token

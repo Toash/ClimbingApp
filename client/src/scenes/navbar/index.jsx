@@ -9,6 +9,7 @@ import {
   FormControl,
   useTheme,
   useMediaQuery,
+  Button,
 } from "@mui/material";
 import {
   Search,
@@ -29,6 +30,7 @@ const NavBar = () => {
   const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const loggedIn = useSelector((state) => state.user);
   const user = useSelector((state) => state.user);
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
 
@@ -157,12 +159,18 @@ const NavBar = () => {
                 }}
                 input={<InputBase></InputBase>}
               >
-                <MenuItem value={fullName}>
-                  <Typography>{fullName}</Typography>
-                </MenuItem>
-                <MenuItem onClick={() => dispatch(setLogout())}>
-                  Log Out
-                </MenuItem>
+                {loggedIn ? (
+                  <>
+                    <MenuItem value={fullName}>
+                      <Typography>{fullName}</Typography>
+                    </MenuItem>
+                    <MenuItem onClick={() => dispatch(setLogout())}>
+                      Log Out
+                    </MenuItem>
+                  </>
+                ) : (
+                  <Button> Sign Up!</Button>
+                )}
               </Select>
             </FormControl>
           </FlexBetween>

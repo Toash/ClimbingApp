@@ -11,6 +11,7 @@ import { ErrorBoundary } from "react-error-boundary";
 const HomePage = () => {
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
   const { _id, picturePath } = useSelector((state) => state.user);
+  const loggedIn = useSelector((state) => state.user);
 
   return (
     <Box>
@@ -25,8 +26,12 @@ const HomePage = () => {
           justifyContent="space-between"
         >
           <Box flexBasis={isNonMobileScreens ? "26%" : undefined}>
-            <UserWidget userId={_id} picturePath={picturePath} />
-            <YourStats userId={_id}></YourStats>
+            {loggedIn && (
+              <>
+                <UserWidget userId={_id} picturePath={picturePath} />
+                <YourStats userId={_id}></YourStats>
+              </>
+            )}
           </Box>
 
           <Box
@@ -34,12 +39,12 @@ const HomePage = () => {
             // margin for mobile since widgets are stacked
             mt={isNonMobileScreens ? undefined : "2rem"}
           >
-            <MyPostWidget picturePath={picturePath} />
+            {loggedIn && <MyPostWidget picturePath={picturePath} />}
             <PostsWidget userId={_id} />
           </Box>
           {isNonMobileScreens && (
             <Box flexBasis="26%">
-              <FriendListWidget userId={_id} />
+              {loggedIn && <FriendListWidget userId={_id} />}
             </Box>
           )}
         </Box>
