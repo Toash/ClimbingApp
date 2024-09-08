@@ -128,7 +128,7 @@ const MyPostWidget = ({ picturePath }) => {
               value={vGrade}
               onChange={(e) => setVGrade(e.target.value)}
               sx={{
-                width: "150px",
+                width: "100px",
                 backgroundColor: palette.neutral.light,
                 borderRadius: "2rem",
                 padding: "1rem 2rem",

@@ -10,9 +10,9 @@ import YourStats from "scenes/widgets/YourStats";
 import { ErrorBoundary } from "react-error-boundary";
 const HomePage = () => {
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
-  const { _id, picturePath } = useSelector((state) => state.user);
   const loggedIn = useSelector((state) => state.user);
-
+  const _id = useSelector((state) => state.user?._id);
+  const picturePath = useSelector((state) => state.user?.picturePath);
   return (
     <Box>
       <NavBar></NavBar>

@@ -7,10 +7,12 @@ import {
 } from "@mui/material";
 import Form from "./Form";
 
+import { useNavigate } from "react-router-dom";
 const LoginPage = () => {
   const theme = useTheme();
-  const {palette} = useTheme();
+  const { palette } = useTheme();
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
+  const navigate = useNavigate();
 
   return (
     <Box>
@@ -45,9 +47,17 @@ const LoginPage = () => {
         borderRadius="1.5rem"
         backgroundColor={theme.palette.background.alt}
       >
-        <Button sx={{                backgroundColor: palette.primary.main,
-                color: palette.background.alt,
-                "&:hover": { color: palette.primary.main },}}> GUEST</Button>
+        <Button
+          onClick={() => navigate("/home")}
+          sx={{
+            backgroundColor: palette.primary.main,
+            color: palette.background.alt,
+            "&:hover": { color: palette.primary.main },
+          }}
+        >
+          {" "}
+          GUEST
+        </Button>
       </Box>
     </Box>
   );

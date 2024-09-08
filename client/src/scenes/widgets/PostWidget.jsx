@@ -63,7 +63,8 @@ const PostWidget = ({
   const token = useSelector((state) => state.token);
 
   //logged in user info
-  const loggedInUserId = useSelector((state) => state.user._id);
+  const loggedIn = useSelector((state) => state.user);
+  const loggedInUserId = useSelector((state) => state.user?._id);
 
   const isCurrentUserPost = loggedInUserId === postUserId;
   const isLiked = Boolean(likes[loggedInUserId]);
@@ -199,7 +200,7 @@ const PostWidget = ({
             userPicturePath={userPicturePath}
           />
         </Box>
-        {isCurrentUserPost && (
+        {loggedIn && isCurrentUserPost && (
           <>
             <IconButton
               sx={{
@@ -285,13 +286,19 @@ const PostWidget = ({
         <FlexBetween gap="1rem">
           {/* LIKES */}
           <FlexBetween gap="0.3rem">
-            <IconButton onClick={patchLike}>
-              {isLiked ? (
-                <FavoriteOutlined sx={{ color: primary }} />
-              ) : (
-                <FavoriteBorderOutlined />
-              )}
-            </IconButton>
+            {loggedIn ? (
+              <>
+                <IconButton onClick={patchLike}>
+                  {isLiked ? (
+                    <FavoriteOutlined sx={{ color: primary }} />
+                  ) : (
+                    <FavoriteBorderOutlined />
+                  )}
+                </IconButton>
+              </>
+            ) : (
+              <FavoriteBorderOutlined />
+            )}
             <Typography>{likeCount}</Typography>
           </FlexBetween>
           {/* COMMENT SECTION */}
@@ -347,23 +354,27 @@ const PostWidget = ({
                   }}
                 >
                   {/* LIKE COMMENT */}
-                  <FlexBetween gap="1rem">
-                    <FlexBetween gap="0rem">
-                      <IconButton
-                        onClick={() => toggleLikeComment(comment._id)}
-                      >
-                        {comment.likeCount[loggedInUserId] ? (
-                          <FavoriteOutlined sx={{ color: primary }} />
-                        ) : (
-                          <FavoriteBorderOutlined />
-                        )}
-                      </IconButton>
-                      <Typography>{comment.likeCount.length}</Typography>
-                    </FlexBetween>
-                    <IconButton>
-                      <DeleteIcon></DeleteIcon>
-                    </IconButton>
-                  </FlexBetween>
+                  {loggedIn && (
+                    <>
+                      <FlexBetween gap="1rem">
+                        <FlexBetween gap="0rem">
+                          <IconButton
+                            onClick={() => toggleLikeComment(comment._id)}
+                          >
+                            {comment.likeCount[loggedInUserId] ? (
+                              <FavoriteOutlined sx={{ color: primary }} />
+                            ) : (
+                              <FavoriteBorderOutlined />
+                            )}
+                          </IconButton>
+                          <Typography>{comment.likeCount.length}</Typography>
+                        </FlexBetween>
+                        <IconButton>
+                          <DeleteIcon></DeleteIcon>
+                        </IconButton>
+                      </FlexBetween>
+                    </>
+                  )}
                 </Box>
               </Box>
             ))}
@@ -371,24 +382,28 @@ const PostWidget = ({
           </Box>
           {/* COMMENT SOMETHING */}
           <Divider />
-          <Box mt="1rem">
-            <TextField
-              fullWidth
-              variant="outlined"
-              placeholder="Comment something..."
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-            />
-            <Button
-              fullWidth
-              variant="contained"
-              color="primary"
-              sx={{ mt: "0.5rem" }}
-              onClick={postComment}
-            >
-              Post Comment
-            </Button>
-          </Box>
+          {loggedIn && (
+            <>
+              <Box mt="1rem">
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  placeholder="Comment something..."
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                />
+                <Button
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  sx={{ mt: "0.5rem" }}
+                  onClick={postComment}
+                >
+                  Post Comment
+                </Button>
+              </Box>
+            </>
+          )}
         </>
       )}
 

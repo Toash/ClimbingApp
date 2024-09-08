@@ -23,7 +23,7 @@ import {
 } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import { setMode, setLogout } from "state";
-import { useNavigate } from "react-router-dom";
+import { redirect, useNavigate } from "react-router-dom";
 import FlexBetween from "components/FlexBetween";
 
 const NavBar = () => {
@@ -41,7 +41,7 @@ const NavBar = () => {
   const primaryLight = theme.palette.primary.light;
   const alt = theme.palette.background.alt;
 
-  const fullName = `${user.firstName} ${user.lastName}`;
+  const fullName = loggedIn ? `${user.firstName} ${user.lastName}` : null;
 
   return (
     <FlexBetween padding="1rem 6%" backgroundColor={alt}>
@@ -80,28 +80,34 @@ const NavBar = () => {
       {isNonMobileScreens ? (
         <FlexBetween gap="2rem">
           <FormControl variant="standard" value={fullName}>
-            <Select
-              value={fullName}
-              sx={{
-                backGroundColor: neutralLight,
-                width: "150px",
-                borderRadius: "0.25rem",
-                p: "0.25rem 1rem",
-                "& .MuiSvgIcon-root": {
-                  pr: "0.25rem",
-                  width: "3rem",
-                },
-                "& .MuiSelect-select:focus": {
-                  backgroundColor: neutralLight,
-                },
-              }}
-              input={<InputBase></InputBase>}
-            >
-              <MenuItem value={fullName}>
-                <Typography>{fullName}</Typography>
-              </MenuItem>
-              <MenuItem onClick={() => dispatch(setLogout())}>Log Out</MenuItem>
-            </Select>
+            {loggedIn ? (
+              <Select
+                value={fullName}
+                sx={{
+                  backGroundColor: neutralLight,
+                  width: "150px",
+                  borderRadius: "0.25rem",
+                  p: "0.25rem 1rem",
+                  "& .MuiSvgIcon-root": {
+                    pr: "0.25rem",
+                    width: "3rem",
+                  },
+                  "& .MuiSelect-select:focus": {
+                    backgroundColor: neutralLight,
+                  },
+                }}
+                input={<InputBase></InputBase>}
+              >
+                <MenuItem value={fullName}>
+                  <Typography>{fullName}</Typography>
+                </MenuItem>
+                <MenuItem onClick={() => dispatch(setLogout())}>
+                  Log Out
+                </MenuItem>
+              </Select>
+            ) : (
+              <Button onClick={() => navigate("/")}>Sign Up!</Button>
+            )}
           </FormControl>
         </FlexBetween>
       ) : (
@@ -169,7 +175,7 @@ const NavBar = () => {
                     </MenuItem>
                   </>
                 ) : (
-                  <Button> Sign Up!</Button>
+                  <Button onClick={() => navigate("/")}>Sign Up!</Button>
                 )}
               </Select>
             </FormControl>

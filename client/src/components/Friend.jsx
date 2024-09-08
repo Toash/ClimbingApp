@@ -10,17 +10,20 @@ import { useState, useEffect } from "react";
 const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { _id } = useSelector((state) => state.user);
-  const token = useSelector((state) => state.token);
-  const friends = useSelector((state) => state.user.friends);
+
+  const loggedIn = useSelector((state) => state.user);
+  const _id = useSelector((state) => state.user?._id);
+  const token = useSelector((state) => state?.token);
+  const friends = useSelector((state) => state.user?.friends);
+  const isFriend = friends
+    ? friends.find((friend) => friend._id === friendId)
+    : null;
 
   const { palette } = useTheme();
   const primaryLight = palette.primary.light;
   const primaryDark = palette.primary.dark;
   const main = palette.neutral.main;
   const medium = palette.neutral.medium;
-
-  const isFriend = friends.find((friend) => friend._id === friendId);
 
   const [vGrade, setVGrade] = useState(null);
 
@@ -92,7 +95,7 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
           </Typography>
         </Box>
       </FlexBetween>
-      {_id != friendId && (
+      {loggedIn && _id != friendId && (
         <IconButton
           onClick={() => patchFriend()}
           sx={{ backgroundColor: primaryLight, p: "0.6rem" }}
