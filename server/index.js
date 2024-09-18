@@ -56,12 +56,10 @@ app.use("/users", userRoutes);
 app.use("/posts", postRoutes);
 
 /* MONGOOSE SETUP */
+// connect to mongodb, then the express server
 const PORT = process.env.PORT || 6001;
 mongoose
-  .connect(process.env.MONGO_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(process.env.MONGO_URL)
   .then(() => {
     app.listen(PORT, () =>
       console.log(`Server started successfully with Server Port: ${PORT}`)

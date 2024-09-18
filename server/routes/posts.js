@@ -10,23 +10,22 @@ import {
   editPost,
   getHighestVGradePost,
 } from "../controllers/posts.js";
-import { verifyToken } from "../middleware/auth.js";
 
 const router = express.Router();
 
 /* READ */
 router.get("/", getFeedPosts);
 router.get("/:userId", getUserPosts);
-router.get("/:userId/hiscore", verifyToken, getHighestVGradePost);
+router.get("/:userId/hiscore", getHighestVGradePost);
 
 /* UPDATE */
-router.patch("/:id", verifyToken, editPost);
-router.patch("/:id/like", verifyToken, likePost);
-router.patch("/:postId/:commentId/like", verifyToken, toggleLikeComment);
+router.patch("/:id", editPost);
+router.patch("/:id/like", likePost);
+router.patch("/:postId/:commentId/like", toggleLikeComment);
 
 // Add a new comment to a post
-router.post("/:postId/comment", verifyToken, commentPost);
+router.post("/:postId/comment", commentPost);
 
 /* DELETE */
-router.delete("/:id", verifyToken, deletePost);
+router.delete("/:id", deletePost);
 export default router;

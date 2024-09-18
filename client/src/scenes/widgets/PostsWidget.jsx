@@ -13,7 +13,7 @@ const PostsWidget = ({ userId, isProfile = false }) => {
       process.env.REACT_APP_API_BASE_URL + "/posts",
       {
         method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
+        //headers: { Authorization: `Bearer ${token}` },
       }
     );
     const data = await response.json();

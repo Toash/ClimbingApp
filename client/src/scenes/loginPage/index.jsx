@@ -48,7 +48,7 @@ const LoginPage = () => {
         backgroundColor={theme.palette.background.alt}
       >
         <Button
-          onClick={() => navigate("/home")}
+          onClick={() => navigate("/")}
           sx={{
             backgroundColor: palette.primary.main,
             color: palette.background.alt,

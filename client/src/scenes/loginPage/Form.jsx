@@ -90,9 +90,10 @@ const Form = () => {
 
     const loggedIn = await loggedInResponse.json();
     onSubmitProps.resetForm();
+    // TODO: Integrate with cognito
     if (loggedIn) {
       dispatch(setLogin({ user: loggedIn.user, token: loggedIn.token }));
-      navigate("/home");
+      navigate("/");
     }
   };
 
@@ -243,7 +244,6 @@ const Form = () => {
               {isLogin ? "Sign Up" : "Log In"}
             </Typography>
           </Box>
-
         </form>
       )}
     </Formik>
