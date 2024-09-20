@@ -15,17 +15,17 @@ const router = express.Router();
 
 /* READ */
 router.get("/", getFeedPosts);
-router.get("/:userId", getUserPosts);
-router.get("/:userId/hiscore", getHighestVGradePost);
+router.get("/user/:userId", getUserPosts);
+router.get("/user/:userId/hiscore", getHighestVGradePost);
 
 /* UPDATE */
-router.patch("/:id", editPost);
-router.patch("/:id/like", likePost);
-router.patch("/:postId/:commentId/like", toggleLikeComment);
+router.patch("/post/:postId", editPost);
+router.patch("/post/:postId/like", likePost);
+router.patch("/post/:postId/:commentId/like", toggleLikeComment);
 
 // Add a new comment to a post
-router.post("/:postId/comment", commentPost);
+router.post("/post/:postId/comment", commentPost);
 
 /* DELETE */
-router.delete("/:id", deletePost);
+router.delete("/post/:postId", deletePost);
 export default router;

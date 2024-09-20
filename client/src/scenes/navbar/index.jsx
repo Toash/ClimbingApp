@@ -43,6 +43,12 @@ const NavBar = () => {
 
   const fullName = loggedIn ? `${user.firstName} ${user.lastName}` : null;
 
+  const signInButton = (
+    <Button onClick={() => navigate(process.env.REACT_APP_LOGIN_URL)}>
+      Sign Up!
+    </Button>
+  );
+
   return (
     <FlexBetween padding="1rem 6%" backgroundColor={alt}>
       <FlexBetween gap="1.75rem">
@@ -106,7 +112,7 @@ const NavBar = () => {
                 </MenuItem>
               </Select>
             ) : (
-              <Button onClick={() => navigate("/")}>Sign Up!</Button>
+              signInButton
             )}
           </FormControl>
         </FlexBetween>
@@ -175,7 +181,7 @@ const NavBar = () => {
                     </MenuItem>
                   </>
                 ) : (
-                  <Button onClick={() => navigate("/")}>Sign Up!</Button>
+                  signInButton
                 )}
               </Select>
             </FormControl>

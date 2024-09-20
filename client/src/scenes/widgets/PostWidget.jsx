@@ -78,7 +78,7 @@ const PostWidget = ({
 
   const patchLike = async () => {
     const response = await fetch(
-      process.env.REACT_APP_API_BASE_URL + `/posts/${postId}/like`,
+      process.env.REACT_APP_API_BASE_URL + `/posts/post/${postId}/like`,
       {
         method: "PATCH",
         headers: {
@@ -97,7 +97,7 @@ const PostWidget = ({
     if (newComment.trim() === "") return;
 
     const response = await fetch(
-      process.env.REACT_APP_API_BASE_URL + `/posts/${postId}/comment`,
+      process.env.REACT_APP_API_BASE_URL + `/posts/post/${postId}/comment`,
       {
         method: "POST",
         headers: {
@@ -116,7 +116,8 @@ const PostWidget = ({
   };
   const toggleLikeComment = async (commentId) => {
     const response = await fetch(
-      process.env.REACT_APP_API_BASE_URL + `/posts/${postId}/${commentId}/like`,
+      process.env.REACT_APP_API_BASE_URL +
+        `/posts/post/${postId}/${commentId}/like`,
       {
         method: "PATCH",
         headers: {
@@ -134,7 +135,7 @@ const PostWidget = ({
     if (window.confirm("Are you sure you want to delete this post?")) {
       try {
         const response = await fetch(
-          process.env.REACT_APP_API_BASE_URL + `/posts/${postId}/`,
+          process.env.REACT_APP_API_BASE_URL + `/posts/post/${postId}/`,
           {
             method: "DELETE",
             headers: {
@@ -167,7 +168,7 @@ const PostWidget = ({
       };
 
       const response = await fetch(
-        process.env.REACT_APP_API_BASE_URL + `/posts/${postId}`,
+        process.env.REACT_APP_API_BASE_URL + `/posts/post/${postId}`,
         {
           method: "PATCH",
           headers: {

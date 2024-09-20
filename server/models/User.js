@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 
 const UserSchema = new mongoose.Schema(
   {
+    _id: {
+      type: String,
+      required: true,
+    },
     firstName: {
       type: String,
       required: true,
@@ -14,17 +18,6 @@ const UserSchema = new mongoose.Schema(
       min: 2,
       max: 50,
     },
-    email: {
-      type: String,
-      required: true,
-      max: 50,
-      unique: true,
-    },
-    password: {
-      type: String,
-      require: true,
-      min: 5,
-    },
     picturePath: {
       type: String,
       default: "",
@@ -33,9 +26,6 @@ const UserSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
-    location: String,
-    viewedProfile: Number,
-    impressions: Number,
   },
   { timestamps: true }
 );

@@ -13,7 +13,7 @@ const YourStats = ({ userId }) => {
   const getHighestVGradePost = async (userId) => {
     try {
       const response = await fetch(
-        process.env.REACT_APP_API_BASE_URL + `/posts/${userId}/hiscore`,
+        process.env.REACT_APP_API_BASE_URL + `/posts/user/${userId}/hiscore`,
         {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },

@@ -8,10 +8,10 @@ import {
 const router = express.Router();
 
 /* READ */
-router.get("/:id", getUser);
-router.get("/:id/friends", getUserFriends);
+router.get("/:userId", getUser);
+router.get("/:userId/friends", getUserFriends);
 
 /* UPDATE */
-router.patch("/:id/:friendId", addRemoveFriend);
+router.patch("/:userId/:friendId", addRemoveFriend);
 
 export default router;

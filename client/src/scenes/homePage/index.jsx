@@ -8,11 +8,38 @@ import FriendListWidget from "scenes/widgets/FriendListWidget";
 import YourStats from "scenes/widgets/YourStats";
 
 import { ErrorBoundary } from "react-error-boundary";
+import ProfileCompletionModal from "./ProfileCompletionModal";
+
 const HomePage = () => {
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
   const loggedIn = useSelector((state) => state.user);
   const _id = useSelector((state) => state.user?._id);
   const picturePath = useSelector((state) => state.user?.picturePath);
+
+  const [isProfileComplete, setIsProfileComplete] = useState(false);
+
+  useEffect(() => {
+    async function checkProfile() {
+      try {
+        const user = await Auth.currentAuthenticatedUser();
+        const cognitoUserId = user.attributes.sub;
+
+        const response = await fetch(
+          process.env.REACT_APP_API_BASE_URL + `/users/${cognitoUserId}`
+        );
+        const userProfile = await response.json();
+
+        if (userProfile && userProfile.firstName && userProfile.lastName) {
+          setIsProfileComplete(true);
+        }
+      } catch (error) {
+        console.error("Error checking profile", error);
+      }
+    }
+
+    checkProfile();
+  }, []);
+
   return (
     <Box>
       <NavBar></NavBar>
