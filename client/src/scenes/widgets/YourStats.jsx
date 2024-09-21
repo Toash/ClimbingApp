@@ -16,7 +16,7 @@ const YourStats = ({ userId }) => {
         process.env.REACT_APP_API_BASE_URL + `/posts/user/${userId}/hiscore`,
         {
           method: "GET",
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { IDToken: `${token}` },
         }
       );
       const data = await response.json();

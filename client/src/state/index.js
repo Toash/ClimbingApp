@@ -2,9 +2,11 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   mode: "dark",
-  user: null,
+  user: null, //user object (from database)
   token: null,
   posts: [],
+  //used when important data needs to be retrieved (such as user data), before rendering other components.
+  loading: false,
 };
 
 export const authSlice = createSlice({
@@ -45,10 +47,20 @@ export const authSlice = createSlice({
       });
       state.posts = updatedPosts;
     },
+    setLoading: (state, action) => {
+      state.loading = action.payload;
+    },
   },
 });
 
-export const { setMode, setLogin, setLogout, setFriends, setPosts, setPost } =
-  authSlice.actions;
+export const {
+  setMode,
+  setLogin,
+  setLogout,
+  setFriends,
+  setPosts,
+  setPost,
+  setLoading,
+} = authSlice.actions;
 
 export default authSlice.reducer;

@@ -21,7 +21,7 @@ const UserWidget = ({ userId, picturePath }) => {
       process.env.REACT_APP_API_BASE_URL + `/users/${userId}`,
       {
         method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { IDToken: `${token}` },
       }
     );
     const data = await response.json();

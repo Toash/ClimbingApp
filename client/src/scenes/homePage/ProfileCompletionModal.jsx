@@ -6,9 +6,9 @@ import {
   TextField,
   Button,
 } from "@mui/material";
-import { Auth, Storage } from "aws-amplify";
 
 function ProfileCompletionDialog({ open, onComplete }) {
+  /*
   const [username, setUsername] = useState("");
   const [profileImage, setProfileImage] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -24,14 +24,12 @@ function ProfileCompletionDialog({ open, onComplete }) {
     try {
       // Upload the profile image to S3
       const photoKey = `profile-images/${username}-${Date.now()}`;
-      await Storage.put(photoKey, profileImage, {
-        contentType: profileImage.type,
-      });
+      // TODO ADD MEDIA TO S3 BUCKET
 
-      const profileImageUrl = await Storage.get(photoKey);
+      // TODO GET URL FROM S3 BUCKET
 
       // Get Cognito user ID
-      const user = await Auth.currentAuthenticatedUser();
+      // TODO GET CURRENT AUTHENTICATED USER
       const cognitoUserId = user.attributes.sub;
 
       // Save profile in the backend (e.g., MongoDB)
@@ -90,6 +88,7 @@ function ProfileCompletionDialog({ open, onComplete }) {
       </DialogContent>
     </Dialog>
   );
+  */
 }
 
 export default ProfileCompletionDialog;

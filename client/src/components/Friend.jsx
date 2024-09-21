@@ -33,7 +33,7 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
       {
         method: "PATCH",
         headers: {
-          Authorization: `Bearer ${token}`,
+          IDToken: `${token}`,
           "Content-Type": "application/json",
         },
       }
@@ -48,7 +48,7 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
         process.env.REACT_APP_API_BASE_URL + `/posts/user/${userId}/hiscore`,
         {
           method: "GET",
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { IDToken: `${token}` },
         }
       );
       const data = await response.json();

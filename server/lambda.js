@@ -18,11 +18,20 @@ async function connectToDatabase() {
   }
 }
 
-// Initialize the serverless express app
 const server = serverlessExpress({ app });
 
 // Lambda handler function
 export const handler = async (event, context) => {
-  await connectToDatabase(); // Ensure the database is connected for each invocation
-  return server(event, context);
+  await connectToDatabase();
+
+  const response = await server(event, context);
+
+  response.headers = {
+    ...response.headers,
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "OPTIONS,POST,GET",
+  };
+
+  return response;
 };
