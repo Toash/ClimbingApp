@@ -12,11 +12,11 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
   const navigate = useNavigate();
 
   const loggedIn = useSelector((state) => state.user);
-  const _id = useSelector((state) => state.user?._id);
-  const token = useSelector((state) => state?.token);
+  const id = useSelector((state) => state.user?.cid);
+  const token = useSelector((state) => state.token);
   const friends = useSelector((state) => state.user?.friends);
   const isFriend = friends
-    ? friends.find((friend) => friend._id === friendId)
+    ? friends.find((friend) => friend.cid === friendId)
     : null;
 
   const { palette } = useTheme();
@@ -29,11 +29,11 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
 
   const patchFriend = async () => {
     const response = await fetch(
-      process.env.REACT_APP_API_BASE_URL + `/users/${_id}/${friendId}`,
+      process.env.REACT_APP_API_BASE_URL + `/users/${id}/${friendId}`,
       {
         method: "PATCH",
         headers: {
-          IDToken: `${token}`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       }
@@ -48,7 +48,7 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
         process.env.REACT_APP_API_BASE_URL + `/posts/user/${userId}/hiscore`,
         {
           method: "GET",
-          headers: { IDToken: `${token}` },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
       const data = await response.json();
@@ -95,7 +95,7 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
           </Typography>
         </Box>
       </FlexBetween>
-      {loggedIn && _id != friendId && (
+      {loggedIn && id != friendId && (
         <IconButton
           onClick={() => patchFriend()}
           sx={{ backgroundColor: primaryLight, p: "0.6rem" }}

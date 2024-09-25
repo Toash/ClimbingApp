@@ -9,6 +9,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import userRoutes from "./routes/users.js";
 import postRoutes from "./routes/posts.js";
+import authRoutes from "./routes/auth.js";
 
 /* CONFIGURATIONS */
 const __filename = fileURLToPath(import.meta.url);
@@ -28,6 +29,7 @@ app.use(cors());
 /* ROUTES */
 app.use("/users", userRoutes);
 app.use("/posts", postRoutes);
+app.use("/auth", authRoutes);
 
 // Export the app for use in lambda.js
 export default app;

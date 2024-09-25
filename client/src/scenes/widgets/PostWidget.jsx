@@ -82,7 +82,7 @@ const PostWidget = ({
       {
         method: "PATCH",
         headers: {
-          IDToken: `${token}`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ userId: loggedInUserId }),
@@ -101,7 +101,7 @@ const PostWidget = ({
       {
         method: "POST",
         headers: {
-          IDToken: `${token}`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -121,7 +121,7 @@ const PostWidget = ({
       {
         method: "PATCH",
         headers: {
-          IDToken: `${token}`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -139,7 +139,7 @@ const PostWidget = ({
           {
             method: "DELETE",
             headers: {
-              IDToken: `${token}`,
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -172,7 +172,7 @@ const PostWidget = ({
         {
           method: "PATCH",
           headers: {
-            IDToken: `${token}`,
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify(updatedData),

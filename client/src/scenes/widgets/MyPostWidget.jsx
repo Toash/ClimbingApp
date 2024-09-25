@@ -54,7 +54,7 @@ const MyPostWidget = ({ picturePath }) => {
       process.env.REACT_APP_API_BASE_URL + `/posts`,
       {
         method: "POST",
-        headers: { IDToken: `${token}` },
+        headers: { Authorization: `Bearer ${token}` },
         body: formData,
       }
     );
@@ -65,7 +65,7 @@ const MyPostWidget = ({ picturePath }) => {
         process.env.REACT_APP_API_BASE_URL + "/posts",
         {
           method: "GET",
-          headers: { IDToken: `${token}` },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
       const postsData = await postsResponse.json();

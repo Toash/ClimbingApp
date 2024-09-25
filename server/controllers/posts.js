@@ -40,7 +40,7 @@ export const createPost = async (req, res) => {
     const mediaPath = req.file ? req.file.filename : null;
 
     // get user info
-    const user = await User.findById(userId);
+    const user = await User.findOne({ cid: userId });
     const firstName = user.firstName;
     const lastName = user.lastName;
     const userPicturePath = user.picturePath;
@@ -198,7 +198,7 @@ export const commentPost = async (req, res) => {
     const { postId } = req.params;
     const { userId, comment } = req.body;
 
-    const user = await User.findById(userId);
+    const user = await User.findOne({ cid: userId });
     const name = user.firstName + " " + user.lastName;
     const userImage = user.picturePath;
 

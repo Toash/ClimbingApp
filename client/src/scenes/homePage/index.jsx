@@ -18,6 +18,8 @@ import {
 import { useDispatch } from "react-redux";
 import { setLogin, setLoading } from "state";
 
+import ErrorFallback from "scenes/errors/ErrorFallback";
+
 const HomePage = () => {
   const dispatch = useDispatch();
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
@@ -34,51 +36,66 @@ const HomePage = () => {
   const loading = useSelector((state) => state.loading);
 
   useEffect(() => {
+    // async allows us to pause execution with "await."
     async function checkProfile() {
-      dispatch(setLoading(true));
-      console.log("Redirect URI:", process.env.REACT_APP_REDIRECT_URL); // Check if this is correct
-
       try {
+        // TODO: check if the user is signed in
+
         // get authorization code in url
         const urlParams = new URLSearchParams(window.location.search);
         const authorizationCode = urlParams.get("code");
 
-        // get tokens
-        let response = await fetch(
-          "https://climbing-app.auth.us-east-2.amazoncognito.com/oauth2/token",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-            },
-            body: new URLSearchParams({
-              grant_type: "authorization_code",
-              client_id: "6e718pu7haefgts8vp0hveoaa4",
-              code: authorizationCode,
-              redirect_uri: process.env.REACT_APP_REDIRECT_URL,
-            }),
+        if (authorizationCode) {
+          try {
+            // we get id and access tokens
+            const response = await fetch(
+              process.env.REACT_APP_API_BASE_URL + `/auth/exchange-code`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ authorizationCode: authorizationCode }),
+              }
+            );
+            const tokens = await response.json();
+          } catch (error) {
+            console.log("Error: Could not exchange auth code. ", error);
           }
-        );
-        const token = await response.json();
-        console.log("Here are the tokens: ", token);
+        }
 
         // store the necessary tokens in redux
-        dispatch(setLogin({ user: null, token: token.id_token }));
+        dispatch(setLogin({ user: null, token: id_token }));
 
-        const getUserCommand = new GetUserCommand(token);
+        console.log("Getting cognito user.");
+        const getUserCommand = new GetUserCommand({
+          AccessToken: access_token,
+        });
         const userData = await cognitoClient.send(getUserCommand);
 
+        console.log("Here is the userData:");
         console.log(userData);
-        const cognitoUserId = userData.UserAttributes.sub;
+        const cognitoUserId = userData.UserAttributes.find(
+          (data) => data.Name === "sub"
+        ).Value;
+
+        console.log("extracted cognito user id: ", cognitoUserId);
 
         response = await fetch(
-          process.env.REACT_APP_API_BASE_URL + `/users/${cognitoUserId}`
+          process.env.REACT_APP_API_BASE_URL + `/users/${cognitoUserId}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${id_token})}`,
+            },
+          }
         );
         const userProfile = await response.json();
 
         if (userProfile && userProfile.firstName && userProfile.lastName) {
           setIsProfileComplete(true);
         }
+
+        console.log("Extracted user profile: ");
+        console.log(userProfile);
       } catch (error) {
         console.error("Error checking profile", error);
       } finally {
@@ -92,7 +109,7 @@ const HomePage = () => {
   return (
     <Box>
       <NavBar></NavBar>
-      <ErrorBoundary fallback={<div>Something went wrong :(</div>}>
+      <ErrorBoundary FallbackComponent={ErrorFallback}>
         {!loading ? (
           <Box
             width="100%"
