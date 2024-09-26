@@ -1,3 +1,5 @@
+import { CognitoJwtVerifier } from "aws-jwt-verify";
+
 // exchange authorization code for the tokens.
 export const exchangeCode = async (req, res) => {
   const { authorizationCode } = req.body;
@@ -37,7 +39,7 @@ export const exchangeCode = async (req, res) => {
   }
 };
 
-export const refreshToken = async (req, res) => {
+export const refreshTokens = async (req, res) => {
   const refresh_token = req.cookies.refresh_token;
   if (!refresh_token) {
     return res.status(403).json({ error: "No refresh token in cookies" });
@@ -67,5 +69,25 @@ export const refreshToken = async (req, res) => {
   } catch (error) {
     console.log("Failed to refresh token: ", error);
     res.status(500).json({ error: "Failed to refresh token" });
+  }
+};
+
+// chcek if token is valid (not expired)
+export const verifyToken = async (req, res) => {
+  const verifier = CognitoJwtVerifier.create({
+    userPoolId: "us-east-2_CpLLfRhtv",
+    tokenUse: "access",
+    clientId: "6e718pu7haefgts8vp0hveoaa4",
+  });
+
+  if (req.body.access_token) {
+    try {
+      const payload = await verifier.verify(req.body.access_token);
+      console.log("Client supplied token is valid. Payload:", payload);
+      return true;
+    } catch {
+      console.log("Client supplied token is invalid.");
+      return false;
+    }
   }
 };

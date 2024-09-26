@@ -18,6 +18,7 @@ import WidgetWrapper from "components/WidgetWrapper";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPosts } from "state";
+import refreshAccessToken from "refreshAccessToken";
 
 const MyPostWidget = ({ picturePath }) => {
   const dispatch = useDispatch();
@@ -58,6 +59,11 @@ const MyPostWidget = ({ picturePath }) => {
         body: formData,
       }
     );
+
+    if (response.status == 401) {
+      console.log("Unauthorized request... attempting to refresh token.");
+      await refreshAccessToken(dispatch);
+    }
 
     // Sort
     if (response.ok) {

@@ -30,6 +30,7 @@ import WidgetWrapper from "components/WidgetWrapper";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPost } from "state";
+import refreshAccessToken from "refreshAccessToken";
 
 const PostWidget = ({
   createdAt,
@@ -88,6 +89,10 @@ const PostWidget = ({
         body: JSON.stringify({ userId: loggedInUserId }),
       }
     );
+    if (response.status == 401) {
+      console.log("Unauthorized request... attempting to refresh token.");
+      await refreshAccessToken(dispatch);
+    }
 
     const updatedPost = await response.json();
     dispatch(setPost({ post: updatedPost }));
@@ -110,6 +115,11 @@ const PostWidget = ({
         }),
       }
     );
+
+    if (response.status == 401) {
+      console.log("Unauthorized request... attempting to refresh token.");
+      await refreshAccessToken(dispatch);
+    }
     const updatedPost = await response.json();
     dispatch(setPost({ post: updatedPost }));
     setNewComment("");
@@ -129,6 +139,10 @@ const PostWidget = ({
         }),
       }
     );
+    if (response.status == 401) {
+      console.log("Unauthorized request... attempting to refresh token.");
+      await refreshAccessToken(dispatch);
+    }
   };
 
   const deletePost = async () => {
@@ -143,6 +157,10 @@ const PostWidget = ({
             },
           }
         );
+        if (response.status == 401) {
+          console.log("Unauthorized request... attempting to refresh token.");
+          await refreshAccessToken(dispatch);
+        }
 
         if (response.ok) {
           window.location.reload(); // this is inefficient, but deletion happens rarely so should be fine for now
@@ -178,6 +196,10 @@ const PostWidget = ({
           body: JSON.stringify(updatedData),
         }
       );
+      if (response.status == 401) {
+        console.log("Unauthorized request... attempting to refresh token.");
+        await refreshAccessToken(dispatch);
+      }
 
       if (response.ok) {
         const updatedPost = await response.json();

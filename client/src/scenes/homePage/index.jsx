@@ -19,6 +19,7 @@ import { useDispatch } from "react-redux";
 import { setLogin, setLoading } from "state";
 
 import ErrorFallback from "scenes/errors/ErrorFallback";
+import refreshAccessToken from "refreshAccessToken";
 
 const HomePage = () => {
   const dispatch = useDispatch();
@@ -44,6 +45,8 @@ const HomePage = () => {
         // get authorization code in url
         const urlParams = new URLSearchParams(window.location.search);
         const authorizationCode = urlParams.get("code");
+        let id_token;
+        let access_token;
 
         if (authorizationCode) {
           try {
@@ -57,13 +60,15 @@ const HomePage = () => {
               }
             );
             const tokens = await response.json();
+            id_token = tokens.id_token;
+            access_token = tokens.access_token;
           } catch (error) {
             console.log("Error: Could not exchange auth code. ", error);
           }
         }
 
         // store the necessary tokens in redux
-        dispatch(setLogin({ user: null, token: id_token }));
+        dispatch(setLogin({ token: access_token }));
 
         console.log("Getting cognito user.");
         const getUserCommand = new GetUserCommand({
@@ -79,15 +84,20 @@ const HomePage = () => {
 
         console.log("extracted cognito user id: ", cognitoUserId);
 
-        response = await fetch(
+        const response = await fetch(
           process.env.REACT_APP_API_BASE_URL + `/users/${cognitoUserId}`,
           {
             method: "GET",
             headers: {
-              Authorization: `Bearer ${id_token})}`,
+              Authorization: `Bearer ${access_token})}`,
             },
           }
         );
+
+        if (response.status == 401) {
+          console.log("Unauthorized request... attempting to refresh token.");
+          await refreshAccessToken(dispatch);
+        }
         const userProfile = await response.json();
 
         if (userProfile && userProfile.firstName && userProfile.lastName) {

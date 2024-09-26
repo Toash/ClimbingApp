@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setPosts } from "state";
 import PostWidget from "./PostWidget";
 import { Typography } from "@mui/material";
+import refreshAccessToken from "refreshAccessToken";
 
 const PostsWidget = ({ userId, isProfile = false }) => {
   const dispatch = useDispatch();
@@ -35,6 +36,11 @@ const PostsWidget = ({ userId, isProfile = false }) => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+
+      if (response.status == 401) {
+        console.log("Unauthorized request... attempting to refresh token.");
+        await refreshAccessToken(dispatch);
+      }
       const data = await response.json();
       console.log("User posts retrieved: ", data);
       dispatch(setPosts({ posts: data }));

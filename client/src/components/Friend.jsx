@@ -6,6 +6,7 @@ import { setFriends } from "state";
 import FlexBetween from "./FlexBetween";
 import UserImage from "./UserImage";
 import { useState, useEffect } from "react";
+import refreshAccessToken from "refreshAccessToken";
 
 const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
   const dispatch = useDispatch();
@@ -39,6 +40,11 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
       }
     );
     const data = await response.json();
+
+    if (response.status == 401) {
+      console.log("Unauthorized request... attempting to refresh token.");
+      await refreshAccessToken(dispatch);
+    }
     dispatch(setFriends({ friends: data })); // why are we storing friends list in state
   };
 
@@ -51,6 +57,10 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+      if (response.status == 401) {
+        console.log("Unauthorized request... attempting to refresh token.");
+        await refreshAccessToken(dispatch);
+      }
       const data = await response.json();
       return data;
     } catch (e) {

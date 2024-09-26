@@ -1,9 +1,9 @@
 import express from "express";
-import { exchangeCode } from "../controllers/auth";
+import { exchangeCode, refreshTokens } from "../controllers/auth";
 
 const router = express.Router();
 
 router.post("/exchange-code", exchangeCode);
-router.post("/refresh-token");
+router.post("/refresh-token", refreshTokens);
 
 export default router;

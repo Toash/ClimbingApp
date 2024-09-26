@@ -1,14 +1,16 @@
 import { Box, useMediaQuery } from "@mui/material";
 import { useEffect, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import NavBar from "scenes/navbar";
 import FriendListWidget from "scenes/widgets/FriendListWidget";
 import PostsWidget from "scenes/widgets/PostsWidget";
 import UserWidget from "scenes/widgets/UserWidget";
+import refreshAccessToken from "refreshAccessToken";
 
 const ProfilePage = () => {
+  const dispatch = useDispatch();
   const [user, setUser] = useState(null);
   const { userId } = useParams(); //get id from url
   const token = useSelector((state) => state.token);
@@ -22,6 +24,11 @@ const ProfilePage = () => {
         headers: { Authorization: `Bearer ${token}` },
       }
     );
+
+    if (response.status == 401) {
+      console.log("Unauthorized request... attempting to refresh token.");
+      await refreshAccessToken(dispatch);
+    }
     const data = await response.json();
     setUser(data);
   };

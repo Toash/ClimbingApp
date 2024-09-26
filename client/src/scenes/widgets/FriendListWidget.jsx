@@ -4,6 +4,7 @@ import WidgetWrapper from "components/WidgetWrapper";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setFriends } from "state";
+import refreshAccessToken from "refreshAccessToken";
 
 const FriendListWidget = ({ userId }) => {
   const dispatch = useDispatch();
@@ -19,6 +20,11 @@ const FriendListWidget = ({ userId }) => {
         headers: { Authorization: `Bearer ${token}` },
       }
     );
+
+    if (response.status == 401) {
+      console.log("Unauthorized request... attempting to refresh token.");
+      await refreshAccessToken(dispatch);
+    }
     const data = await response.json();
     dispatch(setFriends({ friends: data })); // so we can see store friends of other users
   };

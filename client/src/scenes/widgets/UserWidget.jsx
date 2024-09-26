@@ -4,11 +4,13 @@ import { Box, Typography, Divider, useTheme } from "@mui/material";
 import UserImage from "components/UserImage";
 import FlexBetween from "components/FlexBetween";
 import WidgetWrapper from "components/WidgetWrapper";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import refreshAccessToken from "refreshAccessToken";
 
 const UserWidget = ({ userId, picturePath }) => {
+  const dispatch = useDispatch();
   const [user, setUser] = useState(null);
   const { palette } = useTheme();
   const navigate = useNavigate();
@@ -24,6 +26,10 @@ const UserWidget = ({ userId, picturePath }) => {
         headers: { Authorization: `Bearer ${token}` },
       }
     );
+    if (response.status == 401) {
+      console.log("Unauthorized request... attempting to refresh token.");
+      await refreshAccessToken(dispatch);
+    }
     const data = await response.json();
     setUser(data);
   };
