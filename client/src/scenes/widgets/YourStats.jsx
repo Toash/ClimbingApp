@@ -1,8 +1,8 @@
 import { Divider, Typography, useTheme } from "@mui/material";
 import WidgetWrapper from "components/WidgetWrapper";
+import fetchWithRetry from "fetchWithRetry";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import refreshAccessToken from "refreshAccessToken";
 
 const YourStats = ({ userId }) => {
   const dispatch = useDispatch();
@@ -13,18 +13,13 @@ const YourStats = ({ userId }) => {
 
   const getHighestVGradePost = async (userId) => {
     try {
-      const response = await fetch(
+      const response = await fetchWithRetry(
         process.env.REACT_APP_API_BASE_URL + `/posts/user/${userId}/hiscore`,
         {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
-      if (response.status == 401) {
-        console.log("Unauthorized request... attempting to refresh token.");
-        await refreshAccessToken(dispatch);
-      }
       const data = await response.json();
       return data;
     } catch (e) {

@@ -19,7 +19,7 @@ import { useDispatch } from "react-redux";
 import { setLogin, setLoading } from "state";
 
 import ErrorFallback from "scenes/errors/ErrorFallback";
-import refreshAccessToken from "refreshAccessToken";
+import fetchWithRetry from "fetchWithRetry";
 
 const HomePage = () => {
   const dispatch = useDispatch();
@@ -30,17 +30,39 @@ const HomePage = () => {
 
   const [isProfileComplete, setIsProfileComplete] = useState(false);
 
-  const cognitoClient = new CognitoIdentityProviderClient({
-    region: "us-east-2",
-  });
-
   const loading = useSelector((state) => state.loading);
+  const token = useSelector((state) => state.token);
+  const [setupComplete, setSetupComplete] = useState(false);
 
   useEffect(() => {
+    const cognitoClient = new CognitoIdentityProviderClient({
+      region: "us-east-2",
+    });
     // async allows us to pause execution with "await."
     async function checkProfile() {
       try {
-        // TODO: check if the user is signed in
+        // TODO: check if the user is signed in (invalid token or no token), if not get a token
+
+        console.log("Checking to see if the user is signed in.");
+        let response = await fetch(
+          process.env.REACT_APP_API_BASE_URL + "/auth/check-token",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const { status } = await response.json();
+        if (status) {
+          console.log("User already has a valid token. Skipping token setup.");
+          return;
+        } else {
+          console.log(
+            "User does not have a valid token. Exchanging an authorization code."
+          );
+        }
 
         // get authorization code in url
         const urlParams = new URLSearchParams(window.location.search);
@@ -48,27 +70,32 @@ const HomePage = () => {
         let id_token;
         let access_token;
 
-        if (authorizationCode) {
-          try {
-            // we get id and access tokens
-            const response = await fetch(
-              process.env.REACT_APP_API_BASE_URL + `/auth/exchange-code`,
-              {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ authorizationCode: authorizationCode }),
-              }
-            );
-            const tokens = await response.json();
-            id_token = tokens.id_token;
-            access_token = tokens.access_token;
-          } catch (error) {
-            console.log("Error: Could not exchange auth code. ", error);
-          }
+        if (!authorizationCode) {
+          console.log(
+            "No access token and authorization code, user is a guest."
+          );
         }
 
-        // store the necessary tokens in redux
-        dispatch(setLogin({ token: access_token }));
+        try {
+          // we get id and access tokens
+          response = await fetch(
+            process.env.REACT_APP_API_BASE_URL + `/auth/exchange-code`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ authorizationCode: authorizationCode }),
+            }
+          );
+          const tokens = await response.json();
+          id_token = tokens.id_token;
+          access_token = tokens.access_token;
+          // store the necessary tokens in redux
+          dispatch(setLogin({ token: id_token }));
+          console.log("Successfully exchanged auth token!");
+          console.log("Here are the tokens received: ", JSON.stringify(tokens));
+        } catch (error) {
+          console.log("Error: Could not exchange auth code. ", error);
+        }
 
         console.log("Getting cognito user.");
         const getUserCommand = new GetUserCommand({
@@ -76,29 +103,25 @@ const HomePage = () => {
         });
         const userData = await cognitoClient.send(getUserCommand);
 
-        console.log("Here is the userData:");
-        console.log(userData);
+        console.log("Here is the userData: ", userData);
         const cognitoUserId = userData.UserAttributes.find(
           (data) => data.Name === "sub"
         ).Value;
-
         console.log("extracted cognito user id: ", cognitoUserId);
 
-        const response = await fetch(
+        console.log("Attempting to fetch user profile in mongodb database.");
+        response = await fetchWithRetry(
           process.env.REACT_APP_API_BASE_URL + `/users/${cognitoUserId}`,
           {
             method: "GET",
-            headers: {
-              Authorization: `Bearer ${access_token})}`,
-            },
-          }
+            headers: { Authorization: `Bearer ${id_token}` },
+          },
+          dispatch
         );
 
-        if (response.status == 401) {
-          console.log("Unauthorized request... attempting to refresh token.");
-          await refreshAccessToken(dispatch);
-        }
         const userProfile = await response.json();
+
+        console.log("Here is the fetched user profile: ", userProfile);
 
         if (userProfile && userProfile.firstName && userProfile.lastName) {
           setIsProfileComplete(true);
@@ -110,17 +133,18 @@ const HomePage = () => {
         console.error("Error checking profile", error);
       } finally {
         dispatch(setLoading(false));
+        setSetupComplete(true);
       }
     }
 
     checkProfile();
-  }, []);
+  }, [dispatch]);
 
   return (
     <Box>
       <NavBar></NavBar>
       <ErrorBoundary FallbackComponent={ErrorFallback}>
-        {!loading ? (
+        {!loading && setupComplete ? (
           <Box
             width="100%"
             padding="2rem 6%"

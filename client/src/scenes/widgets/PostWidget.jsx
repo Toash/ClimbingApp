@@ -30,7 +30,7 @@ import WidgetWrapper from "components/WidgetWrapper";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPost } from "state";
-import refreshAccessToken from "refreshAccessToken";
+import fetchWithRetry from "fetchWithRetry";
 
 const PostWidget = ({
   createdAt,
@@ -78,7 +78,7 @@ const PostWidget = ({
   const primary = palette.primary.main;
 
   const patchLike = async () => {
-    const response = await fetch(
+    const response = await fetchWithRetry(
       process.env.REACT_APP_API_BASE_URL + `/posts/post/${postId}/like`,
       {
         method: "PATCH",
@@ -89,10 +89,6 @@ const PostWidget = ({
         body: JSON.stringify({ userId: loggedInUserId }),
       }
     );
-    if (response.status == 401) {
-      console.log("Unauthorized request... attempting to refresh token.");
-      await refreshAccessToken(dispatch);
-    }
 
     const updatedPost = await response.json();
     dispatch(setPost({ post: updatedPost }));
@@ -101,7 +97,7 @@ const PostWidget = ({
   const postComment = async () => {
     if (newComment.trim() === "") return;
 
-    const response = await fetch(
+    const response = fetchWithRetry(
       process.env.REACT_APP_API_BASE_URL + `/posts/post/${postId}/comment`,
       {
         method: "POST",
@@ -115,17 +111,12 @@ const PostWidget = ({
         }),
       }
     );
-
-    if (response.status == 401) {
-      console.log("Unauthorized request... attempting to refresh token.");
-      await refreshAccessToken(dispatch);
-    }
     const updatedPost = await response.json();
     dispatch(setPost({ post: updatedPost }));
     setNewComment("");
   };
   const toggleLikeComment = async (commentId) => {
-    const response = await fetch(
+    await fetchWithRetry(
       process.env.REACT_APP_API_BASE_URL +
         `/posts/post/${postId}/${commentId}/like`,
       {
@@ -139,16 +130,12 @@ const PostWidget = ({
         }),
       }
     );
-    if (response.status == 401) {
-      console.log("Unauthorized request... attempting to refresh token.");
-      await refreshAccessToken(dispatch);
-    }
   };
 
   const deletePost = async () => {
     if (window.confirm("Are you sure you want to delete this post?")) {
       try {
-        const response = await fetch(
+        const response = await fetchWithRetry(
           process.env.REACT_APP_API_BASE_URL + `/posts/post/${postId}/`,
           {
             method: "DELETE",
@@ -157,10 +144,6 @@ const PostWidget = ({
             },
           }
         );
-        if (response.status == 401) {
-          console.log("Unauthorized request... attempting to refresh token.");
-          await refreshAccessToken(dispatch);
-        }
 
         if (response.ok) {
           window.location.reload(); // this is inefficient, but deletion happens rarely so should be fine for now
@@ -185,7 +168,7 @@ const PostWidget = ({
         createdAt: editedDate,
       };
 
-      const response = await fetch(
+      const response = await fetchWithRetry(
         process.env.REACT_APP_API_BASE_URL + `/posts/post/${postId}`,
         {
           method: "PATCH",
@@ -196,10 +179,6 @@ const PostWidget = ({
           body: JSON.stringify(updatedData),
         }
       );
-      if (response.status == 401) {
-        console.log("Unauthorized request... attempting to refresh token.");
-        await refreshAccessToken(dispatch);
-      }
 
       if (response.ok) {
         const updatedPost = await response.json();

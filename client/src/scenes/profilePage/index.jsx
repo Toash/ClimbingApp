@@ -7,7 +7,7 @@ import NavBar from "scenes/navbar";
 import FriendListWidget from "scenes/widgets/FriendListWidget";
 import PostsWidget from "scenes/widgets/PostsWidget";
 import UserWidget from "scenes/widgets/UserWidget";
-import refreshAccessToken from "refreshAccessToken";
+import fetchWithRetry from "fetchWithRetry";
 
 const ProfilePage = () => {
   const dispatch = useDispatch();
@@ -17,25 +17,20 @@ const ProfilePage = () => {
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
 
   const getUser = async () => {
-    const response = await fetch(
-      process.env.REACT_APP_API_BASE_URL + `/users/${userId}`,
-      {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
+    const getUserURL = process.env.REACT_APP_API_BASE_URL + `/users/${userId}`;
+    const getUserOptions = {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    };
 
-    if (response.status == 401) {
-      console.log("Unauthorized request... attempting to refresh token.");
-      await refreshAccessToken(dispatch);
-    }
+    const response = await fetchWithRetry(getUserURL, getUserOptions, dispatch);
     const data = await response.json();
     setUser(data);
   };
 
   useEffect(() => {
     getUser();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!user) return null;
 

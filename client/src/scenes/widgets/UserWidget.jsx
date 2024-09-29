@@ -7,7 +7,7 @@ import WidgetWrapper from "components/WidgetWrapper";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import refreshAccessToken from "refreshAccessToken";
+import fetchWithRetry from "fetchWithRetry";
 
 const UserWidget = ({ userId, picturePath }) => {
   const dispatch = useDispatch();
@@ -19,17 +19,13 @@ const UserWidget = ({ userId, picturePath }) => {
   const medium = palette.neutral.medium;
 
   const getUser = async () => {
-    const response = await fetch(
+    const response = await fetchWithRetry(
       process.env.REACT_APP_API_BASE_URL + `/users/${userId}`,
       {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       }
     );
-    if (response.status == 401) {
-      console.log("Unauthorized request... attempting to refresh token.");
-      await refreshAccessToken(dispatch);
-    }
     const data = await response.json();
     setUser(data);
   };

@@ -6,7 +6,7 @@ import { setFriends } from "state";
 import FlexBetween from "./FlexBetween";
 import UserImage from "./UserImage";
 import { useState, useEffect } from "react";
-import refreshAccessToken from "refreshAccessToken";
+import fetchWithRetry from "fetchWithRetry";
 
 const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
   const dispatch = useDispatch();
@@ -29,7 +29,7 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
   const [vGrade, setVGrade] = useState(null);
 
   const patchFriend = async () => {
-    const response = await fetch(
+    const response = await fetchWithRetry(
       process.env.REACT_APP_API_BASE_URL + `/users/${id}/${friendId}`,
       {
         method: "PATCH",
@@ -40,27 +40,23 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
       }
     );
     const data = await response.json();
-
-    if (response.status == 401) {
-      console.log("Unauthorized request... attempting to refresh token.");
-      await refreshAccessToken(dispatch);
-    }
     dispatch(setFriends({ friends: data })); // why are we storing friends list in state
   };
 
   const getHighestVGradePost = async (userId) => {
     try {
-      const response = await fetch(
-        process.env.REACT_APP_API_BASE_URL + `/posts/user/${userId}/hiscore`,
-        {
-          method: "GET",
-          headers: { Authorization: `Bearer ${token}` },
-        }
+      const getUserURL =
+        process.env.REACT_APP_API_BASE_URL + `/users/${userId}`;
+      const getUserOptions = {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      };
+
+      const response = await fetchWithRetry(
+        getUserURL,
+        getUserOptions,
+        dispatch
       );
-      if (response.status == 401) {
-        console.log("Unauthorized request... attempting to refresh token.");
-        await refreshAccessToken(dispatch);
-      }
       const data = await response.json();
       return data;
     } catch (e) {

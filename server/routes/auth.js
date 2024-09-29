@@ -1,9 +1,14 @@
 import express from "express";
-import { exchangeCode, refreshTokens } from "../controllers/auth";
+import {
+  checkToken,
+  exchangeCode,
+  refreshTokens,
+} from "../controllers/auth.js";
 
 const router = express.Router();
 
 router.post("/exchange-code", exchangeCode);
-router.post("/refresh-token", refreshTokens);
+//router.post("/refresh-token", refreshTokens); moved to seperate lambda
+router.get("/check-token", checkToken);
 
 export default router;

@@ -3,6 +3,7 @@ import { CognitoJwtVerifier } from "aws-jwt-verify";
 // exchange authorization code for the tokens.
 export const exchangeCode = async (req, res) => {
   const { authorizationCode } = req.body;
+  console.log("authorization code retrieved: ", authorizationCode);
 
   try {
     const response = await fetch(
@@ -16,7 +17,7 @@ export const exchangeCode = async (req, res) => {
           grant_type: "authorization_code",
           client_id: "6e718pu7haefgts8vp0hveoaa4",
           code: authorizationCode,
-          redirect_uri: process.env.REACT_APP_REDIRECT_URL,
+          redirect_uri: "https://dggviye68hd6z.cloudfront.net/",
         }),
       }
     );
@@ -26,8 +27,10 @@ export const exchangeCode = async (req, res) => {
     res.cookie("refresh_token", tokenData.refresh_token, {
       httpOnly: true, //javascript cannot access the cookie.
       secure: true, //send over encrypted connection
-      sameSite: "Strict",
+      sameSite: "None",
     });
+    console.log("sent cookie!");
+    console.log("Token data:", tokenData);
 
     res.json({
       access_token: tokenData.access_token,
@@ -39,6 +42,7 @@ export const exchangeCode = async (req, res) => {
   }
 };
 
+// moved to seperate lambda
 export const refreshTokens = async (req, res) => {
   const refresh_token = req.cookies.refresh_token;
   if (!refresh_token) {
@@ -62,32 +66,38 @@ export const refreshTokens = async (req, res) => {
     );
 
     const tokenData = await response.json();
+
     res.json({
       access_token: tokenData.access_token,
       id_token: tokenData.id_token,
     });
   } catch (error) {
     console.log("Failed to refresh token: ", error);
+    res.header(
+      "Access-Control-Allow-Origin",
+      "https://dggviye68hd6z.cloudfront.net"
+    );
+    res.header("Access-Control-Allow-Credentials", "true");
     res.status(500).json({ error: "Failed to refresh token" });
   }
 };
 
 // chcek if token is valid (not expired)
-export const verifyToken = async (req, res) => {
+export const checkToken = async (req, res) => {
   const verifier = CognitoJwtVerifier.create({
     userPoolId: "us-east-2_CpLLfRhtv",
     tokenUse: "access",
     clientId: "6e718pu7haefgts8vp0hveoaa4",
   });
 
-  if (req.body.access_token) {
+  if (req.get("Authorization")) {
     try {
-      const payload = await verifier.verify(req.body.access_token);
+      const payload = await verifier.verify(req.get("Authorization"));
       console.log("Client supplied token is valid. Payload:", payload);
-      return true;
+      res.json({ status: true });
     } catch {
       console.log("Client supplied token is invalid.");
-      return false;
+      res.json({ status: false });
     }
   }
 };

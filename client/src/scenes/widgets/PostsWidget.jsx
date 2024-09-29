@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setPosts } from "state";
 import PostWidget from "./PostWidget";
 import { Typography } from "@mui/material";
-import refreshAccessToken from "refreshAccessToken";
+import fetchWithRetry from "fetchWithRetry";
 
 const PostsWidget = ({ userId, isProfile = false }) => {
   const dispatch = useDispatch();
@@ -29,7 +29,7 @@ const PostsWidget = ({ userId, isProfile = false }) => {
   const getUserPosts = async () => {
     try {
       console.log(`Getting user posts of user id ${userId}`);
-      const response = await fetch(
+      const response = await fetchWithRetry(
         process.env.REACT_APP_API_BASE_URL + `/posts/user/${userId}`,
         {
           method: "GET",
@@ -37,10 +37,6 @@ const PostsWidget = ({ userId, isProfile = false }) => {
         }
       );
 
-      if (response.status == 401) {
-        console.log("Unauthorized request... attempting to refresh token.");
-        await refreshAccessToken(dispatch);
-      }
       const data = await response.json();
       console.log("User posts retrieved: ", data);
       dispatch(setPosts({ posts: data }));

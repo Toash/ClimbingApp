@@ -1,10 +1,10 @@
 import { Box, Typography, useTheme } from "@mui/material";
 import Friend from "components/Friend";
 import WidgetWrapper from "components/WidgetWrapper";
+import fetchWithRetry from "fetchWithRetry";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setFriends } from "state";
-import refreshAccessToken from "refreshAccessToken";
 
 const FriendListWidget = ({ userId }) => {
   const dispatch = useDispatch();
@@ -13,18 +13,13 @@ const FriendListWidget = ({ userId }) => {
   const friends = useSelector((state) => state.user.friends);
 
   const getFriends = async () => {
-    const response = await fetch(
+    const response = await fetchWithRetry(
       process.env.REACT_APP_API_BASE_URL + `/users/${userId}/friends`,
       {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       }
     );
-
-    if (response.status == 401) {
-      console.log("Unauthorized request... attempting to refresh token.");
-      await refreshAccessToken(dispatch);
-    }
     const data = await response.json();
     dispatch(setFriends({ friends: data })); // so we can see store friends of other users
   };

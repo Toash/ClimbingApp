@@ -20,25 +20,6 @@ async function connectToDatabase() {
 
 const server = serverlessExpress({ app });
 
-// Lambda handler function called when lambda is triggered.
-// export const handler = async (event, context) => {
-//   await connectToDatabase();
-
-//   const response = await server(event, context);
-
-//   response.headers = {
-//     ...response.headers,
-//     "Access-Control-Allow-Headers": "Content-Type",
-//     "Access-Control-Allow-Origin": "*",
-//     "Access-Control-Allow-Methods": "OPTIONS,POST,GET",
-//   };
-
-//   if (!response.statusCode) {
-//     response.statusCode = 200;
-//   }
-//   return response;
-// };
-
 export const handler = async (event, context) => {
   await connectToDatabase();
   return server(event, context);
