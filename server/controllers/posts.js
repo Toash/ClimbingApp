@@ -151,11 +151,11 @@ export const getUserPosts = async (req, res) => {
 
 export const getHighestVGradePost = async (req, res) => {
   try {
-    console.log("GETTING HIGHEST V GRADE POST");
+    // console.log("GETTING HIGHEST V GRADE POST");
     const { userId } = req.params;
 
-    // get highest v grade
-    const post = await Post.find({ userId }).sort({ vGrade: -1 }).limit(1);
+    // Find all posts associated with a user, and sort them by v grade is descending. Pick the first one
+    const post = await Post.find({ cid: userId }).sort({ vGrade: -1 }).limit(1);
 
     if (post.length > 0) {
       res.status(200).json(post[0]);

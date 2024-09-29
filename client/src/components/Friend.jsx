@@ -43,36 +43,35 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
     dispatch(setFriends({ friends: data })); // why are we storing friends list in state
   };
 
-  const getHighestVGradePost = async (userId) => {
-    try {
-      const getUserURL =
-        process.env.REACT_APP_API_BASE_URL + `/users/${userId}`;
-      const getUserOptions = {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
-      };
-
-      const response = await fetchWithRetry(
-        getUserURL,
-        getUserOptions,
-        dispatch
-      );
-      const data = await response.json();
-      return data;
-    } catch (e) {
-      console.log("Cannot find user or post with hiscore");
-      console.log(e.message);
-      return null;
-    }
-  };
-
   useEffect(() => {
+    const getHighestVGradePost = async (userId) => {
+      try {
+        const getUserURL =
+          process.env.REACT_APP_API_BASE_URL + `/posts/user/${userId}/hiscore`;
+        const getUserOptions = {
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}` },
+        };
+
+        const response = await fetchWithRetry(
+          getUserURL,
+          getUserOptions,
+          dispatch
+        );
+        const data = await response.json();
+        return data;
+      } catch (e) {
+        console.log("Cannot find user or post with hiscore");
+        console.log(e.message);
+        return null;
+      }
+    };
     const fetchMax = async () => {
       const post = await getHighestVGradePost(friendId);
       setVGrade(post.vGrade);
     };
     fetchMax();
-  }, [friendId, token]);
+  }, [dispatch, friendId, token]);
   return (
     <FlexBetween>
       <FlexBetween gap="1rem">

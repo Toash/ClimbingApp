@@ -4,7 +4,7 @@ import Comment from "./Comment.js";
 const postSchema = new mongoose.Schema(
   {
     // ------------- USER ------------
-    userId: {
+    cid: {
       type: String,
       required: true,
     },

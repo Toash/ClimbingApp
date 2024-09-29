@@ -58,7 +58,7 @@ const PostsWidget = ({ userId, isProfile = false }) => {
         posts.map(
           ({
             _id,
-            userId,
+            cid,
             createdAt,
             // ----- user stuff -----
             firstName,
@@ -79,7 +79,7 @@ const PostsWidget = ({ userId, isProfile = false }) => {
               createdAt={createdAt}
               key={_id}
               postId={_id}
-              postUserId={userId}
+              postUserId={cid}
               // ----- user stuff -----
               name={`${firstName} ${lastName}`}
               userPicturePath={userPicturePath}

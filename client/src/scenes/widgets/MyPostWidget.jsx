@@ -29,7 +29,7 @@ const MyPostWidget = ({ picturePath }) => {
   const [description, setDescription] = useState("");
   const [selectedDate, setSelectedDate] = useState(null); // State for date
   const { palette } = useTheme();
-  const { _id } = useSelector((state) => state.user);
+  const { cid } = useSelector((state) => state.user);
   const token = useSelector((state) => state.token);
   const isNonMobileScreens = useMediaQuery("(min-width : 1000px)");
   const mediumMain = palette.neutral.mediumMain;
@@ -37,7 +37,7 @@ const MyPostWidget = ({ picturePath }) => {
 
   const handlePost = async () => {
     const formData = new FormData();
-    formData.append("userId", _id);
+    formData.append("userId", cid);
     formData.append("title", post);
     formData.append("vGrade", vGrade);
     formData.append("attempts", attempts);
