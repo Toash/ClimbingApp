@@ -168,12 +168,17 @@ export const getHighestVGradePost = async (req, res) => {
 };
 
 /* UPDATE */
+/**
+ * Uses _id to keep track of who likes.
+ * @param {*} req
+ * @param {*} res
+ */
 export const likePost = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { postId } = req.params;
     const { userId } = req.body;
-    const post = await Post.findById(id);
-    const isLiked = post.likes.get(userId);
+    const post = await Post.findById(postId);
+    const isLiked = post.likes.get(userId); // get in map
 
     if (isLiked) {
       post.likes.delete(userId);
@@ -182,7 +187,7 @@ export const likePost = async (req, res) => {
     }
 
     const updatedPost = await Post.findByIdAndUpdate(
-      id,
+      postId,
       { likes: post.likes },
       { new: true }
     );

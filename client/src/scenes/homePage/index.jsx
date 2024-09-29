@@ -25,7 +25,7 @@ const HomePage = () => {
   const dispatch = useDispatch();
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
   const loggedIn = useSelector((state) => state.user);
-  const _id = useSelector((state) => state.user?._id);
+  const cid = useSelector((state) => state.user?.cid);
   const picturePath = useSelector((state) => state.user?.picturePath);
 
   const [isProfileComplete, setIsProfileComplete] = useState(false);
@@ -123,12 +123,11 @@ const HomePage = () => {
 
         console.log("Here is the fetched user profile: ", userProfile);
 
+        dispatch(setLogin({ user: userProfile }));
+
         if (userProfile && userProfile.firstName && userProfile.lastName) {
           setIsProfileComplete(true);
         }
-
-        console.log("Extracted user profile: ");
-        console.log(userProfile);
       } catch (error) {
         console.error("Error checking profile", error);
       } finally {
@@ -156,8 +155,8 @@ const HomePage = () => {
             <Box flexBasis={isNonMobileScreens ? "26%" : undefined}>
               {loggedIn && (
                 <>
-                  <UserWidget userId={_id} picturePath={picturePath} />
-                  <YourStats userId={_id}></YourStats>
+                  <UserWidget userId={cid} picturePath={picturePath} />
+                  <YourStats userId={cid}></YourStats>
                 </>
               )}
             </Box>
@@ -168,11 +167,11 @@ const HomePage = () => {
               mt={isNonMobileScreens ? undefined : "2rem"}
             >
               {loggedIn && <MyPostWidget picturePath={picturePath} />}
-              <PostsWidget userId={_id} />
+              <PostsWidget userId={cid} />
             </Box>
             {isNonMobileScreens && (
               <Box flexBasis="26%">
-                {loggedIn && <FriendListWidget userId={_id} />}
+                {loggedIn && <FriendListWidget userId={cid} />}
               </Box>
             )}
           </Box>

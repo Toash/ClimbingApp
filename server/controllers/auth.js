@@ -86,13 +86,18 @@ export const refreshTokens = async (req, res) => {
 export const checkToken = async (req, res) => {
   const verifier = CognitoJwtVerifier.create({
     userPoolId: "us-east-2_CpLLfRhtv",
-    tokenUse: "access",
+    tokenUse: "id",
     clientId: "6e718pu7haefgts8vp0hveoaa4",
   });
 
   if (req.get("Authorization")) {
     try {
-      const payload = await verifier.verify(req.get("Authorization"));
+      const authHeader = req.get("Authorization");
+      const token = authHeader.split(" ")[1];
+
+      console.log("Extracted token: ", token);
+
+      const payload = await verifier.verify(token);
       console.log("Client supplied token is valid. Payload:", payload);
       res.json({ status: true });
     } catch {

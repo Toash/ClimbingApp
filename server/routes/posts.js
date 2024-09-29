@@ -9,6 +9,7 @@ import {
   deletePost,
   editPost,
   getHighestVGradePost,
+  createPost,
 } from "../controllers/posts.js";
 
 const router = express.Router();
@@ -17,6 +18,9 @@ const router = express.Router();
 router.get("/", getFeedPosts);
 router.get("/user/:userId", getUserPosts);
 router.get("/user/:userId/hiscore", getHighestVGradePost);
+
+/* POST */
+router.post("/", createPost);
 
 /* UPDATE */
 router.patch("/post/:postId", editPost);
