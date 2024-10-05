@@ -1,8 +1,11 @@
 # .gitignore
 
-# Ignore node_modules in both client and server
+# ignore node modules
 client/node_modules
 server/node_modules
+lambda/node_modules
+auth-lambda/node_modules
+./node_modules
 
 
 # Ignore environment variable files (includes db password)

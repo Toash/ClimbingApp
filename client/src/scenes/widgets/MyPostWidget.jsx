@@ -7,7 +7,6 @@ import {
   useTheme,
   Button,
   IconButton,
-  useMediaQuery,
 } from "@mui/material";
 
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"; // Import DatePicker from MUI
@@ -31,9 +30,6 @@ const MyPostWidget = ({ picturePath }) => {
   const { palette } = useTheme();
   const { cid } = useSelector((state) => state.user);
   const token = useSelector((state) => state.token);
-  const isNonMobileScreens = useMediaQuery("(min-width : 1000px)");
-  const mediumMain = palette.neutral.mediumMain;
-  const medium = palette.neutral.medium;
 
   const handlePost = async () => {
     const formData = new FormData();
@@ -50,14 +46,27 @@ const MyPostWidget = ({ picturePath }) => {
       formData.append("mediaPath", media.name);
     }
 
-    const response = await fetchWithRetry(
-      process.env.REACT_APP_API_BASE_URL + `/posts`,
-      {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
-      }
-    );
+    console.log("Posting with the formdata: ");
+    for (const entry of formData) {
+      console.log(entry);
+    }
+
+    let response;
+    try {
+      response = await fetchWithRetry(
+        process.env.REACT_APP_API_BASE_URL + `/posts`,
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+          body: formData,
+        }
+      );
+    } catch (e) {
+      console.error(e);
+    }
+
+    const data = await response.json();
+    console.log("/posts Post request data ", data);
 
     // Sort
     if (response.ok) {
@@ -69,15 +78,20 @@ const MyPostWidget = ({ picturePath }) => {
         }
       );
       const postsData = await postsResponse.json();
-      dispatch(setPosts({ posts: postsData }));
-    }
 
-    setMedia(null);
-    setPost("");
-    setVGrade(0);
-    setAttempts(1);
-    setSelectedDate(null);
-    window.location.reload();
+      console.log("Setting new data (here is the new data):");
+      console.log(postsData);
+      dispatch(setPosts({ posts: postsData }));
+
+      setMedia(null);
+      setPost("");
+      setVGrade(0);
+      setAttempts(1);
+      setSelectedDate(null);
+    } else {
+      // If we cannot post for whatever reason it should not work anyways.
+      console.error("Failed to post.");
+    }
   };
 
   const handleAttemptsIncrement = () => {

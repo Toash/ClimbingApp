@@ -1,5 +1,10 @@
 import Post from "../models/Post.js";
 import User from "../models/User.js";
+import {
+  PutObjectCommand,
+  S3Client,
+  S3ServiceException,
+} from "@aws-sdk/client-s3";
 
 // returns json with errors if there are any int he postData
 const validatePostInput = (postData) => {
@@ -17,6 +22,10 @@ const validatePostInput = (postData) => {
     errors.createdAt = "A valid date is required";
   }
   return Object.keys(errors).length > 0 ? errors : null;
+};
+
+const uploadMulterFileToS3 = async (file) => {
+  const params = {};
 };
 
 /* CREATE */
@@ -38,6 +47,38 @@ export const createPost = async (req, res) => {
     }
 
     const mediaPath = req.file ? req.file.filename : null;
+    if (req.file) {
+      console.log("Media file specified. uploading to S3 bucket.");
+
+      const client = new S3Client({});
+      const command = new PutObjectCommand({
+        Bucket: "toash-climbing-media",
+        Key: req.file.filename, // file "path"
+        Body: req.file.buffer, // the file itself
+      });
+
+      try {
+        const response = await client.send(command);
+        console.log(response);
+      } catch (caught) {
+        if (
+          caught instanceof S3ServiceException &&
+          caught.name === "EntityTooLarge"
+        ) {
+          console.error(
+            `Error from S3 while uploading object to ${bucketName}. \
+    The object was too large. To upload objects larger than 5GB, use the S3 console (160GB max) \
+    or the multipart upload API (5TB max).`
+          );
+        } else if (caught instanceof S3ServiceException) {
+          console.error(
+            `Error from S3 while uploading object to ${bucketName}.  ${caught.name}: ${caught.message}`
+          );
+        } else {
+          throw caught;
+        }
+      }
+    }
 
     // get user info
     const user = await User.findOne({ cid: userId });
@@ -46,7 +87,7 @@ export const createPost = async (req, res) => {
     const userPicturePath = user.picturePath;
 
     const newPostData = {
-      userId,
+      cid: userId,
       firstName,
       lastName,
       userPicturePath,
@@ -72,7 +113,7 @@ export const createPost = async (req, res) => {
     const posts = await Post.find();
     res.status(201).json(posts); //send posts in res
   } catch (err) {
-    res.status(409).json({ message: err.message });
+    res.status(400).json({ message: err.message });
   }
 };
 

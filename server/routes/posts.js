@@ -11,8 +11,12 @@ import {
   getHighestVGradePost,
   createPost,
 } from "../controllers/posts.js";
-
 const router = express.Router();
+
+// use temporary storage and access it in the backend to upload, store file in memory as Buffer object
+// "When using memory storage, the file info will contain a field called buffer that contains the entire file.""
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 /* READ */
 router.get("/", getFeedPosts);
@@ -20,7 +24,8 @@ router.get("/user/:userId", getUserPosts);
 router.get("/user/:userId/hiscore", getHighestVGradePost);
 
 /* POST */
-router.post("/", createPost);
+// Will send the media (picture, video) in req.file
+router.post("/", upload.single("media"), createPost);
 
 /* UPDATE */
 router.patch("/post/:postId", editPost);
