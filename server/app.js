@@ -21,23 +21,17 @@ const app = express();
 const corsOptions = {
   origin: "https://dggviye68hd6z.cloudfront.net", // your allowed origin
   credentials: true, // for cookies or other credentials
-  methods: "GET,POST,DELETE,UPDATE,OPTIONS", // allowed methods
+  methods: "GET,POST,DELETE,UPDATE,OPTIONS,PATCH", // allowed methods
   allowedHeaders:
     "Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token", // allowed headers
 };
 
+/* MIDDLEWARE */
 app.use(cors(corsOptions));
-
-// Middlewares
 app.use(express.json());
-app.use(helmet());
-app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
-//app.use(morgan("common"));
+app.use(helmet()); // put a helmet on that jawn
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
-
-// preflight requests
-//app.options("/auth/exchange-code");
 
 /* ROUTES */
 app.use("/auth", authRoutes);

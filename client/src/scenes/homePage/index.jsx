@@ -16,7 +16,7 @@ import {
 } from "@aws-sdk/client-cognito-identity-provider";
 
 import { useDispatch } from "react-redux";
-import { setLogin, setLoading } from "state";
+import { setLogin, setLoading, setLogout } from "state";
 
 import ErrorFallback from "scenes/errors/ErrorFallback";
 import fetchWithRetry from "fetchWithRetry";
@@ -25,14 +25,18 @@ const HomePage = () => {
   const dispatch = useDispatch();
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
   const loggedIn = useSelector((state) => state.user);
-  const cid = useSelector((state) => state.user?.cid);
-  const picturePath = useSelector((state) => state.user?.picturePath);
 
   const [isProfileComplete, setIsProfileComplete] = useState(false);
 
   const loading = useSelector((state) => state.loading);
   const token = useSelector((state) => state.token);
   const [setupComplete, setSetupComplete] = useState(false);
+
+  // if cid and picturePath are null, we will get them when fetching the user.
+  const [cid, setCid] = useState(useSelector((state) => state.user?.cid));
+  const [picturePath, setPicturePath] = useState(
+    useSelector((state) => state.user?.picturePath)
+  );
 
   useEffect(() => {
     const cognitoClient = new CognitoIdentityProviderClient({
@@ -74,6 +78,8 @@ const HomePage = () => {
           console.log(
             "No access token and authorization code, user is a guest."
           );
+          // sign out
+          dispatch(setLogout());
         }
 
         try {
@@ -95,6 +101,8 @@ const HomePage = () => {
           console.log("Here are the tokens received: ", JSON.stringify(tokens));
         } catch (error) {
           console.log("Error: Could not exchange auth code. ", error);
+          // sign out
+          dispatch(setLogout());
         }
 
         console.log("Getting cognito user.");
@@ -124,6 +132,8 @@ const HomePage = () => {
         console.log("Here is the fetched user profile: ", userProfile);
 
         dispatch(setLogin({ user: userProfile }));
+        setCid(userProfile.cid);
+        setPicturePath(userProfile.picturePath);
 
         if (userProfile && userProfile.firstName && userProfile.lastName) {
           setIsProfileComplete(true);
@@ -137,7 +147,7 @@ const HomePage = () => {
     }
 
     checkProfile();
-  }, [dispatch]);
+  }, [dispatch, token]);
 
   return (
     <Box>

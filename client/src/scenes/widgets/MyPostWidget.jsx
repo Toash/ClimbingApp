@@ -105,7 +105,7 @@ const MyPostWidget = ({ picturePath }) => {
   return (
     <WidgetWrapper>
       <FlexBetween gap="1.5rem">
-        <UserImage image={picturePath} />
+        <UserImage key={picturePath} />
         <Box
           display="flex"
           alignItems="center"

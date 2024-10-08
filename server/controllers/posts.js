@@ -51,6 +51,8 @@ export const createPost = async (req, res) => {
       console.log("Media file specified. uploading to S3 bucket.");
 
       const client = new S3Client({});
+
+      // TODO: Should append a unique string in front to uniquely identify.
       const command = new PutObjectCommand({
         Bucket: "toash-climbing-media",
         Key: req.file.filename, // file "path"
@@ -74,6 +76,7 @@ export const createPost = async (req, res) => {
           console.error(
             `Error from S3 while uploading object to ${bucketName}.  ${caught.name}: ${caught.message}`
           );
+          // TODO: Catch error of file already existing
         } else {
           throw caught;
         }
@@ -119,7 +122,7 @@ export const createPost = async (req, res) => {
 
 export const editPost = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { postId } = req.params;
     const { title, description, vGrade, attempts } = req.body;
 
     const validationErrors = validatePostInput({
@@ -133,7 +136,7 @@ export const editPost = async (req, res) => {
         .json({ message: "Validation failed", errors: validationErrors });
     }
 
-    const post = await Post.findById(id);
+    const post = await Post.findById(postId);
     // TODO: get the edited fields and update the corresponding post.
     if (post) {
       post.title = title;
@@ -153,10 +156,10 @@ export const editPost = async (req, res) => {
 
 export const deletePost = async (req, res) => {
   try {
-    const { id } = req.params; // Get the postId from the request parameters
+    const { postId } = req.params; // Get the postId from the request parameters
 
     // Find and delete the post by id
-    const deletedPost = await Post.findByIdAndDelete(id);
+    const deletedPost = await Post.findByIdAndDelete(postId);
 
     if (deletedPost) {
       res

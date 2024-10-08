@@ -23,6 +23,12 @@ export const exchangeCode = async (req, res) => {
     );
     const tokenData = await response.json();
 
+    if (!tokenData) {
+      throw new Error(
+        "Token data could not be retreived (invalid authorization code?)."
+      );
+    }
+
     // store in https cookie cause its sensitive data
     res.cookie("refresh_token", tokenData.refresh_token, {
       httpOnly: true, //javascript cannot access the cookie.
@@ -38,7 +44,7 @@ export const exchangeCode = async (req, res) => {
     });
   } catch (error) {
     console.log("Error trying on token exchange: ", error);
-    res.status(500).json({ error: "Token exchange failed." });
+    res.status(500).json({ error: `Token exchange failed, ${error}` });
   }
 };
 

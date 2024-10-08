@@ -65,7 +65,7 @@ const PostWidget = ({
 
   //logged in user info
   const loggedIn = useSelector((state) => state.user);
-  const loggedInUserId = useSelector((state) => state.user?._id);
+  const loggedInUserId = useSelector((state) => state.user.cid);
 
   const isCurrentUserPost = loggedInUserId === postUserId;
   const isLiked = Boolean(likes[loggedInUserId]);
