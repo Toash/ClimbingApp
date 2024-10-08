@@ -165,6 +165,7 @@ const HomePage = () => {
             <Box flexBasis={isNonMobileScreens ? "26%" : undefined}>
               {loggedIn && (
                 <>
+                  {console.log("Picture Path:", picturePath)}
                   <UserWidget userId={cid} picturePath={picturePath} />
                   <YourStats userId={cid}></YourStats>
                 </>
@@ -176,6 +177,7 @@ const HomePage = () => {
               // margin for mobile since widgets are stacked
               mt={isNonMobileScreens ? undefined : "2rem"}
             >
+              {console.log("Picture Path:", picturePath)}
               {loggedIn && <MyPostWidget picturePath={picturePath} />}
               <PostsWidget userId={cid} />
             </Box>

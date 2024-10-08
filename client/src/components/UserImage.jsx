@@ -13,15 +13,23 @@ import { useState, useEffect } from "react";
  * @async
  * @function UserImage
  * @param {Object} props - The component props.
- * @param {string} props.key - public S3 media url
+ * @param {string} props.s3key - public S3 media url
  * @param {string} [props.size="60px"] - The width and height of the image (default is "60px").
  * @returns {JSX.Element} A box containing the user image rendered as a circular image.
  *
  * @example
- * <UserImage key="path/to/image.jpg" size="100px" />
+ * <UserImage s3key="path/to/image.jpg" size="100px" />
  */
-const UserImage = ({ key, size = "60px" }) => {
-  const img_url = `https://toash-climbing-media.s3.us-east-2.amazonaws.com/${key}`;
+const UserImage = ({ s3key, size = "60px" }) => {
+  useEffect(() => {
+    if (!s3key) {
+      const errorMsg = "Error: key is undefined in UserImage component.";
+      console.error(errorMsg, new Error().stack);
+      throw new Error(`${errorMsg} Check the component hierarchy.`);
+    }
+  }, []);
+
+  const img_url = `https://toash-climbing-media.s3.us-east-2.amazonaws.com/${s3key}`;
   console.log("Image url being passed to UserImage component: ", img_url);
   return (
     <Box width={size} height={size}>

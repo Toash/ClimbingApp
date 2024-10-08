@@ -51,7 +51,7 @@ const UserWidget = ({ userId, picturePath }) => {
         onClick={() => navigate(`/profile/${userId}`)}
       >
         <FlexBetween gap="1rem">
-          <UserImage key={picturePath}></UserImage>
+          <UserImage s3key={picturePath}></UserImage>
           <Box>
             <Typography
               variant="h4"
