@@ -25,6 +25,7 @@ const postSchema = new mongoose.Schema(
     description: String,
 
     // ------------- MEDIA -------------
+    // link to object in s3 bucket
     mediaPath: String,
 
     //map is more efficient than array for lookup O(1)

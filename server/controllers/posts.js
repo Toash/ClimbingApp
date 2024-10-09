@@ -1,10 +1,5 @@
 import Post from "../models/Post.js";
 import User from "../models/User.js";
-import {
-  PutObjectCommand,
-  S3Client,
-  S3ServiceException,
-} from "@aws-sdk/client-s3";
 
 // returns json with errors if there are any int he postData
 const validatePostInput = (postData) => {
@@ -24,15 +19,18 @@ const validatePostInput = (postData) => {
   return Object.keys(errors).length > 0 ? errors : null;
 };
 
-const uploadMulterFileToS3 = async (file) => {
-  const params = {};
-};
-
 /* CREATE */
 export const createPost = async (req, res) => {
   try {
-    const { userId, title, vGrade, attempts, description, createdAt } =
-      req.body;
+    const {
+      userId,
+      title,
+      vGrade,
+      attempts,
+      description,
+      createdAt,
+      mediaPath,
+    } = req.body;
 
     const validationErrors = validatePostInput({
       title,
@@ -46,45 +44,13 @@ export const createPost = async (req, res) => {
         .json({ message: "Validation failed", errors: validationErrors });
     }
 
-    const mediaPath = req.file ? req.file.filename : null;
-    if (req.file) {
-      console.log("Media file specified. uploading to S3 bucket.");
-
-      const client = new S3Client({});
-
-      // TODO: Should append a unique string in front to uniquely identify.
-      const command = new PutObjectCommand({
-        Bucket: "toash-climbing-media",
-        Key: req.file.filename, // file "path"
-        Body: req.file.buffer, // the file itself
-      });
-
-      try {
-        const response = await client.send(command);
-        console.log(response);
-      } catch (caught) {
-        if (
-          caught instanceof S3ServiceException &&
-          caught.name === "EntityTooLarge"
-        ) {
-          console.error(
-            `Error from S3 while uploading object to ${bucketName}. \
-    The object was too large. To upload objects larger than 5GB, use the S3 console (160GB max) \
-    or the multipart upload API (5TB max).`
-          );
-        } else if (caught instanceof S3ServiceException) {
-          console.error(
-            `Error from S3 while uploading object to ${bucketName}.  ${caught.name}: ${caught.message}`
-          );
-          // TODO: Catch error of file already existing
-        } else {
-          throw caught;
-        }
-      }
-    }
-
     // get user info
     const user = await User.findOne({ cid: userId });
+    if (!user) {
+      throw new Error(
+        `Cannot find User with cid ${userId} when trying to make a new post.`
+      );
+    }
     const firstName = user.firstName;
     const lastName = user.lastName;
     const userPicturePath = user.picturePath;
@@ -265,7 +231,7 @@ export const commentPost = async (req, res) => {
       const updatedPost = await post.save();
       res.json(updatedPost);
     } else {
-      res.status(404).json({ message: err.message });
+      res.status(404).json({ message: "Cannot find post" });
     }
   } catch (err) {
     res.status(404).json({ message: err.message });

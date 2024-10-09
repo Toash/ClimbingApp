@@ -5,6 +5,12 @@ import PostWidget from "./PostWidget";
 import { Typography } from "@mui/material";
 import fetchWithRetry from "fetchWithRetry";
 
+/**
+ * Contains multiple posts
+ * @param {string} userId id of user, works in conjunction with isProfile.
+ * @param {boolean} isProfile if true, get post of userId, if false, get everyones posts
+ * @returns
+ */
 const PostsWidget = ({ userId, isProfile = false }) => {
   const dispatch = useDispatch();
   const posts = useSelector((state) => state.posts);

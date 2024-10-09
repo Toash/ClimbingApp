@@ -159,33 +159,32 @@ const HomePage = () => {
             padding="2rem 6%"
             // widgets will be on top of eachother on mobile
             display={isNonMobileScreens ? "flex" : "block"}
-            gap="0.5rem"
+            gap="1rem"
             justifyContent="space-between"
           >
-            <Box flexBasis={isNonMobileScreens ? "26%" : undefined}>
+            {/* Flex basis defines the starting size, flex grow defines how much it grows past */}
+            <Box
+              flexBasis={isNonMobileScreens ? "26%" : undefined}
+              flexGrow={1}
+            >
               {loggedIn && (
                 <>
-                  {console.log("Picture Path:", picturePath)}
                   <UserWidget userId={cid} picturePath={picturePath} />
+                  <FriendListWidget userId={cid} />
                   <YourStats userId={cid}></YourStats>
                 </>
               )}
             </Box>
 
             <Box
-              flexBasis={isNonMobileScreens ? "42%" : undefined}
+              flexBasis={isNonMobileScreens ? "70%" : undefined}
+              flexGrow={3}
               // margin for mobile since widgets are stacked
               mt={isNonMobileScreens ? undefined : "2rem"}
             >
-              {console.log("Picture Path:", picturePath)}
               {loggedIn && <MyPostWidget picturePath={picturePath} />}
               <PostsWidget userId={cid} />
             </Box>
-            {isNonMobileScreens && (
-              <Box flexBasis="26%">
-                {loggedIn && <FriendListWidget userId={cid} />}
-              </Box>
-            )}
           </Box>
         ) : (
           <Typography>Loading...</Typography>

@@ -18,7 +18,14 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPosts } from "state";
 import fetchWithRetry from "fetchWithRetry";
+import { uploadMedia } from "uploadMedia";
 
+/**
+ * Allows user to specify post attributes then post a post.
+ * Contains Dropzone to hold files.
+ * @param {*} param0
+ * @returns
+ */
 const MyPostWidget = ({ picturePath }) => {
   const dispatch = useDispatch();
   const [media, setMedia] = useState(null);
@@ -31,6 +38,10 @@ const MyPostWidget = ({ picturePath }) => {
   const { cid } = useSelector((state) => state.user);
   const token = useSelector((state) => state.token);
 
+  /**
+   * Handles posting a post, gets new posts and updates the state.
+   * @returns
+   */
   const handlePost = async () => {
     const formData = new FormData();
     formData.append("userId", cid);
@@ -42,8 +53,20 @@ const MyPostWidget = ({ picturePath }) => {
       formData.append("createdAt", selectedDate.toISOString()); // Add selected date to form data
     }
     if (media) {
-      formData.append("media", media);
-      formData.append("mediaPath", media.name);
+      // upload media
+      const path = `${cid}/${media.name}`;
+
+      try {
+        await uploadMedia(path, media);
+        // mediaPath is null?
+        formData.append("mediaPath", process.env.REACT_APP_MEDIA_S3_URL + path);
+      } catch (e) {
+        console.error("Error when trying to upload media: ", e);
+        return;
+      }
+
+      // formData.append("media", media);
+      // formData.append("mediaPath", media.name);
     }
 
     console.log("Posting with the formdata: ");
@@ -105,7 +128,6 @@ const MyPostWidget = ({ picturePath }) => {
   return (
     <WidgetWrapper>
       <FlexBetween gap="1.5rem">
-        {console.log("Picture Path:", picturePath)}
         <UserImage s3key={picturePath} />
         <Box
           display="flex"

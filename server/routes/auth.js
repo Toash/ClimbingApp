@@ -1,9 +1,5 @@
 import express from "express";
-import {
-  checkToken,
-  exchangeCode,
-  refreshTokens,
-} from "../controllers/auth.js";
+import { checkToken, exchangeCode } from "../controllers/auth.js";
 
 const router = express.Router();
 

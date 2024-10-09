@@ -259,12 +259,7 @@ const PostWidget = ({
               controls
               style={{ borderRadius: "0.75rem", marginTop: "0.75rem" }}
             >
-              <source
-                src={
-                  process.env.REACT_APP_API_BASE_URL + `/assets/${mediaPath}`
-                }
-                type="video/mp4"
-              />
+              <source src={mediaPath} type="video/mp4" />
               Your browser does not support the video tag.
             </video>
           ) : (
@@ -273,7 +268,7 @@ const PostWidget = ({
               height="auto"
               alt="post"
               style={{ borderRadius: "0.75rem", marginTop: "0.75rem" }}
-              src={process.env.REACT_APP_API_BASE_URL + `/assets/${mediaPath}`}
+              src={mediaPath}
             />
           )}
         </>

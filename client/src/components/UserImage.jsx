@@ -30,7 +30,6 @@ const UserImage = ({ s3key, size = "60px" }) => {
   }, []);
 
   const img_url = `https://toash-climbing-media.s3.us-east-2.amazonaws.com/${s3key}`;
-  console.log("Image url being passed to UserImage component: ", img_url);
   return (
     <Box width={size} height={size}>
       <img
