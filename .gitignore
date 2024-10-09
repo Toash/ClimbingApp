@@ -1,6 +1,5 @@
 # .gitignore
 
-# ignore node modules
 client/node_modules
 server/node_modules
 lambda/node_modules
@@ -8,11 +7,10 @@ auth-lambda/node_modules
 ./node_modules
 
 
-# Ignore environment variable files (includes db password)
-client/.env*
 server/.env*
+client/build
+server/lambda-deployment-package.zip
 
-# Miscellaneous
 client/.DS_Store
 server/.DS_Store
 
