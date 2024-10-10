@@ -1,3 +1,4 @@
+import React from "react";
 import { EditOutlined, DeleteOutlined, Add, Remove } from "@mui/icons-material";
 import {
   Box,
@@ -19,6 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setPosts } from "state";
 import fetchWithRetry from "fetchWithRetry";
 import { uploadMedia } from "uploadMedia";
+import { refreshPosts } from "refreshPosts";
 
 /**
  * Allows user to specify post attributes then post a post.
@@ -57,9 +59,8 @@ const MyPostWidget = ({ picturePath }) => {
       const path = `${cid}/${media.name}`;
 
       try {
-        await uploadMedia(path, media);
-        // mediaPath is null?
-        formData.append("mediaPath", process.env.REACT_APP_MEDIA_S3_URL + path);
+        const fullUrl = await uploadMedia(path, media);
+        formData.append("mediaPath", fullUrl);
       } catch (e) {
         console.error("Error when trying to upload media: ", e);
         return;
@@ -93,18 +94,7 @@ const MyPostWidget = ({ picturePath }) => {
 
     // Sort
     if (response.ok) {
-      const postsResponse = await fetch(
-        process.env.REACT_APP_API_BASE_URL + "/posts",
-        {
-          method: "GET",
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      const postsData = await postsResponse.json();
-
-      console.log("Setting new data (here is the new data):");
-      console.log(postsData);
-      dispatch(setPosts({ posts: postsData }));
+      refreshPosts(token, dispatch)
 
       setMedia(null);
       setPost("");

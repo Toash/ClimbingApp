@@ -72,5 +72,6 @@ export const getPresignedPutUrl = async (req, res) => {
       error: "Could not generate presigned URL for file " + s3keyToUse,
     });
   }
-  res.status(200).json({ presignedUrl });
+  res.status(200).json({ fullUrl: s3keyToUse, presignedUrl });
 };
+

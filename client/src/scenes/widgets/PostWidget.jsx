@@ -1,3 +1,4 @@
+import React from "react";
 import { format } from "date-fns";
 import {
   ChatBubbleOutlineOutlined,
@@ -31,6 +32,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPost } from "state";
 import fetchWithRetry from "fetchWithRetry";
+import { refreshPosts } from "refreshPosts";
 
 const PostWidget = ({
   createdAt,
@@ -118,7 +120,7 @@ const PostWidget = ({
   const toggleLikeComment = async (commentId) => {
     await fetchWithRetry(
       process.env.REACT_APP_API_BASE_URL +
-        `/posts/post/${postId}/${commentId}/like`,
+      `/posts/post/${postId}/${commentId}/like`,
       {
         method: "PATCH",
         headers: {
@@ -146,7 +148,9 @@ const PostWidget = ({
         );
 
         if (response.ok) {
-          window.location.reload(); // this is inefficient, but deletion happens rarely so should be fine for now
+          // get state
+          refreshPosts(token, dispatch)
+          //window.location.reload(); // this is inefficient, but deletion happens rarely so should be fine for now
         } else {
           console.error("Failed to delete the post");
         }
@@ -251,8 +255,8 @@ const PostWidget = ({
       {mediaPath && (
         <>
           {mediaPath.endsWith(".mp4") ||
-          mediaPath.endsWith(".mov") ||
-          mediaPath.endsWith(".avi") ? (
+            mediaPath.endsWith(".mov") ||
+            mediaPath.endsWith(".avi") ? (
             <video
               width="100%"
               height="auto"

@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import React from "react";
+import { useState, useEffect, Suspense } from "react";
 import { Box, Typography, useMediaQuery } from "@mui/material";
 import { useSelector } from "react-redux";
 import NavBar from "scenes/navbar";
@@ -153,7 +154,7 @@ const HomePage = () => {
     <Box>
       <NavBar></NavBar>
       <ErrorBoundary FallbackComponent={ErrorFallback}>
-        {!loading && setupComplete ? (
+        <Suspense fallback={<Typography>Loading!</Typography>}>
           <Box
             width="100%"
             padding="2rem 6%"
@@ -186,9 +187,8 @@ const HomePage = () => {
               <PostsWidget userId={cid} />
             </Box>
           </Box>
-        ) : (
-          <Typography>Loading...</Typography>
-        )}
+        </Suspense>
+
       </ErrorBoundary>
     </Box>
   );

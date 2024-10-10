@@ -5,7 +5,7 @@
  * @param {File} media
  */
 export const uploadMedia = async (s3key, media) => {
-  const fullObjectUrl = process.env.REACT_APP_MEDIA_S3_URL + s3key;
+  //const fullObjectUrl = process.env.REACT_APP_MEDIA_S3_URL + s3key;
 
   // get presigned url for the specific s3key
   console.log("Getting presigned url by passing the following s3 key: ", s3key);
@@ -13,8 +13,8 @@ export const uploadMedia = async (s3key, media) => {
   try {
     response = await fetch(
       process.env.REACT_APP_API_BASE_URL +
-        "/media/presigned-upload?" +
-        new URLSearchParams({ s3key: s3key }).toString(),
+      "/media/presigned-upload?" +
+      new URLSearchParams({ s3key: s3key }).toString(),
       {
         method: "GET",
       }
@@ -25,6 +25,7 @@ export const uploadMedia = async (s3key, media) => {
 
   const data = await response.json();
   const presignedUrl = data.presignedUrl;
+  const s3KeyWithVersion = data.fullUrl;
 
   console.log("Json object retrieved: ", data);
   console.log("Presigned URL retrieved: ", presignedUrl);
@@ -34,7 +35,7 @@ export const uploadMedia = async (s3key, media) => {
   }
 
   // upload file to s3
-  console.log("Uploading file to S3 bucket with path: ", fullObjectUrl);
+  console.log("Uploading file to S3 bucket with path: ", s3KeyWithVersion);
   const s3Response = await fetch(presignedUrl, {
     method: "PUT",
     headers: {
@@ -48,5 +49,5 @@ export const uploadMedia = async (s3key, media) => {
   }
 
   console.log("Media successfully uploaded to S3");
-  return fullObjectUrl;
+  return process.env.REACT_APP_MEDIA_S3_URL + s3KeyWithVersion;
 };

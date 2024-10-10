@@ -1,5 +1,6 @@
 import Post from "../models/Post.js";
 import User from "../models/User.js";
+import { S3Client, DeleteObjectCommand, waitUntilObjectNotExists, S3ServiceException } from "@aws-sdk/client-s3";
 
 // returns json with errors if there are any int he postData
 const validatePostInput = (postData) => {
@@ -121,8 +122,60 @@ export const editPost = async (req, res) => {
 };
 
 export const deletePost = async (req, res) => {
+
+  const deleteObject = async (fullS3Key) => {
+
+
+    const url = new URL(fullS3Key);
+    // The pathname gives us everything after the domain
+    const s3key = url.pathname.substring(1); // Remove the leading "/"
+
+
+    const client = new S3Client({ region: "us-east-2" })
+    try {
+      await client.send(new DeleteObjectCommand({
+        Bucket: "toash-climbing-media",
+        Key: s3key
+      }))
+      await waitUntilObjectNotExists(
+        { client },
+        { Bucket: "toash-climbing-media", Key: s3key }
+      )
+      console.log(`Object with key ${s3key} was deleted from media bucket, or it never existed in the first place.`)
+
+    } catch (caught) {
+      if (
+        caught instanceof S3ServiceException &&
+        caught.name === "NoSuchBucket"
+      ) {
+        console.error(
+          `Error from S3 while deleting object. The bucket doesn't exist.`,
+        );
+      } else if (caught instanceof S3ServiceException) {
+        console.error(
+          `Error from S3 while deleting object. ${caught.name}: ${caught.message}`,
+        );
+      } else {
+        throw caught;
+      }
+    }
+  }
   try {
     const { postId } = req.params; // Get the postId from the request parameters
+
+    // Ensure media attach to post is also deleted if it exists.
+    const postToDelete = await Post.findById(postId);
+    const mediaPath = postToDelete?.mediaPath;
+    if (mediaPath) {
+      //delete s3 object
+      try {
+        await deleteObject(mediaPath)
+        console.log("S3 object at " + mediaPath + " successfully deleted.")
+      } catch (e) {
+        console.log("error trying to delete bucket, " + e.message)
+      }
+
+    }
 
     // Find and delete the post by id
     const deletedPost = await Post.findByIdAndDelete(postId);
