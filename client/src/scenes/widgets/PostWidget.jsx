@@ -33,6 +33,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setPost } from "state";
 import fetchWithRetry from "fetchWithRetry";
 import { refreshPosts } from "refreshPosts";
+import PropTypes from 'prop-types'
 
 const PostWidget = ({
   createdAt,
@@ -66,8 +67,8 @@ const PostWidget = ({
   const token = useSelector((state) => state.token);
 
   //logged in user info
-  const loggedIn = useSelector((state) => state.user);
-  const loggedInUserId = useSelector((state) => state.user.cid);
+  const loggedIn = useSelector((state) => state?.user);
+  const loggedInUserId = useSelector((state) => state.user?.cid);
 
   const isCurrentUserPost = loggedInUserId === postUserId;
   const isLiked = Boolean(likes[loggedInUserId]);
@@ -323,7 +324,7 @@ const PostWidget = ({
             {/* Display all comments from array */}
             {comments.map((comment, i) => (
               //comment
-              <Box display="flex" alignItems="center" marginTop="1rem">
+              <Box key={i} display="flex" alignItems="center" marginTop="1rem">
                 <Box
                   key={`${name}-${i}`}
                   display="flex"
@@ -459,5 +460,25 @@ const PostWidget = ({
     </WidgetWrapper>
   );
 };
+
+PostWidget.propTypes = {
+  createdAt: PropTypes.string.isRequired,
+  postId: PropTypes.any.isRequired,
+  postUserId: PropTypes.string.isRequired,
+  //user info
+  name: PropTypes.string.isRequired,
+  userPicturePath: PropTypes.string.isRequired,
+
+  //climbing info
+  vGrade: PropTypes.number.isRequired,
+  attempts: PropTypes.number.isRequired,
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+
+  //media
+  mediaPath: PropTypes.string.isRequired,
+  likes: PropTypes.number.isRequired,
+  comments: PropTypes.array.isRequired,
+}
 
 export default PostWidget;

@@ -5,12 +5,14 @@ import fetchWithRetry from "fetchWithRetry";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setFriends } from "state";
+import React from "react";
+import PropTypes from "prop-types"
 
 const FriendListWidget = ({ userId }) => {
   const dispatch = useDispatch();
   const { palette } = useTheme();
   const token = useSelector((state) => state.token);
-  const friends = useSelector((state) => state.user.friends);
+  const friends = useSelector((state) => state.user.friends)
 
   const getFriends = async () => {
     const response = await fetchWithRetry(
@@ -26,10 +28,11 @@ const FriendListWidget = ({ userId }) => {
 
   useEffect(() => {
     getFriends();
-  }, []); //eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <WidgetWrapper>
+      {console.log("HERE IS FRIENDS: ", friends)}
       <Typography
         color={palette.neutral.dark}
         variant="h5"
@@ -52,5 +55,9 @@ const FriendListWidget = ({ userId }) => {
     </WidgetWrapper>
   );
 };
+
+FriendListWidget.propTypes = {
+  userId: PropTypes.string.isRequired
+}
 
 export default FriendListWidget;

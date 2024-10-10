@@ -1,3 +1,4 @@
+import React from "react";
 import { PersonAddOutlined, PersonRemoveOutlined } from "@mui/icons-material";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
@@ -7,14 +8,16 @@ import FlexBetween from "./FlexBetween";
 import UserImage from "./UserImage";
 import { useState, useEffect } from "react";
 import fetchWithRetry from "fetchWithRetry";
+import { getHighestVGradePost } from "getHighestVGradePost";
+import PropTypes from 'prop-types'
 
-const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
+const Friend = ({ friendId, name, userPicturePath }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const loggedIn = useSelector((state) => state.user);
+  const loggedIn = useSelector((state) => state?.user);
   const id = useSelector((state) => state.user?.cid);
-  const token = useSelector((state) => state.token);
+  const token = useSelector((state) => state?.token);
   const friends = useSelector((state) => state.user?.friends);
   const isFriend = friends
     ? friends.find((friend) => friend.cid === friendId)
@@ -40,38 +43,16 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
       }
     );
     const data = await response.json();
-    dispatch(setFriends({ friends: data })); // why are we storing friends list in state
+    dispatch(setFriends({ friends: data }));
   };
 
   useEffect(() => {
-    const getHighestVGradePost = async (userId) => {
-      try {
-        const getUserURL =
-          process.env.REACT_APP_API_BASE_URL + `/posts/user/${userId}/hiscore`;
-        const getUserOptions = {
-          method: "GET",
-          headers: { Authorization: `Bearer ${token}` },
-        };
-
-        const response = await fetchWithRetry(
-          getUserURL,
-          getUserOptions,
-          dispatch
-        );
-        const data = await response.json();
-        return data;
-      } catch (e) {
-        console.log("Cannot find user or post with hiscore");
-        console.log(e.message);
-        return null;
-      }
-    };
     const fetchMax = async () => {
       const post = await getHighestVGradePost(friendId);
       setVGrade(post.vGrade);
     };
     fetchMax();
-  }, [dispatch, friendId, token]);
+  }, []);
   return (
     <FlexBetween>
       <FlexBetween gap="1rem">
@@ -115,5 +96,11 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
     </FlexBetween>
   );
 };
+
+Friend.propTypes = {
+  friendId: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  userPicturePath: PropTypes.string.isRequired
+}
 
 export default Friend;

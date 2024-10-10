@@ -23,7 +23,7 @@ const persistConfig = { key: "root", storage, version: 1 };
 const persistedReducer = persistReducer(persistConfig, authReducer);
 
 const store = configureStore({
-  reducer: persistedReducer,
+  reducer: persistedReducer, //save state to storage when reducing, get state when app is initialized.
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {

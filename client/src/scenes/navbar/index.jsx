@@ -1,3 +1,4 @@
+import React from "react";
 import { useState } from "react";
 import {
   Box,
@@ -12,18 +13,12 @@ import {
   Button,
 } from "@mui/material";
 import {
-  Search,
-  Message,
-  DarkMode,
-  LightMode,
-  Notifications,
-  Help,
   Menu,
   Close,
 } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
-import { setMode, setLogout } from "state";
-import { redirect, useNavigate } from "react-router-dom";
+import { setLogout } from "state";
+import { useNavigate } from "react-router-dom";
 import FlexBetween from "components/FlexBetween";
 
 const NavBar = () => {
@@ -36,7 +31,6 @@ const NavBar = () => {
 
   const theme = useTheme();
   const neutralLight = theme.palette.neutral.light;
-  const dark = theme.palette.neutral.dark;
   const background = theme.palette.background.default;
   const primaryLight = theme.palette.primary.light;
   const alt = theme.palette.background.alt;
@@ -44,7 +38,7 @@ const NavBar = () => {
   const fullName = loggedIn ? `${user.firstName} ${user.lastName}` : null;
 
   const signInButton = (
-    <Button onClick={() => navigate(process.env.REACT_APP_LOGIN_URL)}>
+    <Button onClick={() => window.location.href = process.env.REACT_APP_LOGIN_URL}>
       Sign Up!
     </Button>
   );
@@ -66,21 +60,6 @@ const NavBar = () => {
         >
           Climbing App
         </Typography>
-        {/*
-        {isNonMobileScreens && (
-          <FlexBetween
-            backgroundColor={neutralLight}
-            borderRadius="9px"
-            gap="3rem"
-            padding="0.1rem 1.5rem"
-          >
-            <InputBase placeholder="Search..." />
-            <IconButton>
-              <Search></Search>
-            </IconButton>
-          </FlexBetween>
-        )}
-          */}
       </FlexBetween>
       {/* DESKTOP NAV */}
       {isNonMobileScreens ? (

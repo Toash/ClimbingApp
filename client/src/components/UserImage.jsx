@@ -1,6 +1,8 @@
 import { Box } from "@mui/material";
-import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import React from "react";
+import { useState } from "react";
+import PropTypes from "prop-types"
 
 /**
  * Fetches a user image from an S3 bucket and renders it with the specified size.
@@ -21,15 +23,14 @@ import { useState, useEffect } from "react";
  * <UserImage s3key="path/to/image.jpg" size="100px" />
  */
 const UserImage = ({ s3key, size = "60px" }) => {
+  const [imgUrl, setImgUrl] = useState("https://toash-climbing-media.s3.us-east-2.amazonaws.com/default.png");
   useEffect(() => {
-    if (!s3key) {
-      const errorMsg = "Error: key is undefined in UserImage component.";
-      console.error(errorMsg, new Error().stack);
-      throw new Error(`${errorMsg} Check the component hierarchy.`);
+    if (s3key && s3key.trim() !== "") {
+      setImgUrl(`https://toash-climbing-media.s3.us-east-2.amazonaws.com/${s3key}`);
     }
   }, []);
 
-  const img_url = `https://toash-climbing-media.s3.us-east-2.amazonaws.com/${s3key}`;
+
   return (
     <Box width={size} height={size}>
       <img
@@ -37,10 +38,18 @@ const UserImage = ({ s3key, size = "60px" }) => {
         width={size}
         height={size}
         alt=""
-        src={img_url}
+        src={imgUrl}
       />
     </Box>
   );
 };
+
+UserImage.propTypes = {
+
+  s3key: PropTypes.string.isRequired,
+  size: PropTypes.string
+}
+
+
 
 export default UserImage;

@@ -1,3 +1,4 @@
+import React from "react";
 import { ManageAccountsOutlined } from "@mui/icons-material";
 
 import { Box, Typography, Divider, useTheme } from "@mui/material";
@@ -33,7 +34,7 @@ const UserWidget = ({ userId, picturePath }) => {
   // runs by default when the componenet is rendered
   useEffect(() => {
     getUser();
-  }, []); //eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   // we can add a loading component here later
   if (!user) {

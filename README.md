@@ -29,7 +29,6 @@ https://trello.com/b/1NERCnDG/climbing-app <br/>
 frontend <br/>
 
 REACT_APP_BASE_URL=
-REACT_APP_REDIRECT_URL=
 REACT_APP_API_BASE_URL=
 REACT_APP_LOGIN_URL=
 REACT_APP_MEDIA_S3_URL=

@@ -88,7 +88,13 @@ export const refreshTokens = async (req, res) => {
   }
 };
 
-// chcek if token is valid (not expired)
+
+/**
+ * Check to see if id_token is valid (not expired)
+ * @param {*} req 
+ * @param {*} res 
+ * @returns {*} {status:true} or {status:false}
+ */
 export const checkToken = async (req, res) => {
   const verifier = CognitoJwtVerifier.create({
     userPoolId: "us-east-2_CpLLfRhtv",

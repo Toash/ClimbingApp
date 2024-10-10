@@ -17,10 +17,11 @@ import UserImage from "components/UserImage";
 import WidgetWrapper from "components/WidgetWrapper";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setPosts } from "state";
 import fetchWithRetry from "fetchWithRetry";
 import { uploadMedia } from "uploadMedia";
 import { refreshPosts } from "refreshPosts";
+import PropTypes from 'prop-types'
+
 
 /**
  * Allows user to specify post attributes then post a post.
@@ -37,7 +38,14 @@ const MyPostWidget = ({ picturePath }) => {
   const [description, setDescription] = useState("");
   const [selectedDate, setSelectedDate] = useState(null); // State for date
   const { palette } = useTheme();
-  const { cid } = useSelector((state) => state.user);
+  const cid = useSelector((state) => {
+    const cid = state.user?.cid
+    if (!cid) {
+      console.error("cid is undefined.")
+
+    }
+    return cid
+  });
   const token = useSelector((state) => state.token);
 
   /**
@@ -322,5 +330,9 @@ const MyPostWidget = ({ picturePath }) => {
     </WidgetWrapper>
   );
 };
+
+MyPostWidget.propTypes = {
+  picturePath: PropTypes.string.isRequired
+}
 
 export default MyPostWidget;
