@@ -38,6 +38,7 @@ const MyPostWidget = ({ picturePath }) => {
   const [description, setDescription] = useState("");
   const [selectedDate, setSelectedDate] = useState(null); // State for date
   const { palette } = useTheme();
+  //smelly - cid should always be defined 
   const cid = useSelector((state) => {
     const cid = state.user?.cid
     if (!cid) {

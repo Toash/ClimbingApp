@@ -76,6 +76,7 @@ const HomePage = () => {
         } else {
           // assuming that if valid token then user in state is also defined.
           console.log("User already has a valid token. Skipping token setup.");
+
           // for some reason we need to set these again. Although user should be defined?
           if (userProfile) {
             setCid(userProfile.cid);

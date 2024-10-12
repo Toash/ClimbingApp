@@ -7,6 +7,9 @@
  */
 export const getHighestVGradePost = async (userId) => {
     try {
+        if (!userId) {
+            throw new Error("User id is null!")
+        }
         const response =
             await fetch(
                 process.env.REACT_APP_API_BASE_URL + `/posts/user/${userId}/hiscore`,
