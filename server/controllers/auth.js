@@ -57,7 +57,7 @@ export const refreshTokens = async (req, res) => {
 
   try {
     const response = await fetch(
-      "https://climbing-app.auth.us-east-2.amazoncognito.com/oauth2/token",
+      process.env.TOKEN_URL,
       {
         method: "POST",
         headers: {
@@ -65,7 +65,7 @@ export const refreshTokens = async (req, res) => {
         },
         body: new URLSearchParams({
           grant_type: "refresh_token",
-          client_id: "6e718pu7haefgts8vp0hveoaa4",
+          client_id: process.env.APP_CLIENT_ID,
           refresh_token: refresh_token,
         }),
       }
@@ -81,7 +81,7 @@ export const refreshTokens = async (req, res) => {
     console.log("Failed to refresh token: ", error);
     res.header(
       "Access-Control-Allow-Origin",
-      "https://dggviye68hd6z.cloudfront.net"
+      process.env.ORIGIN
     );
     res.header("Access-Control-Allow-Credentials", "true");
     res.status(500).json({ error: "Failed to refresh token" });

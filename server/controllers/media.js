@@ -21,7 +21,7 @@ export const getPresignedPutUrl = async (req, res) => {
 
   // since this will be on a lambda i think aws will automaticlaly pass credentials
   const client = new S3Client({
-    region: "us-east-2",
+    region: process.env.AWS_REGION,
   });
 
   let version = 0;
@@ -40,7 +40,7 @@ export const getPresignedPutUrl = async (req, res) => {
   while (exists) {
     try {
       const headCommand = new HeadObjectCommand({
-        Bucket: "toash-climbing-media",
+        Bucket: process.env.MEDIA_BUCKET,
         Key: s3keyToUse,
       });
       await client.send(headCommand);
@@ -61,7 +61,7 @@ export const getPresignedPutUrl = async (req, res) => {
   console.log("S3 key that will be used for the presigned url: ", s3keyToUse);
 
   const command = new PutObjectCommand({
-    Bucket: "toash-climbing-media",
+    Bucket: process.env.MEDIA_BUCKET,
     Key: s3keyToUse,
   });
 

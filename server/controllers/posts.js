@@ -134,12 +134,12 @@ export const deletePost = async (req, res) => {
     const client = new S3Client({ region: "us-east-2" })
     try {
       await client.send(new DeleteObjectCommand({
-        Bucket: "toash-climbing-media",
+        Bucket: process.env.MEDIA_BUCKET,
         Key: s3key
       }))
       await waitUntilObjectNotExists(
         { client },
-        { Bucket: "toash-climbing-media", Key: s3key }
+        { Bucket: process.env.MEDIA_BUCKET, Key: s3key }
       )
       console.log(`Object with key ${s3key} was deleted from media bucket, or it never existed in the first place.`)
 

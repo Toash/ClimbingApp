@@ -15,7 +15,7 @@ const app = express();
 
 // enable cors
 const corsOptions = {
-  origin: "https://dggviye68hd6z.cloudfront.net", // your allowed origin
+  origin: process.env.ORIGIN, // your allowed origin
   credentials: true, // for cookies or other credentials
   methods: "GET,POST,DELETE,UPDATE,OPTIONS,PATCH", // allowed methods
   allowedHeaders:
