@@ -19,6 +19,15 @@ Hit backend endpoint to get presigned url, use this to upload. Use object url to
 
 S3 bucket uses the Cognito user id as a folder name for each user to store images / videos. <br/>
 
+## Staging environment.
+
+Uses seperate cloudfront distribution and s3 bucket\
+Seperate API Gateway stages\
+Seperate lambda\
+Same user pool with different app client\
+
+
+
 ## WIP
 
 https://trello.com/b/1NERCnDG/climbing-app <br/>

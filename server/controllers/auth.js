@@ -15,9 +15,9 @@ export const exchangeCode = async (req, res) => {
         },
         body: new URLSearchParams({
           grant_type: "authorization_code",
-          client_id: "6e718pu7haefgts8vp0hveoaa4",
+          client_id: process.env.CLIENT_ID,
           code: authorizationCode,
-          redirect_uri: "https://dggviye68hd6z.cloudfront.net/",
+          redirect_uri: process.env.REDIRECT_URL,
         }),
       }
     );
@@ -65,7 +65,7 @@ export const refreshTokens = async (req, res) => {
         },
         body: new URLSearchParams({
           grant_type: "refresh_token",
-          client_id: process.env.APP_CLIENT_ID,
+          client_id: process.env.CLIENT_ID,
           refresh_token: refresh_token,
         }),
       }
@@ -97,9 +97,9 @@ export const refreshTokens = async (req, res) => {
  */
 export const checkToken = async (req, res) => {
   const verifier = CognitoJwtVerifier.create({
-    userPoolId: "us-east-2_CpLLfRhtv",
+    userPoolId: process.env.USER_POOL_ID,
     tokenUse: "id",
-    clientId: "6e718pu7haefgts8vp0hveoaa4",
+    clientId: process.env.CLIENT_ID,
   });
 
   if (req.get("Authorization")) {

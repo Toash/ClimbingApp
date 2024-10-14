@@ -12,6 +12,7 @@
     "@mui/x-date-pickers": "^7.16.0",
     "@reduxjs/toolkit": "^2.2.5",
     "date-fns": "^2.30.0",
+    "env-cmd": "^10.1.0",
     "prop-types": "^15.8.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -26,7 +27,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "build:prod": "env-cmd -f ./environments/.prod.env npm run-script build",
+    "build:staging": "env-cmd -f ./environments/.staging.env npm run-script build"
   },
   "eslintConfig": {
     "extends": [

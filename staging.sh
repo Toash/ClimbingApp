@@ -1,11 +1,13 @@
-#!/bin/bash
+\#!/bin/bash
 
 # Backend update
 
-LAMBDA_FUNCTION_NAME="myfunction"
+LAMBDA_FUNCTION_NAME="backend-staging"
 ZIP_FILE="lambda-deployment-package.zip"
 BACKEND_DIR="./server"  
 AWS_REGION="us-east-2"
+
+echo "pushing to staging..."
 
 # remove the old zip file if it exists
 if [ -f $ZIP_FILE ]; then
@@ -43,10 +45,10 @@ else
 fi
 
 # sync the build folder with the S3 bucket and delete old files
-aws s3 sync ./build s3://toash-climbing --delete
+aws s3 sync ./build s3://toash-climbing-staging --delete
 
 # cloudfront invalidation
-DISTRIBUTION_ID="E2D4K72RXKEF95"
+DISTRIBUTION_ID="EW9BUDUWG0IMV"
 invalidation_id=$(aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*" --query 'Invalidation.Id' --output text)
 
 # check invalidation status to see if its completed.
@@ -58,4 +60,4 @@ while [ "$status" != "Completed" ]; do
 done
 
 echo "CloudFront invalidation completed."
-echo "Backend and Frontend update completed successfully. Yay!"
+echo "Pushed to staging."

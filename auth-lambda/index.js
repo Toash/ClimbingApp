@@ -13,7 +13,7 @@ const refreshTokens = async (event) => {
       return {
         statusCode: 403,
         headers: {
-          "Access-Control-Allow-Origin": "https://dggviye68hd6z.cloudfront.net",
+          "Access-Control-Allow-Origin": process.env.ORIGIN,
           "Access-Control-Allow-Credentials": "true",
         },
         body: JSON.stringify({ error: "No refresh token in cookies" }),
@@ -30,7 +30,7 @@ const refreshTokens = async (event) => {
         },
         body: new URLSearchParams({
           grant_type: "refresh_token",
-          client_id: "6e718pu7haefgts8vp0hveoaa4",
+          client_id: process.env.CLIENT_ID,
           refresh_token: refresh_token,
         }),
       }
@@ -46,7 +46,7 @@ const refreshTokens = async (event) => {
     return {
       statusCode: 200,
       headers: {
-        "Access-Control-Allow-Origin": "https://dggviye68hd6z.cloudfront.net",
+        "Access-Control-Allow-Origin": process.env.ORIGIN,
         "Access-Control-Allow-Credentials": "true",
         "Content-Type": "application/json",
       },
@@ -60,7 +60,7 @@ const refreshTokens = async (event) => {
     return {
       statusCode: 500,
       headers: {
-        "Access-Control-Allow-Origin": "https://dggviye68hd6z.cloudfront.net",
+        "Access-Control-Allow-Origin": process.env.ORIGIN,
         "Access-Control-Allow-Credentials": "true",
       },
       body: JSON.stringify({ error: "Failed to refresh token" }),
