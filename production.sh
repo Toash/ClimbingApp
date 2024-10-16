@@ -24,7 +24,7 @@ fi
 
 
 cd $BACKEND_DIR
-zip -r $ZIP_FILE . -x "*.git*" -x "public/*"
+zip -r $ZIP_FILE . -x "*.git*" -x "public/*" -x "node_modules"/*
 echo "Backend folder zipped into $ZIP_FILE with specified file exclusions."
 
 # update the Lambda function with the new zip file

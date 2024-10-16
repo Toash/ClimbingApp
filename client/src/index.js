@@ -17,11 +17,13 @@ import {
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { PersistGate } from "redux-persist/integration/react";
+import { QueryClientProvider } from "@tanstack/react-query";
 
 // set up redux store
 const persistConfig = { key: "root", storage, version: 1 };
 const persistedReducer = persistReducer(persistConfig, authReducer);
 
+// reducer listens to actions from dispatch
 const store = configureStore({
   reducer: persistedReducer, //save state to storage when reducing, get state when app is initialized.
   middleware: (getDefaultMiddleware) =>
@@ -32,13 +34,19 @@ const store = configureStore({
     }),
 });
 
+const queryClient = new QueryClient();
+
+
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistStore(store)}>
-        <App />
-      </PersistGate>
-    </Provider>
+    <QueryClientProvider client={queryClient}>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistStore(store)}>
+          <App />
+        </PersistGate>
+      </Provider>
+    </QueryClientProvider>
   </React.StrictMode>
 );

@@ -1,5 +1,5 @@
 import { Box, Typography, useTheme } from "@mui/material";
-import Friend from "components/Friend";
+import UserCard from "components/UserCard";
 import WidgetWrapper from "components/WidgetWrapper";
 import fetchWithRetry from "fetchWithRetry";
 import { useEffect } from "react";
@@ -43,7 +43,7 @@ const FriendListWidget = ({ userId }) => {
       </Typography>
       <Box display="flex" flexDirection="column" gap="1.5rem">
         {friends.map((friend) => (
-          <Friend
+          <UserCard
             key={friend._id}
             friendId={friend._id}
             name={`${friend.firstName} ${friend.lastName}`}

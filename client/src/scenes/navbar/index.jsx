@@ -16,14 +16,12 @@ import {
   Menu,
   Close,
 } from "@mui/icons-material";
-import { useDispatch, useSelector } from "react-redux";
-import { setLogout } from "state";
 import { useNavigate } from "react-router-dom";
 import FlexBetween from "components/FlexBetween";
+import logout from "auth/logout";
 
 const NavBar = () => {
   const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const loggedIn = useSelector((state) => state.user);
   const user = useSelector((state) => state.user);
@@ -86,7 +84,7 @@ const NavBar = () => {
                 <MenuItem value={fullName}>
                   <Typography>{fullName}</Typography>
                 </MenuItem>
-                <MenuItem onClick={() => dispatch(setLogout())}>
+                <MenuItem onClick={() => logout()}>
                   Log Out
                 </MenuItem>
               </Select>
@@ -155,7 +153,7 @@ const NavBar = () => {
                     <MenuItem value={fullName}>
                       <Typography>{fullName}</Typography>
                     </MenuItem>
-                    <MenuItem onClick={() => dispatch(setLogout())}>
+                    <MenuItem onClick={() => logout()}>
                       Log Out
                     </MenuItem>
                   </>

@@ -18,7 +18,7 @@ import WidgetWrapper from "components/WidgetWrapper";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import fetchWithRetry from "fetchWithRetry";
-import { uploadMedia } from "uploadMedia";
+import { uploadMedia } from "data/uploadMedia";
 import { refreshPosts } from "refreshPosts";
 import PropTypes from 'prop-types'
 
