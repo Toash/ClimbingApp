@@ -1,6 +1,10 @@
 import { CognitoJwtVerifier } from "aws-jwt-verify";
 
-// exchange authorization code for the tokens.
+/**
+ * Sends id_token and access_token in the response body, and refresh_token in the cookies.
+ * @param {*} req 
+ * @param {*} res 
+ */
 export const exchangeCode = async (req, res) => {
   const { authorizationCode } = req.body;
   console.log("authorization code retrieved: ", authorizationCode);

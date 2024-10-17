@@ -8,71 +8,51 @@ import PostsWidget from "scenes/widgets/PostsWidget";
 import FriendListWidget from "scenes/widgets/FriendListWidget";
 import YourStats from "scenes/widgets/YourStats";
 import { jwtDecode } from "jwt-decode";
+import { QUERY_KEYS } from "queryKeys";
 
 
 const HomePage = () => {
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
 
   /**
-   * Get user profile from cognito profile
-   * needs id token
-   * @returns 
+   * Exchanges the auth code for tokens, sets the tokens in local storage.
    */
-  const getUserProfile = async () => {
-    // decode id_token to get sub attribute.
-    const id_token = localStorage.getItem("id_token")
-    const decoded = jwtDecode(id_token);
-    console.log("Decoded id_token: ", decoded)
-
-    const cid = decoded.sub;
-
-
-    const response = await fetch(
-      process.env.REACT_APP_API_BASE_URL + `/users/${cid}`,
-      {
-        method: "GET",
-        headers: { Authorization: `Bearer ${id_token}` },
-      }
-    );
-    const data = await response.json();
-    return data;
-  };
-
-
-  const exchangeAuthCode = async (authorizationCode) => {
-    const response = await fetch(
-      process.env.REACT_APP_API_BASE_URL + `/auth/exchange-code`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ authorizationCode }),
-      }
-    );
-    return await response.json();
-  };
-
-  // useMutation to exchange the authorization code for tokens
-  const exchangeCodeMutation = useMutation(exchangeAuthCode, {
-    onSuccess: (data) => {
-      const { id_token, access_token } = data;
-
-      localStorage.setItem("access_token", access_token);
-      localStorage.setItem("id_token", id_token)
-
-      // Refetch user profile with the new token
-      queryClient.invalidateQueries(['user']);
-
-      // TODO display success message
-      console.log("Successfully got user data!")
+  const exchangeCodeMutation = useMutation(
+    async (authorizationCode) => {
+      const response = await fetch(
+        process.env.REACT_APP_API_BASE_URL + `/auth/exchange-code`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ authorizationCode }),
+        }
+      );
+      return await response.json();
     },
-    onError: (error) => {
-      console.error('Error exchanging auth code', error);
-      localStorage.removeItem("access_token")
-      localStorage.removeItem("id_token")
-    }
-  });
+    {
+      onSuccess: (data) => {
+        const { id_token, access_token } = data;
 
-  // Function to check if the user has a valid token
+        localStorage.setItem("access_token", access_token);
+        localStorage.setItem("id_token", id_token)
+
+        // Refetch user profile with the new token
+        queryClient.invalidateQueries(QUERY_KEYS.CURRENT_USER);
+
+        // TODO display success message
+        console.log("Successfully got user data!")
+      },
+      onError: (error) => {
+        console.error('Error exchanging auth code', error);
+        localStorage.removeItem("access_token")
+        localStorage.removeItem("id_token")
+      }
+    });
+
+  /**
+   * 
+   * @returns {boolean} true if user has valid token, false otherwise
+   */
   const userHasValidToken = async () => {
     const id_token = localStorage.getItem("id_token")
     if (!id_token) return false;
@@ -88,7 +68,11 @@ const HomePage = () => {
     return status;
   };
 
-  // Function to handle authorization code exchange
+
+
+  /**
+   * If there is a code in url and user does not already have a token, attempt to get them.
+   */
   const getTokensFromAuthCode = async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const authorizationCode = urlParams.get("code");
@@ -105,12 +89,34 @@ const HomePage = () => {
   }, []);
 
 
-  // useQuery to fetch user profile if the user has a token
+
+  /**
+   * Get user profile from cognito profile
+   * needs id token
+   * @returns {object} user object
+   */
   const { isSuccess, isError, error, isPending, data, } = useQuery(
     {
       enabled: !!localStorage.getItem("id_token"), // only run query if token is available
-      queryKey: ["currentUser"],
-      queryFn: () => getUserProfile(),
+      queryKey: [QUERY_KEYS.CURRENT_USER],
+      queryFn: () => async () => {
+        // decode id_token to get sub attribute.
+        const id_token = localStorage.getItem("id_token")
+
+        const decoded = jwtDecode(id_token);
+        console.log("Decoded id_token: ", decoded)
+        const cid = decoded.sub;
+
+        const response = await fetch(
+          process.env.REACT_APP_API_BASE_URL + `/users/${cid}`,
+          {
+            method: "GET",
+            headers: { Authorization: `Bearer ${id_token}` },
+          }
+        );
+        const data = await response.json();
+        return data;
+      },
     }
   );
 

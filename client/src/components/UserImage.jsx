@@ -7,11 +7,6 @@ import PropTypes from "prop-types"
 /**
  * Fetches a user image from an S3 bucket and renders it with the specified size.
  *
- * This asynchronous component retrieves the image using the provided S3 key,
- * sends a `GetObjectCommand` to the S3 bucket, and renders the image in an
- * HTML <img> element. The image is styled to be a circle with a customizable
- * size, and by default, it's displayed at 60px x 60px.
- *
  * @async
  * @function UserImage
  * @param {Object} props - The component props.
