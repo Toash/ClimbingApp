@@ -10,17 +10,18 @@ import {
   IconButton,
 } from "@mui/material";
 
-import { DatePicker } from "@mui/x-date-pickers/DatePicker"; // Import DatePicker from MUI
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import Dropzone from "react-dropzone";
 import FlexBetween from "components/FlexBetween";
 import UserImage from "components/UserImage";
 import WidgetWrapper from "components/WidgetWrapper";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import fetchWithRetry from "fetchWithRetry";
+import fetchWithRetry from "auth/fetchWithRetry";
 import { uploadMedia } from "data/uploadMedia";
 import { refreshPosts } from "refreshPosts";
 import PropTypes from 'prop-types'
+import { useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEYS } from "queryKeys";
 
 
 /**
@@ -30,7 +31,6 @@ import PropTypes from 'prop-types'
  * @returns
  */
 const MyPostWidget = ({ picturePath }) => {
-  const dispatch = useDispatch();
   const [media, setMedia] = useState(null);
   const [post, setPost] = useState("");
   const [vGrade, setVGrade] = useState(0);
@@ -38,22 +38,16 @@ const MyPostWidget = ({ picturePath }) => {
   const [description, setDescription] = useState("");
   const [selectedDate, setSelectedDate] = useState(null); // State for date
   const { palette } = useTheme();
-  //smelly - cid should always be defined 
-  const cid = useSelector((state) => {
-    const cid = state.user?.cid
-    if (!cid) {
-      console.error("cid is undefined.")
 
-    }
-    return cid
-  });
-  const token = useSelector((state) => state.token);
+
+  const queryClient = useQueryClient();
+
 
   /**
-   * Handles posting a post, gets new posts and updates the state.
-   * @returns
+   * Post something, invalidate posts cache.
    */
-  const handlePost = async () => {
+  const postMutation = useMutation(async () => {
+
     const formData = new FormData();
     formData.append("userId", cid);
     formData.append("title", post);
@@ -63,6 +57,7 @@ const MyPostWidget = ({ picturePath }) => {
     if (selectedDate) {
       formData.append("createdAt", selectedDate.toISOString()); // Add selected date to form data
     }
+
     if (media) {
       // upload media
       const path = `${cid}/${media.name}`;
@@ -74,46 +69,41 @@ const MyPostWidget = ({ picturePath }) => {
         console.error("Error when trying to upload media: ", e);
         return;
       }
-
-      // formData.append("media", media);
-      // formData.append("mediaPath", media.name);
     }
 
-    console.log("Posting with the formdata: ");
-    for (const entry of formData) {
-      console.log(entry);
-    }
-
-    let response;
-    try {
-      response = await fetchWithRetry(
-        process.env.REACT_APP_API_BASE_URL + `/posts`,
-        {
-          method: "POST",
-          headers: { Authorization: `Bearer ${token}` },
-          body: formData,
-        }
-      );
-    } catch (e) {
-      console.error(e);
-    }
-
-    const data = await response.json();
-    console.log("/posts Post request data ", data);
-
-    // Sort
-    if (response.ok) {
-      refreshPosts(token, dispatch)
-
+    const response = await fetchWithRetry(
+      process.env.REACT_APP_API_BASE_URL + "/posts",
+      {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      }
+    );
+    return response.json();
+  }, {
+    onSuccess: () => {
+      // we just changed the post so we need to get posts again.
+      queryClient.invalidateQueries(QUERY_KEYS.POSTS)
       setMedia(null);
       setPost("");
       setVGrade(0);
       setAttempts(1);
       setSelectedDate(null);
-    } else {
-      // If we cannot post for whatever reason it should not work anyways.
-      console.error("Failed to post.");
+    },
+    onError: (error) => {
+      console.log("Error posting:", error)
     }
+  }
+  )
+
+
+
+  const handlePost = async () => {
+
+
+    postMutation.mutate(formData);
+
+
   };
 
   const handleAttemptsIncrement = () => {
@@ -319,7 +309,7 @@ const MyPostWidget = ({ picturePath }) => {
 
       <Button
         disabled={!post}
-        onClick={handlePost}
+        onClick={postMutation.mutate()}
         sx={{
           color: palette.background.alt,
           backgroundColor: palette.primary.main,

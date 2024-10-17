@@ -1,5 +1,5 @@
 import goToLogin from "goToLogin.js";
-import refreshAuthorizationToken from "./refreshAuthorizationToken.js";
+import refreshIdToken from "./refreshAuthorizationToken.js";
 
 /**
  * Attempts to fetch, if the response status is unauthorized, will try to get a new token (assumed we have refresh token in cookies.)
@@ -16,7 +16,7 @@ const fetchWithRetry = async (url, options) => {
 
         if (response.status === 401) {
             console.log("Unauthorized request... attempting to refresh token");
-            const refreshed = await refreshAuthorizationToken();
+            const refreshed = await refreshIdToken();
             if (refreshed) {
                 options.headers.Authorization = `Bearer ${token}`;
                 response = await fetch(url, options);

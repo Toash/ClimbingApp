@@ -3,7 +3,7 @@
  * Returns true if token refresh is successful, false otherwise.
  * @returns {boolean}
  */
-async function refreshAuthorizationToken() {
+async function refreshIdToken() {
     let id_token = null;
 
     try {
@@ -36,4 +36,4 @@ async function refreshAuthorizationToken() {
 
 }
 
-export default refreshAuthorizationToken;
+export default refreshIdToken;
