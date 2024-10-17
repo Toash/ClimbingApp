@@ -35,7 +35,7 @@ import fetchWithRetry from "fetchWithRetry";
 import { refreshPosts } from "refreshPosts";
 import PropTypes from 'prop-types'
 
-const PostWidget = ({
+const Post = ({
   createdAt,
   postId,
   postUserId,
@@ -461,7 +461,7 @@ const PostWidget = ({
   );
 };
 
-PostWidget.propTypes = {
+Post.propTypes = {
   createdAt: PropTypes.string.isRequired,
   postId: PropTypes.any.isRequired,
   postUserId: PropTypes.string.isRequired,
@@ -481,4 +481,4 @@ PostWidget.propTypes = {
   comments: PropTypes.array.isRequired,
 }
 
-export default PostWidget;
+export default Post;

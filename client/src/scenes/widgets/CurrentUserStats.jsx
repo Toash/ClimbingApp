@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import { getHighestVGradePost } from "data/getHighestVGradePost";
 import PropTypes from 'prop-types'
 
-function YourStats({ userId }) {
+function CurrentUserStats({ userId }) {
 
   const { palette } = useTheme();
   const token = useSelector((state) => state.token);
@@ -48,8 +48,8 @@ function YourStats({ userId }) {
   );
 };
 
-YourStats.propTypes = {
+CurrentUserStats.propTypes = {
   userId: PropTypes.string
 }
 
-export default YourStats;
+export default CurrentUserStats;

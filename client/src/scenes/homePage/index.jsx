@@ -2,11 +2,11 @@ import React from "react";
 import { useEffect } from "react";
 import { Box, Typography, useMediaQuery } from "@mui/material";
 import NavBar from "scenes/navbar";
-import UserWidget from "scenes/widgets/UserWidget";
-import MyPostWidget from "scenes/widgets/MyPostWidget";
-import PostsWidget from "scenes/widgets/PostsWidget";
+import CurrentUserCard from "scenes/widgets/CurrentUserWidget";
+import CreatePost from "scenes/widgets/CreatePost";
+import Posts from "scenes/widgets/Posts";
 import FriendListWidget from "scenes/widgets/FriendListWidget";
-import YourStats from "scenes/widgets/YourStats";
+import CurrentUserStats from "scenes/widgets/CurrentUserStats";
 import { jwtDecode } from "jwt-decode";
 import { QUERY_KEYS } from "queryKeys";
 
@@ -148,9 +148,9 @@ const HomePage = () => {
           >
             {loggedIn && (
               <>
-                <UserWidget userId={data.cid} picturePath={picturePath} />
+                <CurrentUserCard userId={data.cid} picturePath={picturePath} />
                 <FriendListWidget userId={cid} />
-                <YourStats userId={cid}></YourStats>
+                <CurrentUserStats userId={cid}></CurrentUserStats>
               </>
             )}
           </Box>
@@ -160,8 +160,8 @@ const HomePage = () => {
             // margin for mobile since widgets are stacked
             mt={isNonMobileScreens ? undefined : "2rem"}
           >
-            {loggedIn && <MyPostWidget picturePath={picturePath} />}
-            <PostsWidget userId={cid} />
+            {loggedIn && <CreatePost picturePath={picturePath} />}
+            <Posts userId={cid} />
           </Box>
         </Box>
       </Box >

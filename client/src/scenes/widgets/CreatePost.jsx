@@ -30,7 +30,7 @@ import { QUERY_KEYS } from "queryKeys";
  * @param {*} param0
  * @returns
  */
-const MyPostWidget = ({ picturePath }) => {
+const CreatePost = ({ picturePath }) => {
   const [media, setMedia] = useState(null);
   const [post, setPost] = useState("");
   const [vGrade, setVGrade] = useState(0);
@@ -322,8 +322,8 @@ const MyPostWidget = ({ picturePath }) => {
   );
 };
 
-MyPostWidget.propTypes = {
+CreatePost.propTypes = {
   picturePath: PropTypes.string.isRequired
 }
 
-export default MyPostWidget;
+export default CreatePost;

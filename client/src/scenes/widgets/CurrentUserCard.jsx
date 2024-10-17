@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import fetchWithRetry from "fetchWithRetry";
 
-const UserWidget = ({ userId, picturePath }) => {
+const CurrentUserCard = ({ userId, picturePath }) => {
   const dispatch = useDispatch();
   const [user, setUser] = useState(null);
   const { palette } = useTheme();
@@ -75,4 +75,4 @@ const UserWidget = ({ userId, picturePath }) => {
   );
 };
 
-export default UserWidget;
+export default CurrentUserCard;
