@@ -4,8 +4,8 @@ import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import FlexBetween from "./FlexBetween";
 import UserImage from "./UserImage";
 import PropTypes from 'prop-types'
-import getUser from "data/getUser";
-import getCurrentUser from "auth/getCurrentUser";
+import getUserById from "data/getUserById";
+import getAuthenticatedUser from "data/getAuthenticatedUser";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 
 /**
@@ -20,8 +20,8 @@ const UserCard = ({ friendId: userId }) => {
   const main = palette.neutral.main;
   const medium = palette.neutral.medium;
 
-  const { data: currentUserData, isLoading: currentUserIsLoading, isSuccess: currentUserIsSuccess } = getCurrentUser();
-  const { data: userData, isLoading: userIsLoading, isSuccess: userIsSuccess } = getUser(userId);
+  const { data: currentUserData, isLoading: currentUserIsLoading, isSuccess: currentUserIsSuccess } = getAuthenticatedUser();
+  const { data: userData, isLoading: userIsLoading, isSuccess: userIsSuccess } = getUserById(userId);
 
   // useQueryClient to avoid creating a new client every render (QueryClient)
   const queryClient = useQueryClient();

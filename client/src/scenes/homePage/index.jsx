@@ -2,13 +2,15 @@ import React from "react";
 import { useEffect } from "react";
 import { Box, Typography, useMediaQuery } from "@mui/material";
 import NavBar from "scenes/navbar";
-import CurrentUserCard from "scenes/widgets/CurrentUserWidget";
+import CurrentUserCard from "scenes/widgets/CurrentUserCard";
 import CreatePost from "scenes/widgets/CreatePost";
 import Posts from "scenes/widgets/Posts";
 import FriendListWidget from "scenes/widgets/FriendListWidget";
 import CurrentUserStats from "scenes/widgets/CurrentUserStats";
 import { jwtDecode } from "jwt-decode";
 import { QUERY_KEYS } from "queryKeys";
+import getAuthenticatedUser from "data/getAuthenticatedUser";
+import defineAuthenticatedUser from "data/defineAuthenticatedUser";
 
 
 const HomePage = () => {
@@ -90,18 +92,20 @@ const HomePage = () => {
 
 
 
+
   /**
-   * Get user profile from cognito profile
-   * needs id token
-   * @returns {object} user object
+   * Extract tokens and get the associated user.
    */
   const { isSuccess, isError, error, isPending, data, } = useQuery(
     {
       enabled: !!localStorage.getItem("id_token"), // only run query if token is available
       queryKey: [QUERY_KEYS.CURRENT_USER],
-      queryFn: () => async () => {
+      queryFn: async () => {
         // decode id_token to get sub attribute.
         const id_token = localStorage.getItem("id_token")
+        if (!id_token) {
+          throw new Error("id token is not in localStorage.")
+        }
 
         const decoded = jwtDecode(id_token);
         console.log("Decoded id_token: ", decoded)
@@ -114,11 +118,11 @@ const HomePage = () => {
             headers: { Authorization: `Bearer ${id_token}` },
           }
         );
-        const data = await response.json();
-        return data;
+        return await response.json();
       },
+      staleTime: Infinity,
     }
-  );
+  )
 
   if (isPending) {
     return <Typography>Fetching user profile....</Typography>

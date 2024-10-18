@@ -1,14 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
+import { QUERY_KEYS } from "queryKeys";
 
 // we could make this more efficient by definining queries for each individual attribute for users. And using multiple keys for this.
 /**
- * Gets the user, stores the query in the ["otherUser",userId] key. 
+ * Gets the user, stores the query in  key. 
  * @param {string} userId the cognito id for the user
  * @returns 
  */
-export default function getUser(userId) {
+export default function getUserById(userId) {
     return useQuery({
-        queryKey: ["otherUser", userId], queryFn: async () => {
+        queryKey: [QUERY_KEYS.USER_BY_ID(userId)], queryFn: async () => {
             try {
                 const response = await fetch(process.env.REACT_APP_API_BASE_URL + `users/${userId}`,
                     {
