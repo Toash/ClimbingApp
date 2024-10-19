@@ -18,7 +18,6 @@ import WidgetWrapper from "components/WidgetWrapper";
 import { useState } from "react";
 import fetchWithRetry from "auth/fetchWithRetry";
 import { uploadMedia } from "data/uploadMedia";
-import { refreshPosts } from "refreshPosts";
 import PropTypes from 'prop-types'
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "queryKeys";

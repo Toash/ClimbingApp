@@ -9,8 +9,6 @@ import FriendListWidget from "scenes/widgets/FriendListWidget";
 import CurrentUserStats from "scenes/widgets/CurrentUserStats";
 import { jwtDecode } from "jwt-decode";
 import { QUERY_KEYS } from "queryKeys";
-import getAuthenticatedUser from "data/getAuthenticatedUser";
-import defineAuthenticatedUser from "data/defineAuthenticatedUser";
 
 
 const HomePage = () => {
@@ -101,6 +99,7 @@ const HomePage = () => {
       enabled: !!localStorage.getItem("id_token"), // only run query if token is available
       queryKey: [QUERY_KEYS.CURRENT_USER],
       queryFn: async () => {
+        // Define the user in the cache.
         // decode id_token to get sub attribute.
         const id_token = localStorage.getItem("id_token")
         if (!id_token) {
