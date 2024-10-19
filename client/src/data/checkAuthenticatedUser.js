@@ -1,4 +1,5 @@
 import { QUERY_KEYS } from "queryKeys";
+import { QueryClient } from "@tanstack/react-query";
 import getAuthenticatedUser from "./getAuthenticatedUser";
 
 /**
@@ -19,6 +20,4 @@ export default function checkAuthenticatedUser() {
 
 
     return true;
-
-
 }

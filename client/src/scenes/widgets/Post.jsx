@@ -35,6 +35,8 @@ import PropTypes from 'prop-types'
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "queryKeys";
 import useUserById from "data/useUserById";
+import getAuthenticatedUser from "data/getAuthenticatedUser";
+import checkAuthenticatedUser from "data/checkAuthenticatedUser";
 
 const Post = ({
   createdAt,
@@ -84,8 +86,6 @@ const Post = ({
   const queryClient = useQueryClient();
 
 
-
-
   /**
    * Mutation to toggle like on post.
    */
@@ -99,7 +99,7 @@ const Post = ({
             Authorization: `Bearer ${localStorage.getItem("id_token")}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ userId: loggedInUserId }),
+          body: JSON.stringify({ userId: data.cid }),
         }
       );
 
@@ -127,7 +127,7 @@ const Post = ({
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            userId: loggedInUserId,
+            userId: data.cid,
             comment: variables.comment,
           }),
         }
@@ -155,7 +155,7 @@ const Post = ({
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            userId: loggedInUserId,
+            userId: data.cid,
           }),
         }
       );
@@ -217,7 +217,6 @@ const Post = ({
 
         if (response.ok) {
           const updatedPost = await response.json();
-          dispatch(setPost({ post: updatedPost }));
           setIsEditing(false);
         } else {
           console.error("Failed to update the post");
@@ -233,277 +232,274 @@ const Post = ({
 
   })
 
-  const { data, isSuccess, isLoading } = useUserById();
+  const { data, isSuccess, isLoading } = getAuthenticatedUser();
 
-  if (isLoading) {
-    return <Typography>Getting user data....</Typography>
-  }
 
-  if (isSuccess) {
-    return (
-      <WidgetWrapper m="2rem 0">
-        <Box display="flex">
-          <Box flex="1">
-            <UserCard
-              friendId={postUserId}
-              name={name}
-              userPicturePath={userPicturePath}
-            />
-          </Box>
-          {isCurrentUserPost() && (
-            <>
-              <IconButton
-                sx={{
-                  backgroundColor: alpha(palette.info.light, 0.1),
-                  color: palette.info.main,
-                  height: "2.5rem",
-                  width: "2.5rem",
-                  marginRight: "0.5rem",
-                }}
-                onClick={() => setIsEditing(!isEditing)}
-              >
-                <EditIcon />
-              </IconButton>
-              <IconButton
-                sx={{
-                  backgroundColor: alpha(palette.error.light, 0.1),
-                  color: palette.error.main,
-                  height: "2.5rem",
-                  width: "2.5rem",
-                }}
-                onClick={() => deletePostMutation.mutate()}
-              >
-                <DeleteIcon />
-              </IconButton>
-            </>
-          )}
+
+  return (
+    <WidgetWrapper m="2rem 0">
+      <Box display="flex">
+        <Box flex="1">
+          <UserCard
+            friendId={postUserId}
+            name={name}
+            userPicturePath={userPicturePath}
+          />
         </Box>
-        {/* TITLE AND GRADE */}
-        <Typography color={main} sx={{ mt: "1rem", fontSize: "2rem" }}>
-          {vGrade !== null ? title + " - V" + vGrade : title}
-        </Typography>
-
-        {/* ATTEMPTS */}
-        <Typography
-          color={main}
-          sx={{ mt: "0rem", mb: "1rem", fontSize: "1rem" }}
-        >
-          {attempts
-            ? attempts !== 1
-              ? attempts + " Attempts "
-              : "Flash⚡︎"
-            : null}
-        </Typography>
-
-        {/* MEDIA */}
-        {mediaPath && (
+        {isCurrentUserPost() && (
           <>
-            {mediaPath.endsWith(".mp4") ||
-              mediaPath.endsWith(".mov") ||
-              mediaPath.endsWith(".avi") ? (
-              <video
-                width="100%"
-                height="auto"
-                controls
-                style={{ borderRadius: "0.75rem", marginTop: "0.75rem" }}
-              >
-                <source src={mediaPath} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-            ) : (
-              <img
-                width="100%"
-                height="auto"
-                alt="post"
-                style={{ borderRadius: "0.75rem", marginTop: "0.75rem" }}
-                src={mediaPath}
-              />
-            )}
+            <IconButton
+              sx={{
+                backgroundColor: alpha(palette.info.light, 0.1),
+                color: palette.info.main,
+                height: "2.5rem",
+                width: "2.5rem",
+                marginRight: "0.5rem",
+              }}
+              onClick={() => setIsEditing(!isEditing)}
+            >
+              <EditIcon />
+            </IconButton>
+            <IconButton
+              sx={{
+                backgroundColor: alpha(palette.error.light, 0.1),
+                color: palette.error.main,
+                height: "2.5rem",
+                width: "2.5rem",
+              }}
+              onClick={() => deletePostMutation.mutate()}
+            >
+              <DeleteIcon />
+            </IconButton>
           </>
         )}
+      </Box>
+      {/* TITLE AND GRADE */}
+      <Typography color={main} sx={{ mt: "1rem", fontSize: "2rem" }}>
+        {vGrade !== null ? title + " - V" + vGrade : title}
+      </Typography>
 
-        {/* DESCRIPTION */}
-        <Typography color={main} sx={{ mt: "1rem", fontSize: "1rem" }}>
-          {description}
-        </Typography>
+      {/* ATTEMPTS */}
+      <Typography
+        color={main}
+        sx={{ mt: "0rem", mb: "1rem", fontSize: "1rem" }}
+      >
+        {attempts
+          ? attempts !== 1
+            ? attempts + " Attempts "
+            : "Flash⚡︎"
+          : null}
+      </Typography>
 
-        <FlexBetween mt="2rem">
-          <FlexBetween gap="1rem">
-            {/* LIKES */}
-            <FlexBetween gap="0.3rem">
-              {loggedIn ? (
-                <>
-                  <IconButton onClick={patchLike}>
-                    {isLiked ? (
-                      <FavoriteOutlined sx={{ color: primary }} />
-                    ) : (
-                      <FavoriteBorderOutlined />
-                    )}
-                  </IconButton>
-                </>
-              ) : (
-                <FavoriteBorderOutlined />
-              )}
-              <Typography>{likeCount}</Typography>
-            </FlexBetween>
-            {/* COMMENT SECTION */}
-            <FlexBetween gap="0.3rem">
-              <IconButton onClick={() => setIsComments(!isComments)}>
-                <ChatBubbleOutlineOutlined />
-              </IconButton>
-              <Typography>{comments.length}</Typography>
-            </FlexBetween>
+      {/* MEDIA */}
+      {mediaPath && (
+        <>
+          {mediaPath.endsWith(".mp4") ||
+            mediaPath.endsWith(".mov") ||
+            mediaPath.endsWith(".avi") ? (
+            <video
+              width="100%"
+              height="auto"
+              controls
+              style={{ borderRadius: "0.75rem", marginTop: "0.75rem" }}
+            >
+              <source src={mediaPath} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          ) : (
+            <img
+              width="100%"
+              height="auto"
+              alt="post"
+              style={{ borderRadius: "0.75rem", marginTop: "0.75rem" }}
+              src={mediaPath}
+            />
+          )}
+        </>
+      )}
+
+      {/* DESCRIPTION */}
+      <Typography color={main} sx={{ mt: "1rem", fontSize: "1rem" }}>
+        {description}
+      </Typography>
+
+      <FlexBetween mt="2rem">
+        <FlexBetween gap="1rem">
+          {/* LIKES */}
+          <FlexBetween gap="0.3rem">
+            {checkAuthenticatedUser() ? (
+              <>
+                <IconButton onClick={togglePostLikeMutation.mutate()}>
+                  {isLiked ? (
+                    <FavoriteOutlined sx={{ color: primary }} />
+                  ) : (
+                    <FavoriteBorderOutlined />
+                  )}
+                </IconButton>
+              </>
+            ) : (
+              <FavoriteBorderOutlined />
+            )}
+            <Typography>{likeCount}</Typography>
           </FlexBetween>
-          {/* DATE */}
-          <Typography color={main} sx={{ fontSize: "0.875rem" }}>
-            {formattedDate}
-          </Typography>
+          {/* COMMENT SECTION */}
+          <FlexBetween gap="0.3rem">
+            <IconButton onClick={() => setIsComments(!isComments)}>
+              <ChatBubbleOutlineOutlined />
+            </IconButton>
+            <Typography>{comments.length}</Typography>
+          </FlexBetween>
         </FlexBetween>
+        {/* DATE */}
+        <Typography color={main} sx={{ fontSize: "0.875rem" }}>
+          {formattedDate}
+        </Typography>
+      </FlexBetween>
 
-        <Divider></Divider>
-        {isComments && (
-          <>
-            <Box>
-              {/* Display all comments from array */}
-              {comments.map((comment, i) => (
-                //comment
-                <Box key={i} display="flex" alignItems="center" marginTop="1rem">
+      <Divider></Divider>
+      {isComments && (
+        <>
+          <Box>
+            {/* Display all comments from array */}
+            {comments.map((comment, i) => (
+              //comment
+              <Box key={i} display="flex" alignItems="center" marginTop="1rem">
+                <Box
+                  key={`${name}-${i}`}
+                  display="flex"
+                  alignItems="center"
+                  mb="0.5rem"
+                >
+                  <Avatar
+                    src={
+                      process.env.REACT_APP_API_BASE_URL +
+                      `/assets/${comment.userImage}`
+                    }
+                  />
                   <Box
-                    key={`${name}-${i}`}
-                    display="flex"
-                    alignItems="center"
-                    mb="0.5rem"
-                  >
-                    <Avatar
-                      src={
-                        process.env.REACT_APP_API_BASE_URL +
-                        `/assets/${comment.userImage}`
-                      }
-                    />
-                    <Box
-                      ml="1rem"
-                      flex="1"
-                      sx={{
-                        wordBreak: "break-word",
-                      }}
-                    >
-                      <Typography sx={{ color: main }}>
-                        <strong>{comment.name}</strong> {comment.comment}
-                      </Typography>
-                    </Box>
-                  </Box>
-                  <Box
+                    ml="1rem"
+                    flex="1"
                     sx={{
-                      display: "flex",
-                      ml: "auto",
+                      wordBreak: "break-word",
                     }}
                   >
-                    {/* LIKE COMMENT */}
-                    {loggedIn && (
-                      <>
-                        <FlexBetween gap="1rem">
-                          <FlexBetween gap="0rem">
-                            <IconButton
-                              onClick={() => toggleCommentLikeMutation({ commentId: comment._id })}
-                            >
-                              {!!comment.likeCount[data.cid] ? (
-                                <FavoriteOutlined sx={{ color: primary }} />
-                              ) : (
-                                <FavoriteBorderOutlined />
-                              )}
-                            </IconButton>
-                            <Typography>{comment.likeCount.length}</Typography>
-                          </FlexBetween>
-                          <IconButton>
-                            <DeleteIcon></DeleteIcon>
-                          </IconButton>
-                        </FlexBetween>
-                      </>
-                    )}
+                    <Typography sx={{ color: main }}>
+                      <strong>{comment.name}</strong> {comment.comment}
+                    </Typography>
                   </Box>
                 </Box>
-              ))}
-              <Divider />
-            </Box>
-            {/* COMMENT SOMETHING */}
-            <Divider />
-            {loggedIn && (
-              <>
-                <Box mt="1rem">
-                  <TextField
-                    fullWidth
-                    variant="outlined"
-                    placeholder="Comment something..."
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                  />
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    color="primary"
-                    sx={{ mt: "0.5rem" }}
-                    onClick={postComment}
-                  >
-                    Post Comment
-                  </Button>
+                <Box
+                  sx={{
+                    display: "flex",
+                    ml: "auto",
+                  }}
+                >
+                  {/* LIKE COMMENT */}
+                  {checkAuthenticatedUser() && (
+                    <>
+                      <FlexBetween gap="1rem">
+                        <FlexBetween gap="0rem">
+                          <IconButton
+                            onClick={() => toggleCommentLikeMutation({ commentId: comment._id })}
+                          >
+                            {!!comment.likeCount[data.cid] ? (
+                              <FavoriteOutlined sx={{ color: primary }} />
+                            ) : (
+                              <FavoriteBorderOutlined />
+                            )}
+                          </IconButton>
+                          <Typography>{comment.likeCount.length}</Typography>
+                        </FlexBetween>
+                        <IconButton>
+                          <DeleteIcon></DeleteIcon>
+                        </IconButton>
+                      </FlexBetween>
+                    </>
+                  )}
                 </Box>
-              </>
-            )}
-          </>
-        )}
+              </Box>
+            ))}
+            <Divider />
+          </Box>
+          {/* COMMENT SOMETHING */}
+          <Divider />
+          {checkAuthenticatedUser() && (
+            <>
+              <Box mt="1rem">
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  placeholder="Comment something..."
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                />
+                <Button
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  sx={{ mt: "0.5rem" }}
+                  onClick={postCommentMutation({ comment: newComment })}
+                >
+                  Post Comment
+                </Button>
+              </Box>
+            </>
+          )}
+        </>
+      )}
 
-        {/* Edit Post Dialog */}
-        <Dialog open={isEditing} onClose={() => setIsEditing(false)}>
-          <DialogTitle>Edit Post</DialogTitle>
-          <DialogContent>
-            <TextField
-              fullWidth
-              variant="outlined"
-              label="Title"
-              value={editedTitle}
-              onChange={(e) => setEditedTitle(e.target.value)}
-              sx={{ mt: 2 }}
-            />
-            <TextField
-              fullWidth
-              variant="outlined"
-              label="V-Grade"
-              value={editedVGrade}
-              onChange={(e) => setEditedVGrade(e.target.value)}
-              sx={{ mt: 2 }}
-            />
-            <TextField
-              fullWidth
-              variant="outlined"
-              label="Attempts"
-              value={editedAttempts}
-              onChange={(e) => setEditedAttempts(e.target.value)}
-              sx={{ mt: 2 }}
-            />
-            <TextField
-              fullWidth
-              variant="outlined"
-              label="Description"
-              value={editedDescription}
-              onChange={(e) => setEditedDescription(e.target.value)}
-              multiline
-              rows={4}
-              sx={{ mt: 2 }}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setIsEditing(false)} color="secondary">
-              Cancel
-            </Button>
-            <Button onClick={updatePost} color="primary" variant="contained">
-              Save
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </WidgetWrapper>
-    );
-  };
-}
+      {/* Edit Post Dialog */}
+      <Dialog open={isEditing} onClose={() => setIsEditing(false)}>
+        <DialogTitle>Edit Post</DialogTitle>
+        <DialogContent>
+          <TextField
+            fullWidth
+            variant="outlined"
+            label="Title"
+            value={editedTitle}
+            onChange={(e) => setEditedTitle(e.target.value)}
+            sx={{ mt: 2 }}
+          />
+          <TextField
+            fullWidth
+            variant="outlined"
+            label="V-Grade"
+            value={editedVGrade}
+            onChange={(e) => setEditedVGrade(e.target.value)}
+            sx={{ mt: 2 }}
+          />
+          <TextField
+            fullWidth
+            variant="outlined"
+            label="Attempts"
+            value={editedAttempts}
+            onChange={(e) => setEditedAttempts(e.target.value)}
+            sx={{ mt: 2 }}
+          />
+          <TextField
+            fullWidth
+            variant="outlined"
+            label="Description"
+            value={editedDescription}
+            onChange={(e) => setEditedDescription(e.target.value)}
+            multiline
+            rows={4}
+            sx={{ mt: 2 }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setIsEditing(false)} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={updatePostMutation.mutate()} color="primary" variant="contained">
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </WidgetWrapper>
+  );
+};
+
 
 
 

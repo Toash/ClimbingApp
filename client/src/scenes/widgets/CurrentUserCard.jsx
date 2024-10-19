@@ -35,7 +35,7 @@ const CurrentUserCard = () => {
                 color={dark}
                 fontWeight="500"
               >
-                {firstName} {lastName}
+                {data.firstName} {data.lastName}
               </Typography>
               <Typography color={medium}>{data.friends.length} friends</Typography>
             </Box>

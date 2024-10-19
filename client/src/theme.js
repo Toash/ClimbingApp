@@ -34,6 +34,7 @@ export const themeSettings = (mode) => {
   return {
     palette: {
       mode: mode,
+      //spread operator to put each element sequentially
       ...(mode === "dark"
         ? {
           // palette values for dark mode

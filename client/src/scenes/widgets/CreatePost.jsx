@@ -18,8 +18,7 @@ import WidgetWrapper from "components/WidgetWrapper";
 import { useState } from "react";
 import fetchWithRetry from "auth/fetchWithRetry";
 import { uploadMedia } from "data/uploadMedia";
-import PropTypes from 'prop-types'
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { QUERY_KEYS } from "queryKeys";
 import getAuthenticatedUser from "data/getAuthenticatedUser";
 
@@ -30,7 +29,7 @@ import getAuthenticatedUser from "data/getAuthenticatedUser";
  * @param {*} param0
  * @returns
  */
-const CreatePost = ({ picturePath }) => {
+const CreatePost = () => {
   const [media, setMedia] = useState(null);
   const [post, setPost] = useState("");
   const [vGrade, setVGrade] = useState(0);
@@ -49,7 +48,7 @@ const CreatePost = ({ picturePath }) => {
   const postMutation = useMutation(async () => {
 
     const formData = new FormData();
-    formData.append("userId", cid);
+    formData.append("userId", data.cid);
     formData.append("title", post);
     formData.append("vGrade", vGrade);
     formData.append("attempts", attempts);
@@ -60,7 +59,7 @@ const CreatePost = ({ picturePath }) => {
 
     if (media) {
       // upload media
-      const path = `${cid}/${media.name}`;
+      const path = `${data.cid}/${media.name}`;
 
       try {
         const fullUrl = await uploadMedia(path, media);
@@ -75,7 +74,7 @@ const CreatePost = ({ picturePath }) => {
       process.env.REACT_APP_API_BASE_URL + "/posts",
       {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${localStorage.getItem("id_token")}` },
         body: formData,
       }
     );
@@ -97,15 +96,6 @@ const CreatePost = ({ picturePath }) => {
   )
 
 
-
-  const handlePost = async () => {
-
-
-    postMutation.mutate(formData);
-
-
-  };
-
   const handleAttemptsIncrement = () => {
     setAttempts((prev) => Math.min(prev + 1, 999));
   };
@@ -116,216 +106,221 @@ const CreatePost = ({ picturePath }) => {
 
   const { data, isSuccess, isLoading } = getAuthenticatedUser();
 
-  return (
-    <WidgetWrapper>
-      <FlexBetween gap="1.5rem">
-        <UserImage s3key={picturePath} />
-        <Box
-          display="flex"
-          alignItems="center"
-          justifyContent="space-between"
-          sx={{ width: "100%" }}
-        >
-          {/* TITLE */}
-          <InputBase
-            placeholder="Enter a title for your climb"
-            onChange={(e) => setPost(e.target.value)}
-            value={post}
-            sx={{
-              flexGrow: 1,
-              backgroundColor: palette.neutral.light,
-              borderRadius: "2rem",
-              padding: "1rem 2rem",
-              color: palette.neutral.main,
-              fontSize: "1rem", // Optional: ensure consistent font size
-              outline: `1px solid ${palette.neutral.outline}`,
-            }}
-          />
+  if (isLoading) {
+    return <Typography>Fetching user data...</Typography>
+  }
 
-          {/* V-Grade Input */}
-          <Box display="flex" alignItems="center" sx={{ marginLeft: "2rem" }}>
-            <Typography
-              variant="h6"
-              sx={{ marginRight: "1rem", color: palette.neutral.main }}
-            >
-              V-Grade:
-            </Typography>
+  if (isSuccess) {
 
+    return (
+      <WidgetWrapper>
+        <FlexBetween gap="1.5rem">
+          <UserImage s3key={data.userPicturePath} />
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+            sx={{ width: "100%" }}
+          >
+            {/* TITLE */}
             <InputBase
-              type="number"
-              value={vGrade}
-              onChange={(e) => setVGrade(e.target.value)}
+              placeholder="Enter a title for your climb"
+              onChange={(e) => setPost(e.target.value)}
+              value={post}
               sx={{
-                width: "100px",
+                flexGrow: 1,
                 backgroundColor: palette.neutral.light,
                 borderRadius: "2rem",
                 padding: "1rem 2rem",
                 color: palette.neutral.main,
-                fontSize: "1rem",
+                fontSize: "1rem", // Optional: ensure consistent font size
                 outline: `1px solid ${palette.neutral.outline}`,
               }}
-              inputProps={{ min: 0, max: 17 }}
             />
-          </Box>
-        </Box>
-      </FlexBetween>
 
-      {/* Number of Attempts Input */}
-      <Box display="flex" alignItems="center" sx={{ marginTop: "1.5rem" }}>
-        <Button
-          onClick={handleAttemptsDecrement}
-          sx={{
-            color: palette.background.alt,
-            backgroundColor: palette.primary.main,
-            borderRadius: "3rem",
-            minWidth: "40px",
-            height: "40px",
-          }}
-        >
-          <Remove />
-        </Button>
-
-        <Typography
-          variant="h6"
-          sx={{
-            color: palette.neutral.main,
-            minWidth: "50px",
-            textAlign: "center",
-          }}
-        >
-          {attempts}
-        </Typography>
-
-        <Button
-          onClick={handleAttemptsIncrement}
-          sx={{
-            color: palette.background.alt,
-            backgroundColor: palette.primary.main,
-            borderRadius: "3rem",
-            minWidth: "40px",
-            height: "40px",
-          }}
-        >
-          <Add />
-        </Button>
-
-        <Typography
-          variant="h6"
-          sx={{ color: palette.neutral.main, marginLeft: "1rem" }}
-        >
-          Attempts
-        </Typography>
-      </Box>
-      <Divider sx={{ marginTop: "1.5rem", marginBottom: "2rem" }}></Divider>
-      {/* ADD MEDIA  */}
-      <Box
-        sx={{
-          backgroundColor: palette.neutral.light, // Match background color
-          borderRadius: "2rem", // Match border radius
-          padding: "1rem 2rem", // Match padding
-          marginTop: "1rem",
-          outline: `1px solid ${palette.neutral.outline}`,
-        }}
-      >
-        <Dropzone
-          acceptedFiles=".jpg,.jpeg,.png,video/*"
-          multiple={false}
-          onDrop={(acceptedFiles) => setMedia(acceptedFiles[0])}
-        >
-          {({ getRootProps, getInputProps }) => (
-            <FlexBetween>
-              <Box
-                {...getRootProps()}
-                border={`2px dashed ${palette.primary.main}`}
-                p="1rem"
-                width="100%"
-                sx={{
-                  "&:hover": { cursor: "pointer" },
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
+            {/* V-Grade Input */}
+            <Box display="flex" alignItems="center" sx={{ marginLeft: "2rem" }}>
+              <Typography
+                variant="h6"
+                sx={{ marginRight: "1rem", color: palette.neutral.main }}
               >
-                <input {...getInputProps()} />
-                {!media ? (
-                  <Typography color={palette.neutral.main}>
-                    Add Media (Optional)
-                  </Typography>
-                ) : (
-                  <FlexBetween>
-                    <Typography color={palette.neutral.main}>
-                      {media.name}
-                    </Typography>
-                    <EditOutlined />
-                  </FlexBetween>
-                )}
-              </Box>
-              {media && (
-                <IconButton
-                  onClick={() => setMedia(null)}
+                V-Grade:
+              </Typography>
+
+              <InputBase
+                type="number"
+                value={vGrade}
+                onChange={(e) => setVGrade(e.target.value)}
+                sx={{
+                  width: "100px",
+                  backgroundColor: palette.neutral.light,
+                  borderRadius: "2rem",
+                  padding: "1rem 2rem",
+                  color: palette.neutral.main,
+                  fontSize: "1rem",
+                  outline: `1px solid ${palette.neutral.outline}`,
+                }}
+                inputProps={{ min: 0, max: 17 }}
+              />
+            </Box>
+          </Box>
+        </FlexBetween>
+
+        {/* Number of Attempts Input */}
+        <Box display="flex" alignItems="center" sx={{ marginTop: "1.5rem" }}>
+          <Button
+            onClick={handleAttemptsDecrement}
+            sx={{
+              color: palette.background.alt,
+              backgroundColor: palette.primary.main,
+              borderRadius: "3rem",
+              minWidth: "40px",
+              height: "40px",
+            }}
+          >
+            <Remove />
+          </Button>
+
+          <Typography
+            variant="h6"
+            sx={{
+              color: palette.neutral.main,
+              minWidth: "50px",
+              textAlign: "center",
+            }}
+          >
+            {attempts}
+          </Typography>
+
+          <Button
+            onClick={handleAttemptsIncrement}
+            sx={{
+              color: palette.background.alt,
+              backgroundColor: palette.primary.main,
+              borderRadius: "3rem",
+              minWidth: "40px",
+              height: "40px",
+            }}
+          >
+            <Add />
+          </Button>
+
+          <Typography
+            variant="h6"
+            sx={{ color: palette.neutral.main, marginLeft: "1rem" }}
+          >
+            Attempts
+          </Typography>
+        </Box>
+        <Divider sx={{ marginTop: "1.5rem", marginBottom: "2rem" }}></Divider>
+        {/* ADD MEDIA  */}
+        <Box
+          sx={{
+            backgroundColor: palette.neutral.light, // Match background color
+            borderRadius: "2rem", // Match border radius
+            padding: "1rem 2rem", // Match padding
+            marginTop: "1rem",
+            outline: `1px solid ${palette.neutral.outline}`,
+          }}
+        >
+          <Dropzone
+            acceptedFiles=".jpg,.jpeg,.png,video/*"
+            multiple={false}
+            onDrop={(acceptedFiles) => setMedia(acceptedFiles[0])}
+          >
+            {({ getRootProps, getInputProps }) => (
+              <FlexBetween>
+                <Box
+                  {...getRootProps()}
+                  border={`2px dashed ${palette.primary.main}`}
+                  p="1rem"
+                  width="100%"
                   sx={{
-                    marginLeft: "1rem",
-                    color: palette.error.main,
+                    "&:hover": { cursor: "pointer" },
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
                   }}
                 >
-                  <DeleteOutlined />
-                </IconButton>
-              )}
-            </FlexBetween>
-          )}
-        </Dropzone>
-      </Box>
+                  <input {...getInputProps()} />
+                  {!media ? (
+                    <Typography color={palette.neutral.main}>
+                      Add Media (Optional)
+                    </Typography>
+                  ) : (
+                    <FlexBetween>
+                      <Typography color={palette.neutral.main}>
+                        {media.name}
+                      </Typography>
+                      <EditOutlined />
+                    </FlexBetween>
+                  )}
+                </Box>
+                {media && (
+                  <IconButton
+                    onClick={() => setMedia(null)}
+                    sx={{
+                      marginLeft: "1rem",
+                      color: palette.error.main,
+                    }}
+                  >
+                    <DeleteOutlined />
+                  </IconButton>
+                )}
+              </FlexBetween>
+            )}
+          </Dropzone>
+        </Box>
 
-      {/* Description */}
-      <InputBase
-        fullWidth
-        placeholder="Description (Optional)"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        sx={{
-          width: "100%",
-          backgroundColor: palette.neutral.light,
-          borderRadius: "2rem",
-          padding: "1rem 2rem",
-          color: palette.neutral.main,
-          marginTop: "1rem",
-          outline: `1px solid ${palette.neutral.outline}`,
-        }}
-      />
-
-      {/* Date Picker */}
-      <Box
-        sx={{ marginTop: "1rem", display: "flex", justifyContent: "flex-end" }}
-      >
-        <DatePicker
-          label="Select Date (Optional)"
-          value={selectedDate}
-          onChange={(newDate) => setSelectedDate(newDate)}
+        {/* Description */}
+        <InputBase
+          fullWidth
+          placeholder="Description (Optional)"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
           sx={{
+            width: "100%",
             backgroundColor: palette.neutral.light,
+            borderRadius: "2rem",
+            padding: "1rem 2rem",
             color: palette.neutral.main,
+            marginTop: "1rem",
+            outline: `1px solid ${palette.neutral.outline}`,
           }}
         />
-      </Box>
-      <Divider sx={{ margin: "1.25rem 0" }} />
 
-      <Button
-        disabled={!post}
-        onClick={postMutation.mutate()}
-        sx={{
-          color: palette.background.alt,
-          backgroundColor: palette.primary.main,
-          borderRadius: "3rem",
-        }}
-      >
-        POST
-      </Button>
-    </WidgetWrapper>
-  );
+        {/* Date Picker */}
+        <Box
+          sx={{ marginTop: "1rem", display: "flex", justifyContent: "flex-end" }}
+        >
+          <DatePicker
+            label="Select Date (Optional)"
+            value={selectedDate}
+            onChange={(newDate) => setSelectedDate(newDate)}
+            sx={{
+              backgroundColor: palette.neutral.light,
+              color: palette.neutral.main,
+            }}
+          />
+        </Box>
+        <Divider sx={{ margin: "1.25rem 0" }} />
+
+        <Button
+          disabled={!post}
+          onClick={postMutation.mutate()}
+          sx={{
+            color: palette.background.alt,
+            backgroundColor: palette.primary.main,
+            borderRadius: "3rem",
+          }}
+        >
+          POST
+        </Button>
+      </WidgetWrapper>
+    );
+  }
 };
 
-CreatePost.propTypes = {
-  picturePath: PropTypes.string.isRequired
-}
+
 
 export default CreatePost;
