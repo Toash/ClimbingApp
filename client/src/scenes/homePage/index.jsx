@@ -127,6 +127,8 @@ const HomePage = () => {
 
 
   if (isSuccess) {
+    loggedIn = localStorage.getItem("id_token");
+
     return (
       <Box>
         < NavBar ></NavBar >
@@ -145,9 +147,9 @@ const HomePage = () => {
           >
             {loggedIn && (
               <>
-                <CurrentUserCard userId={data.cid} picturePath={picturePath} />
-                <FriendListWidget userId={cid} />
-                <CurrentUserStats userId={cid}></CurrentUserStats>
+                <CurrentUserCard />
+                <FriendListWidget />
+                <CurrentUserStats />
               </>
             )}
           </Box>

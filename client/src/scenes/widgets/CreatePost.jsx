@@ -21,6 +21,7 @@ import { uploadMedia } from "data/uploadMedia";
 import PropTypes from 'prop-types'
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "queryKeys";
+import getAuthenticatedUser from "data/getAuthenticatedUser";
 
 
 /**
@@ -112,6 +113,8 @@ const CreatePost = ({ picturePath }) => {
   const handleAttemptsDecrement = () => {
     setAttempts((prev) => Math.max(prev - 1, 1));
   };
+
+  const { data, isSuccess, isLoading } = getAuthenticatedUser();
 
   return (
     <WidgetWrapper>

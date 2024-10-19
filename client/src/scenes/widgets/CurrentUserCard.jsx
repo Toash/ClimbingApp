@@ -7,7 +7,7 @@ import FlexBetween from "components/FlexBetween";
 import WidgetWrapper from "components/WidgetWrapper";
 import getAuthenticatedUser from "data/getAuthenticatedUser";
 
-const CurrentUserCard = ({ userId, picturePath }) => {
+const CurrentUserCard = () => {
   const { palette } = useTheme();
   const dark = palette.neutral.dark;
   const medium = palette.neutral.medium;
