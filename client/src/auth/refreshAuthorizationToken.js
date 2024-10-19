@@ -19,7 +19,7 @@ async function refreshIdToken() {
             const data = await tokenResponse.json();
             console.log("OK response from /auth/refresh-token, here is the data: ", data);
             id_token = data?.id_token;
-            if (token) {
+            if (id_token) {
                 localStorage.setItem("id_token", id_token)
             } else {
                 return false;

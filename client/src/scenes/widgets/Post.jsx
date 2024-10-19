@@ -1,4 +1,5 @@
 import React from "react";
+import { useState } from "react";
 import { format } from "date-fns";
 import {
   ChatBubbleOutlineOutlined,
@@ -28,9 +29,7 @@ import {
 import FlexBetween from "components/FlexBetween";
 import UserCard from "components/UserCard";
 import WidgetWrapper from "components/WidgetWrapper";
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { setPost } from "state";
+
 import fetchWithRetry from "auth/fetchWithRetry";
 import PropTypes from 'prop-types'
 import { useMutation, useQueryClient } from "@tanstack/react-query";

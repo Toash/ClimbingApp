@@ -18,7 +18,7 @@ const fetchWithRetry = async (url, options) => {
             console.log("Unauthorized request... attempting to refresh token");
             const refreshed = await refreshIdToken();
             if (refreshed) {
-                options.headers.Authorization = `Bearer ${token}`;
+                options.headers.Authorization = `Bearer ${localStorage.getItem("id_token")}`;
                 response = await fetch(url, options);
             } else {
                 goToLogin(); // just start the whole process again

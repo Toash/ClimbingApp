@@ -9,6 +9,7 @@ import FriendListWidget from "scenes/widgets/FriendListWidget";
 import CurrentUserStats from "scenes/widgets/CurrentUserStats";
 import { jwtDecode } from "jwt-decode";
 import { QUERY_KEYS } from "queryKeys";
+import getCidFromToken from "auth/getCidFromToken";
 
 
 const HomePage = () => {
@@ -99,16 +100,8 @@ const HomePage = () => {
       enabled: !!localStorage.getItem("id_token"), // only run query if token is available
       queryKey: [QUERY_KEYS.CURRENT_USER],
       queryFn: async () => {
-        // Define the user in the cache.
-        // decode id_token to get sub attribute.
-        const id_token = localStorage.getItem("id_token")
-        if (!id_token) {
-          throw new Error("id token is not in localStorage.")
-        }
 
-        const decoded = jwtDecode(id_token);
-        console.log("Decoded id_token: ", decoded)
-        const cid = decoded.sub;
+        const cid = getCidFromToken();
 
         const response = await fetch(
           process.env.REACT_APP_API_BASE_URL + `/users/${cid}`,
