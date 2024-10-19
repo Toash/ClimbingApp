@@ -7,13 +7,14 @@ import CreatePost from "scenes/widgets/CreatePost";
 import Posts from "scenes/widgets/Posts";
 import FriendListWidget from "scenes/widgets/FriendListWidget";
 import CurrentUserStats from "scenes/widgets/CurrentUserStats";
-import { jwtDecode } from "jwt-decode";
 import { QUERY_KEYS } from "queryKeys";
 import getCidFromToken from "auth/getCidFromToken";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 
 const HomePage = () => {
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
+  const queryClient = useQueryClient();
 
   /**
    * Exchanges the auth code for tokens, sets the tokens in local storage.
@@ -107,7 +108,7 @@ const HomePage = () => {
           process.env.REACT_APP_API_BASE_URL + `/users/${cid}`,
           {
             method: "GET",
-            headers: { Authorization: `Bearer ${id_token}` },
+            headers: { Authorization: `Bearer ${localStorage.getItem("id_token")}` },
           }
         );
         return await response.json();
@@ -133,7 +134,7 @@ const HomePage = () => {
           width="100%"
           padding="2rem 6%"
           // widgets will be on top of eachother on mobile
-          display={isNonMobileScrewens ? "flex" : "block"}
+          display={isNonMobileScreens ? "flex" : "block"}
           gap="1rem"
           justifyContent="space-between"
         >
