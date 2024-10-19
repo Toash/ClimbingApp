@@ -34,7 +34,6 @@ import fetchWithRetry from "auth/fetchWithRetry";
 import PropTypes from 'prop-types'
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "queryKeys";
-import useUserById from "data/useUserById";
 import getAuthenticatedUser from "data/getAuthenticatedUser";
 import checkAuthenticatedUser from "data/checkAuthenticatedUser";
 
@@ -236,6 +235,7 @@ const Post = ({
 
 
 
+  // inline styling is bloating this component so much
   return (
     <WidgetWrapper m="2rem 0">
       <Box display="flex">
@@ -267,7 +267,7 @@ const Post = ({
                 height: "2.5rem",
                 width: "2.5rem",
               }}
-              onClick={() => deletePostMutation.mutate()}
+              onClick={deletePostMutation.mutate()}
             >
               <DeleteIcon />
             </IconButton>

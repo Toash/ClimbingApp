@@ -20,18 +20,18 @@ const HomePage = () => {
    * Exchanges the auth code for tokens, sets the tokens in local storage.
    */
   const exchangeCodeMutation = useMutation(
-    async (authorizationCode) => {
-      const response = await fetch(
-        process.env.REACT_APP_API_BASE_URL + `/auth/exchange-code`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ authorizationCode }),
-        }
-      );
-      return await response.json();
-    },
     {
+      mutationFn: async (authorizationCode) => {
+        const response = await fetch(
+          process.env.REACT_APP_API_BASE_URL + `/auth/exchange-code`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ authorizationCode }),
+          }
+        );
+        return await response.json();
+      },
       onSuccess: (data) => {
         const { id_token, access_token } = data;
 

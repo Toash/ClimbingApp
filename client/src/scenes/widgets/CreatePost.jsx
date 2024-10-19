@@ -45,54 +45,56 @@ const CreatePost = () => {
   /**
    * Post something, invalidate posts cache.
    */
-  const postMutation = useMutation(async () => {
+  const postMutation = useMutation(
+    {
+      mutationFn: async () => {
 
-    const formData = new FormData();
-    formData.append("userId", data.cid);
-    formData.append("title", post);
-    formData.append("vGrade", vGrade);
-    formData.append("attempts", attempts);
-    formData.append("description", description);
-    if (selectedDate) {
-      formData.append("createdAt", selectedDate.toISOString()); // Add selected date to form data
-    }
+        const formData = new FormData();
+        formData.append("userId", data.cid);
+        formData.append("title", post);
+        formData.append("vGrade", vGrade);
+        formData.append("attempts", attempts);
+        formData.append("description", description);
+        if (selectedDate) {
+          formData.append("createdAt", selectedDate.toISOString()); // Add selected date to form data
+        }
 
-    if (media) {
-      // upload media
-      const path = `${data.cid}/${media.name}`;
+        if (media) {
+          // upload media
+          const path = `${data.cid}/${media.name}`;
 
-      try {
-        const fullUrl = await uploadMedia(path, media);
-        formData.append("mediaPath", fullUrl);
-      } catch (e) {
-        console.error("Error when trying to upload media: ", e);
-        return;
+          try {
+            const fullUrl = await uploadMedia(path, media);
+            formData.append("mediaPath", fullUrl);
+          } catch (e) {
+            console.error("Error when trying to upload media: ", e);
+            return;
+          }
+        }
+
+        const response = await fetchWithRetry(
+          process.env.REACT_APP_API_BASE_URL + "/posts",
+          {
+            method: "POST",
+            headers: { Authorization: `Bearer ${localStorage.getItem("id_token")}` },
+            body: formData,
+          }
+        );
+        return response.json();
+      },
+      onSuccess: () => {
+        // we just changed the post so we need to get posts again.
+        queryClient.invalidateQueries(QUERY_KEYS.POSTS)
+        setMedia(null);
+        setPost("");
+        setVGrade(0);
+        setAttempts(1);
+        setSelectedDate(null);
+      },
+      onError: (error) => {
+        console.log("Error posting:", error)
       }
     }
-
-    const response = await fetchWithRetry(
-      process.env.REACT_APP_API_BASE_URL + "/posts",
-      {
-        method: "POST",
-        headers: { Authorization: `Bearer ${localStorage.getItem("id_token")}` },
-        body: formData,
-      }
-    );
-    return response.json();
-  }, {
-    onSuccess: () => {
-      // we just changed the post so we need to get posts again.
-      queryClient.invalidateQueries(QUERY_KEYS.POSTS)
-      setMedia(null);
-      setPost("");
-      setVGrade(0);
-      setAttempts(1);
-      setSelectedDate(null);
-    },
-    onError: (error) => {
-      console.log("Error posting:", error)
-    }
-  }
   )
 
 
