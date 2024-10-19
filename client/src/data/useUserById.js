@@ -7,7 +7,7 @@ import { QUERY_KEYS } from "queryKeys";
  * @param {string} userId the cognito id for the user
  * @returns 
  */
-export default function getUserById(userId) {
+export default function useUserById(userId) {
     return useQuery({
         queryKey: [QUERY_KEYS.USER_BY_ID(userId)], queryFn: async () => {
             try {

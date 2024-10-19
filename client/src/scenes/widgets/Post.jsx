@@ -34,7 +34,7 @@ import fetchWithRetry from "auth/fetchWithRetry";
 import PropTypes from 'prop-types'
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "queryKeys";
-import getUserById from "data/getUserById";
+import useUserById from "data/useUserById";
 
 const Post = ({
   createdAt,
@@ -233,7 +233,7 @@ const Post = ({
 
   })
 
-  const { data, isSuccess, isLoading } = getUserById();
+  const { data, isSuccess, isLoading } = useUserById();
 
   if (isLoading) {
     return <Typography>Getting user data....</Typography>

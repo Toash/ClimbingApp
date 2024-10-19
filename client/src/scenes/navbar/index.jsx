@@ -19,7 +19,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import FlexBetween from "components/FlexBetween";
 import logout from "auth/logout";
-import getUserById from "data/getUserById";
+import useUserById from "data/useUserById";
 
 const NavBar = () => {
   const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
@@ -38,7 +38,7 @@ const NavBar = () => {
     </Button>
   );
 
-  const { data, isSuccess, isLoading, isError, error } = getUserById();
+  const { data, isSuccess, isLoading, isError, error } = useUserById();
 
   if (isError) {
     return <Typography>{error}</Typography>;

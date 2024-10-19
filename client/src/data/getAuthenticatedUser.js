@@ -1,7 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { QueryClient } from "@tanstack/react-query";
 import fetchWithRetry from "auth/fetchWithRetry";
 import getCidFromToken from "auth/getCidFromToken";
-import goToLogin from "goToLogin";
 import { QUERY_KEYS } from "queryKeys";
 
 /**
@@ -11,8 +10,9 @@ import { QUERY_KEYS } from "queryKeys";
  * 
  * 
  */
-export default async function getAuthenticatedUser(queryClient) {
+export default async function getAuthenticatedUser() {
 
+    const queryClient = new QueryClient();
     const user = queryClient.getQueryData(QUERY_KEYS.CURRENT_USER)
     // no user go to login.
     if (!user) {

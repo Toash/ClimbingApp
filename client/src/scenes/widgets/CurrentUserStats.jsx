@@ -3,7 +3,7 @@ import { Divider, Typography, useTheme } from "@mui/material";
 import WidgetWrapper from "components/WidgetWrapper";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { getHighestVGradePost } from "data/getHighestVGradePost";
+import { useHighestVGradePost } from "data/getHighestVGradePost";
 import PropTypes from 'prop-types'
 
 function CurrentUserStats({ userId }) {
@@ -15,7 +15,7 @@ function CurrentUserStats({ userId }) {
 
   useEffect(() => {
     const fetchStats = async () => {
-      const post = await getHighestVGradePost(userId);
+      const post = await useHighestVGradePost(userId);
       setVGrade(post.vGrade);
       setAttempts(post.attempts);
     };

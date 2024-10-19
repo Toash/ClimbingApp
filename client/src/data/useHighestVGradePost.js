@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
  * @param {string} userId - user to get hiscore post from
  * @returns post | null
  */
-export const getHighestVGradePost = (userId) => {
+export const useHighestVGradePost = (userId) => {
     return useQuery({
         queryKey: ["hiscore", userId],
         queryFn: async () => {

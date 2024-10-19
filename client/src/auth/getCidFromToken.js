@@ -1,4 +1,5 @@
 import { jwtDecode } from "jwt-decode";
+import goToLogin from "goToLogin";
 
 export default function getCidFromToken() {
     const id_token = localStorage.getItem("id_token")
