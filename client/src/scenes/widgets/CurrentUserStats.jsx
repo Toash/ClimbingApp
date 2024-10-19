@@ -1,55 +1,47 @@
 import React from "react";
 import { Divider, Typography, useTheme } from "@mui/material";
 import WidgetWrapper from "components/WidgetWrapper";
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { useHighestVGradePost } from "data/useHighestVGradePost";
-import PropTypes from 'prop-types'
+import getAuthenticatedUser from "data/getAuthenticatedUser";
 
-function CurrentUserStats({ userId }) {
+function CurrentUserStats() {
 
   const { palette } = useTheme();
-  const token = useSelector((state) => state.token);
-  const [vGrade, setVGrade] = useState(null);
-  const [attempts, setAttempts] = useState(null);
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      const post = await useHighestVGradePost(userId);
-      setVGrade(post.vGrade);
-      setAttempts(post.attempts);
-    };
+  const { data, isSuccess, isLoading } = getAuthenticatedUser();
 
-    fetchStats();
-  }, [userId, token]);
-  return (
-    <WidgetWrapper m="2rem 0">
-      <Typography
-        variant="h6"
-        sx={{
-          fontSize: "2rem",
-          color: palette.neutral.main,
-        }}
-      >
-        Your Stats
-      </Typography>
-      <Divider sx={{ marginBottom: "1rem" }}></Divider>
+  if (isLoading) {
+    return <Typography>Fetching user data...</Typography>
+  }
 
-      {vGrade != null ? (
-        <Typography>
-          {"Max Grade: "}
-          {vGrade != null ? "V" + vGrade : "Loading..."}
-          {attempts != null ? ` (${attempts} attempts)` : "Loading..."}
+  if (isSuccess) {
+    return (
+      <WidgetWrapper m="2rem 0">
+        <Typography
+          variant="h6"
+          sx={{
+            fontSize: "2rem",
+            color: palette.neutral.main,
+          }}
+        >
+          Your Stats
         </Typography>
-      ) : (
-        <Typography>Post something</Typography>
-      )}
-    </WidgetWrapper>
-  );
+        <Divider sx={{ marginBottom: "1rem" }}></Divider>
+
+        {data.vGrade != null ? (
+          <Typography>
+            {"Max Grade: "}
+            {data.vGrade}
+          </Typography>
+        ) : (
+          <Typography>Post something to view stats</Typography>
+        )}
+      </WidgetWrapper>
+    );
+  }
+
+
+
 };
 
-CurrentUserStats.propTypes = {
-  userId: PropTypes.string
-}
 
 export default CurrentUserStats;

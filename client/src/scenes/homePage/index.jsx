@@ -127,7 +127,7 @@ const HomePage = () => {
 
 
   if (isSuccess) {
-    loggedIn = localStorage.getItem("id_token");
+    let loggedIn = localStorage.getItem("id_token");
 
     return (
       <Box>
@@ -159,8 +159,8 @@ const HomePage = () => {
             // margin for mobile since widgets are stacked
             mt={isNonMobileScreens ? undefined : "2rem"}
           >
-            {loggedIn && <CreatePost picturePath={picturePath} />}
-            <Posts userId={cid} />
+            {loggedIn && <CreatePost />}
+            <Posts />
           </Box>
         </Box>
       </Box >
