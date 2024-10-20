@@ -41,7 +41,6 @@ const CreatePost = () => {
 
   const queryClient = useQueryClient();
 
-
   /**
    * Post something, invalidate posts cache.
    */

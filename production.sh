@@ -15,6 +15,7 @@ if [ ! "${input}" = "yes" ]; then
   exit 1
 fi
 
+cd $BACKEND_DIR
 
 # remove the old zip file if it exists
 if [ -f $ZIP_FILE ]; then
@@ -22,9 +23,7 @@ if [ -f $ZIP_FILE ]; then
   echo "Old zip file removed."
 fi
 
-
-cd $BACKEND_DIR
-zip -r $ZIP_FILE . -x "*.git*" -x "public/*" -x "node_modules"/*
+zip -r $ZIP_FILE . -x "*.git*" -x "public/*" -x "node_modules/*"
 echo "Backend folder zipped into $ZIP_FILE with specified file exclusions."
 
 # update the Lambda function with the new zip file

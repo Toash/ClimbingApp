@@ -117,6 +117,7 @@ const HomePage = () => {
     }
   )
 
+  // why is this running when there is (presumably) no id_token when running on localhost?
   if (isPending) {
     return <Typography>Fetching user profile....</Typography>
   }
