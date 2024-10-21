@@ -1,9 +1,9 @@
-import { QueryClient } from "@tanstack/react-query";
 import fetchWithRetry from "auth/fetchWithRetry";
 import getCidFromToken from "auth/getCidFromToken";
 import { QUERY_KEYS } from "queryKeys";
 
 /**
+ * Wrapper for useQuery.
  * Needs a user in cache or id_token.
  * Gets the current user info if it is cached, otherwise it will try to get user from id_token and set this in the cache.
  * If both fail, it will return to login page.

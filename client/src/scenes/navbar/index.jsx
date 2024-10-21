@@ -19,8 +19,6 @@ import {
 import { useNavigate } from "react-router-dom";
 import FlexBetween from "components/FlexBetween";
 import logout from "auth/logout";
-import checkAuthenticatedUser from "data/checkAuthenticatedUser";
-import useAuthenticatedUser from "data/useAuthenticatedUser";
 import { QUERY_KEYS } from "queryKeys";
 import { jwtDecode } from "jwt-decode";
 

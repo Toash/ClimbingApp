@@ -35,7 +35,6 @@ import PropTypes from 'prop-types'
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "queryKeys";
 import useAuthenticatedUser from "data/useAuthenticatedUser";
-import checkAuthenticatedUser from "data/checkAuthenticatedUser";
 
 const Post = ({
   createdAt,
@@ -231,7 +230,7 @@ const Post = ({
 
   })
 
-  const { data, isSuccess, isLoading } = useAuthenticatedUser();
+  const { data, isSuccess } = useAuthenticatedUser();
 
 
 
@@ -327,7 +326,7 @@ const Post = ({
         <FlexBetween gap="1rem">
           {/* LIKES */}
           <FlexBetween gap="0.3rem">
-            {checkAuthenticatedUser() ? (
+            {isSuccess ? (
               <>
                 <IconButton onClick={togglePostLikeMutation.mutate()}>
                   {isLiked ? (
@@ -395,7 +394,7 @@ const Post = ({
                   }}
                 >
                   {/* LIKE COMMENT */}
-                  {checkAuthenticatedUser() && (
+                  {isSuccess && (
                     <>
                       <FlexBetween gap="1rem">
                         <FlexBetween gap="0rem">
@@ -423,7 +422,7 @@ const Post = ({
           </Box>
           {/* COMMENT SOMETHING */}
           <Divider />
-          {checkAuthenticatedUser() && (
+          {isSuccess && (
             <>
               <Box mt="1rem">
                 <TextField
