@@ -3,12 +3,12 @@ import { Box, Typography, useTheme } from "@mui/material";
 import UserCard from "components/UserCard";
 import WidgetWrapper from "components/WidgetWrapper";
 import PropTypes from "prop-types"
-import getAuthenticatedUser from "data/getAuthenticatedUser";
+import useAuthenticatedUser from "data/useAuthenticatedUser";
 
 const FriendListWidget = () => {
   const { palette } = useTheme();
 
-  const { data, isSuccess, isLoading } = getAuthenticatedUser();
+  const { data, isSuccess, isLoading } = useAuthenticatedUser();
 
 
   if (isLoading) {

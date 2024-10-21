@@ -5,14 +5,14 @@ import { Box, Typography, Divider, useTheme } from "@mui/material";
 import UserImage from "components/UserImage";
 import FlexBetween from "components/FlexBetween";
 import WidgetWrapper from "components/WidgetWrapper";
-import getAuthenticatedUser from "data/getAuthenticatedUser";
+import useAuthenticatedUser from "data/useAuthenticatedUser";
 
 const CurrentUserCard = () => {
   const { palette } = useTheme();
   const dark = palette.neutral.dark;
   const medium = palette.neutral.medium;
 
-  const { data, isLoading, isSuccess } = getAuthenticatedUser();
+  const { data, isLoading, isSuccess } = useAuthenticatedUser();
 
   if (isLoading) {
     return <Typography>Fetching user data...</Typography>

@@ -20,7 +20,7 @@ import fetchWithRetry from "auth/fetchWithRetry";
 import { uploadMedia } from "data/uploadMedia";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { QUERY_KEYS } from "queryKeys";
-import getAuthenticatedUser from "data/getAuthenticatedUser";
+import useAuthenticatedUser from "data/useAuthenticatedUser";
 
 
 /**
@@ -105,7 +105,7 @@ const CreatePost = () => {
     setAttempts((prev) => Math.max(prev - 1, 1));
   };
 
-  const { data, isSuccess, isLoading } = getAuthenticatedUser();
+  const { data, isSuccess, isLoading } = useAuthenticatedUser();
 
   if (isLoading) {
     return <Typography>Fetching user data...</Typography>

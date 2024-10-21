@@ -1,13 +1,13 @@
 import React from "react";
 import { Divider, Typography, useTheme } from "@mui/material";
 import WidgetWrapper from "components/WidgetWrapper";
-import getAuthenticatedUser from "data/getAuthenticatedUser";
+import useAuthenticatedUser from "data/useAuthenticatedUser";
 
 function CurrentUserStats() {
 
   const { palette } = useTheme();
 
-  const { data, isSuccess, isLoading } = getAuthenticatedUser();
+  const { data, isSuccess, isLoading } = useAuthenticatedUser();
 
   if (isLoading) {
     return <Typography>Fetching user data...</Typography>

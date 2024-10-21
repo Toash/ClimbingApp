@@ -1,6 +1,6 @@
 import { QUERY_KEYS } from "queryKeys";
 import { QueryClient } from "@tanstack/react-query";
-import getAuthenticatedUser from "./getAuthenticatedUser";
+import useAuthenticatedUser from "./useAuthenticatedUser";
 
 /**
  * @returns true if authenticated user exists, false otherwise
@@ -15,7 +15,7 @@ export default function checkAuthenticatedUser() {
 
     if (!queryClient.getQueryData(QUERY_KEYS.CURRENT_USER)) {
         // we have an id token but no current user.
-        getAuthenticatedUser();
+        useAuthenticatedUser();
     }
 
 

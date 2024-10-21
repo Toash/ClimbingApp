@@ -34,7 +34,7 @@ import fetchWithRetry from "auth/fetchWithRetry";
 import PropTypes from 'prop-types'
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "queryKeys";
-import getAuthenticatedUser from "data/getAuthenticatedUser";
+import useAuthenticatedUser from "data/useAuthenticatedUser";
 import checkAuthenticatedUser from "data/checkAuthenticatedUser";
 
 const Post = ({
@@ -231,7 +231,7 @@ const Post = ({
 
   })
 
-  const { data, isSuccess, isLoading } = getAuthenticatedUser();
+  const { data, isSuccess, isLoading } = useAuthenticatedUser();
 
 
 
