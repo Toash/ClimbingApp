@@ -11,7 +11,7 @@ export default function useUserById(userId) {
     return useQuery({
         queryKey: [QUERY_KEYS.USER_BY_ID(userId)], queryFn: async () => {
             try {
-                const response = await fetch(process.env.REACT_APP_API_BASE_URL + `users/${userId}`,
+                const response = await fetch(process.env.REACT_APP_API_BASE_URL + `/users/${userId}`,
                     {
                         method: "GET",
                         headers: {
