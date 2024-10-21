@@ -99,7 +99,7 @@ const HomePage = () => {
   const { isSuccess, isError, error, isPending, data, } = useQuery(
     {
       enabled: !!localStorage.getItem("id_token"), // only run query if token is available
-      queryKey: [QUERY_KEYS.CURRENT_USER],
+      queryKey: QUERY_KEYS.CURRENT_USER,
       queryFn: async () => {
 
         const cid = getCidFromToken();
@@ -119,7 +119,7 @@ const HomePage = () => {
 
   // why is this running when there is (presumably) no id_token when running on localhost?
   if (isPending) {
-    return <Typography>Fetching user profile....</Typography>
+    return <Typography>Loading...</Typography>
   }
 
   if (isError) {
@@ -128,45 +128,46 @@ const HomePage = () => {
 
 
   if (isSuccess) {
-    let loggedIn = localStorage.getItem("id_token");
-
-    return (
-      <Box>
-        < NavBar ></NavBar >
-        <Box
-          width="100%"
-          padding="2rem 6%"
-          // widgets will be on top of eachother on mobile
-          display={isNonMobileScreens ? "flex" : "block"}
-          gap="1rem"
-          justifyContent="space-between"
-        >
-          {/* Flex basis defines the starting size, flex grow defines how much it grows past */}
-          <Box
-            flexBasis={isNonMobileScreens ? "26%" : undefined}
-            flexGrow={1}
-          >
-            {loggedIn && (
-              <>
-                <CurrentUserCard />
-                <FriendListWidget />
-                <CurrentUserStats />
-              </>
-            )}
-          </Box>
-          <Box
-            flexBasis={isNonMobileScreens ? "70%" : undefined}
-            flexGrow={3}
-            // margin for mobile since widgets are stacked
-            mt={isNonMobileScreens ? undefined : "2rem"}
-          >
-            {loggedIn && <CreatePost />}
-            <Posts />
-          </Box>
-        </Box>
-      </Box >
-    );
+    console.log("User data: ", data);
   }
-};
+
+  return (
+    <Box>
+      < NavBar ></NavBar >
+      <Box
+        width="100%"
+        padding="2rem 6%"
+        // widgets will be on top of eachother on mobile
+        display={isNonMobileScreens ? "flex" : "block"}
+        gap="1rem"
+        justifyContent="space-between"
+      >
+        {/* Flex basis defines the starting size, flex grow defines how much it grows past */}
+        <Box
+          flexBasis={isNonMobileScreens ? "26%" : undefined}
+          flexGrow={1}
+        >
+          {isSuccess && (
+            <>
+              <CurrentUserCard />
+              <FriendListWidget />
+              <CurrentUserStats />
+            </>
+          )}
+        </Box>
+        <Box
+          flexBasis={isNonMobileScreens ? "70%" : undefined}
+          flexGrow={3}
+          // margin for mobile since widgets are stacked
+          mt={isNonMobileScreens ? undefined : "2rem"}
+        >
+          {isSuccess && <CreatePost />}
+          <Posts />
+        </Box>
+      </Box>
+    </Box >
+  );
+}
+
 
 export default HomePage;

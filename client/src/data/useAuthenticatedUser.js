@@ -2,24 +2,29 @@ import fetchWithRetry from "auth/fetchWithRetry";
 import getCidFromToken from "auth/getCidFromToken";
 import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "queryKeys";
-import { jwtDecode } from "jwt-decode";
+import jwtDecode from "jwt-decode";
+
 
 /**
- * Wrapper for useQuery.
- * Needs a user in cache or id_token.
- * Gets the current user info if it is cached, otherwise it will try to get user from id_token and set this in the cache.
- * If both fail, it will return to login page.
- * 
- * Only call this function in components that need an authenticated user.
+ * Custom hook to fetch the authenticated user's data.
+ *
+ * @param {boolean} [redirect=false] - Determines if the user should be redirected.
+ * @returns {object} - The result of the useQuery hook.
+ *
+ * @example
+ * const { data, error, isLoading } = useAuthenticatedUser();
+ *
+ * @example
+ * const { data, error, isLoading } = useAuthenticatedUser(true);
  */
-export default async function useAuthenticatedUser(redirect = false) {
+export default function useAuthenticatedUser(redirect = false) {
 
     const idToken = localStorage.getItem("id_token");
 
     const cid = redirect ? getCidFromToken() : (idToken ? jwtDecode(idToken).sub : null);
 
     return useQuery({
-        enabled: !!cid, // Ensure the query runs only if a CID is available
+        enabled: !!cid, //function closure
         queryKey: QUERY_KEYS.CURRENT_USER,
         queryFn: async () => {
             const response = await fetchWithRetry(
@@ -32,6 +37,7 @@ export default async function useAuthenticatedUser(redirect = false) {
             const data = await response.json();
             return data;
         },
+        staleTime: Infinity,
     });
 
 

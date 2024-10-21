@@ -6,8 +6,6 @@ import { themeSettings } from "./theme";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 
-
-
 function App() {
   const theme = createTheme(themeSettings("dark"));
 
