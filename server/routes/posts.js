@@ -2,7 +2,6 @@ import express from "express";
 import multer from "multer";
 import {
   getFeedPosts,
-  getUserPosts,
   likePost,
   commentPost,
   toggleLikeComment,
@@ -20,7 +19,7 @@ const upload = multer({ storage });
 
 /* READ */
 router.get("/", getFeedPosts);
-router.get("/user/:userId", getUserPosts);
+//router.get("/user/:userId", getUserPosts);
 router.get("/user/:userId/hiscore", getHighestVGradePost);
 
 /* POST */

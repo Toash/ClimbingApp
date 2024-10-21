@@ -3,7 +3,6 @@ import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import dotenv from "dotenv";
-import helmet from "helmet";
 import userRoutes from "./routes/users.js";
 import postRoutes from "./routes/posts.js";
 import authRoutes from "./routes/auth.js";
@@ -24,8 +23,10 @@ const corsOptions = {
 
 /* MIDDLEWARE */
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)) // include before other route
+
 app.use(express.json());
-app.use(helmet()); // put a helmet on that jawn
+//app.use(helmet()); // put a helmet on 
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 

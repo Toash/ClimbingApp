@@ -19,7 +19,6 @@ export const getPresignedPutUrl = async (req, res) => {
     return res.status(400).json({ error: "Missing s3key in query params" });
   }
 
-  // since this will be on a lambda i think aws will automaticlaly pass credentials
   const client = new S3Client({
     region: process.env.AWS_REGION,
   });
