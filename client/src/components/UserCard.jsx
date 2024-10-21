@@ -20,7 +20,7 @@ const UserCard = ({ friendId: userId }) => {
   const main = palette.neutral.main;
   const medium = palette.neutral.medium;
 
-  const { data: currentUserData, isLoading: currentUserIsLoading, isSuccess: currentUserIsSuccess } = getAuthenticatedUser();
+  const { data: currentUserData, isLoading: currentUserIsLoading, isSuccess: currentUserIsSuccess } = await getAuthenticatedUser();
   const { data: userData, isLoading: userIsLoading, isSuccess: userIsSuccess } = useUserById(userId);
 
   // useQueryClient to avoid creating a new client every render (QueryClient)

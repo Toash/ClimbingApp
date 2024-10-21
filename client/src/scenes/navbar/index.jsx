@@ -21,6 +21,8 @@ import FlexBetween from "components/FlexBetween";
 import logout from "auth/logout";
 import checkAuthenticatedUser from "data/checkAuthenticatedUser";
 import getAuthenticatedUser from "data/getAuthenticatedUser";
+import { QUERY_KEYS } from "queryKeys";
+import { jwtDecode } from "jwt-decode";
 
 const NavBar = () => {
   const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
@@ -40,11 +42,25 @@ const NavBar = () => {
   );
 
 
-  let data
   let fullName
-  const loggedIn = checkAuthenticatedUser();
+
+  const { data, isPending, isSuccess: loggedIn } = useQuery({
+    enabled: !!localStorage.getItem("id_token"),
+    queryKey: QUERY_KEYS.CURRENT_USER,
+    queryFn: async () => {
+      const cid = jwtDecode(localStorage.getItem("id_token")).sub
+      const response = await fetchWithRetry(
+        process.env.REACT_APP_API_BASE_URL + `/users/${cid}`,
+        {
+          method: "GET",
+          headers: { Authorization: `Bearer ${localStorage.getItem("id_token")}` },
+        }
+      );
+      const data = await response.json();
+      return data;
+    }
+  })
   if (loggedIn) {
-    ({ data } = getAuthenticatedUser());
     fullName = data.firstName + data.lastName;
   }
 
