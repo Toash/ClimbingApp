@@ -37,18 +37,24 @@ export const handler = async (event, context) => {
       },
       body: null
     };
+  } else {
+    const response = await server(event, context);
+
+    // add the cors headers to the already existing headers.
+    response.headers = {
+      ...response.headers,
+      "Access-Control-Allow-Origin": process.env.ORIGIN,
+      "Access-Control-Allow-Credentials": true,
+      "Access-Control-Allow-Methods": "GET,POST,DELETE,UPDATE,OPTIONS,PATCH",
+      "Access-Control-Allow-Headers": "Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token"
+    }
+
+    return response;
   }
-
-  const response = await server(event, context);
-
-  // add the cors headers to the already existing headers.
-  response.headers = {
-    ...response.headers,
-    "Access-Control-Allow-Origin": process.env.ORIGIN,
-    "Access-Control-Allow-Credentials": true,
-    "Access-Control-Allow-Methods": "GET,POST,DELETE,UPDATE,OPTIONS,PATCH",
-    "Access-Control-Allow-Headers": "Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token"
-  }
-
-  return response;
 };
+
+// export const handler = async (event, context) => {
+//   await connectToDatabase();
+//   const response = await server(event, context);
+//   return response;
+// }

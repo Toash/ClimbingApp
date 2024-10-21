@@ -308,7 +308,7 @@ const CreatePost = () => {
 
         <Button
           disabled={!post}
-          onClick={postMutation.mutate()}
+          onClick={() => postMutation.mutate()}
           sx={{
             color: palette.background.alt,
             backgroundColor: palette.primary.main,

@@ -272,7 +272,7 @@ const Post = ({
                 height: "2.5rem",
                 width: "2.5rem",
               }}
-              onClick={deletePostMutation.mutate()}
+              onClick={() => deletePostMutation.mutate()}
             >
               <DeleteIcon />
             </IconButton>
@@ -334,7 +334,7 @@ const Post = ({
           <FlexBetween gap="0.3rem">
             {isSuccess ? (
               <>
-                <IconButton onClick={togglePostLikeMutation.mutate()}>
+                <IconButton onClick={() => togglePostLikeMutation.mutate()}>
                   {isLiked ? (
                     <FavoriteOutlined sx={{ color: primary }} />
                   ) : (
@@ -496,7 +496,7 @@ const Post = ({
           <Button onClick={() => setIsEditing(false)} color="secondary">
             Cancel
           </Button>
-          <Button onClick={updatePostMutation.mutate()} color="primary" variant="contained">
+          <Button onClick={() => updatePostMutation.mutate()} color="primary" variant="contained">
             Save
           </Button>
         </DialogActions>
