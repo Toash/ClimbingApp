@@ -22,8 +22,10 @@ const corsOptions = {
 };
 
 /* MIDDLEWARE */
+
+// will not work with lambda proxy, this is just for local testing purposes.
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)) // include before other route
+app.options('*', cors(corsOptions))
 
 app.use(express.json());
 //app.use(helmet()); // put a helmet on 
