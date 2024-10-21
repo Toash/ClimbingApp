@@ -1,6 +1,8 @@
 import fetchWithRetry from "auth/fetchWithRetry";
 import getCidFromToken from "auth/getCidFromToken";
+import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "queryKeys";
+import { jwtDecode } from "jwt-decode";
 
 /**
  * Wrapper for useQuery.
@@ -12,43 +14,25 @@ import { QUERY_KEYS } from "queryKeys";
  */
 export default async function useAuthenticatedUser(redirect = false) {
 
-    if (redirect) {
+    const idToken = localStorage.getItem("id_token");
 
-        return useQuery({
-            queryKey: QUERY_KEYS.CURRENT_USER,
-            queryFn: async () => {
-                // Assumes that the user has a vlaid id token,
-                // if not it redirects (from getCidFromToken)
-                const cid = getCidFromToken();
-                const response = await fetchWithRetry(
-                    process.env.REACT_APP_API_BASE_URL + `/users/${cid}`,
-                    {
-                        method: "GET",
-                        headers: { Authorization: `Bearer ${localStorage.getItem("id_token")}` },
-                    }
-                );
-                const data = await response.json();
-                return data;
-            }
-        })
-    } else {
-        return useQuery({
-            enabled: !!localStorage.getItem("id_token"),
-            queryKey: QUERY_KEYS.CURRENT_USER,
-            queryFn: async () => {
-                const cid = jwtDecode(localStorage.getItem("id_token")).sub
-                const response = await fetchWithRetry(
-                    process.env.REACT_APP_API_BASE_URL + `/users/${cid}`,
-                    {
-                        method: "GET",
-                        headers: { Authorization: `Bearer ${localStorage.getItem("id_token")}` },
-                    }
-                );
-                const data = await response.json();
-                return data;
-            }
-        })
-    }
+    const cid = redirect ? getCidFromToken() : (idToken ? jwtDecode(idToken).sub : null);
+
+    return useQuery({
+        enabled: !!cid, // Ensure the query runs only if a CID is available
+        queryKey: QUERY_KEYS.CURRENT_USER,
+        queryFn: async () => {
+            const response = await fetchWithRetry(
+                `${process.env.REACT_APP_API_BASE_URL}/users/${cid}`,
+                {
+                    method: "GET",
+                    headers: { Authorization: `Bearer ${idToken}` },
+                }
+            );
+            const data = await response.json();
+            return data;
+        },
+    });
 
 
 }
