@@ -1,7 +1,6 @@
 // app.js
 import express from "express";
 import bodyParser from "body-parser";
-import cors from "cors";
 import dotenv from "dotenv";
 import userRoutes from "./routes/users.js";
 import postRoutes from "./routes/posts.js";
@@ -11,21 +10,6 @@ import mediaRoutes from "./routes/media.js";
 /* CONFIGURATIONS */
 dotenv.config();
 const app = express();
-
-// enable cors
-const corsOptions = {
-  origin: process.env.ORIGIN, // your allowed origin
-  credentials: true, // for cookies or other credentials
-  methods: "GET,POST,DELETE,UPDATE,OPTIONS,PATCH", // allowed methods
-  allowedHeaders:
-    "Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token", // allowed headers
-};
-
-/* MIDDLEWARE */
-
-// will not work with lambda proxy, this is just for local testing purposes.
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions))
 
 app.use(express.json());
 //app.use(helmet()); // put a helmet on 
