@@ -66,13 +66,7 @@ const Post = ({
   const [newComment, setNewComment] = useState("");
 
 
-  const isCurrentUserPost = () => {
-    return data.cid === postUserId;
-  }
 
-  const isLiked = () => {
-    return !!likes[data.cid];
-  }
   const likeCount = Object.keys(likes).length;
 
   const formattedDate = format(new Date(createdAt), "MMMM d, yyyy");
@@ -232,7 +226,19 @@ const Post = ({
 
   const { data, isSuccess } = useAuthenticatedUser();
 
+  const isCurrentUserPost = () => {
+    if (isSuccess) {
+      return data.cid === postUserId;
+    }
+    return false;
+  }
 
+  const isLiked = () => {
+    if (isSuccess) {
+      return !!likes[data.cid];
+    }
+    return false;
+  }
 
   // inline styling is bloating this component so much
   return (
