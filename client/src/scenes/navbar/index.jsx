@@ -41,11 +41,12 @@ const NavBar = () => {
 
 
   let data
+  let fullName
   const loggedIn = checkAuthenticatedUser();
   if (loggedIn) {
     ({ data } = getAuthenticatedUser());
+    fullName = data.firstName + data.lastName;
   }
-  const fullName = data.firstName + data.lastName;
 
   return (
     <FlexBetween padding="1rem 6%" backgroundColor={alt}>

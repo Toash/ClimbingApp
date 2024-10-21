@@ -9,7 +9,7 @@ export default function checkAuthenticatedUser() {
 
     const queryClient = new QueryClient();
 
-    if (!localStorage.get("id_token")) {
+    if (!localStorage.getItem("id_token")) {
         return false
     }
 

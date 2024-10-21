@@ -8,6 +8,10 @@ import { QUERY_KEYS } from "queryKeys";
  * @returns 
  */
 export default function useUserById(userId) {
+    if (!userId) {
+        throw new Error("userId undefined in useUserById")
+    }
+
     return useQuery({
         queryKey: [QUERY_KEYS.USER_BY_ID(userId)], queryFn: async () => {
             try {
