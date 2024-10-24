@@ -28,7 +28,7 @@ const CurrentUserCard = () => {
           pb="1.1rem"
         >
           <FlexBetween gap="1rem">
-            <UserImage s3key={data.userPicturePath}></UserImage>
+            <UserImage s3key={data.picturePath}></UserImage>
             <Box>
               <Typography
                 variant="h4"

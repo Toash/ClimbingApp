@@ -42,7 +42,7 @@ const Post = ({
   postUserId,
   //user info
   name,
-  userPicturePath,
+  picturePath,
 
   //climbing info
   vGrade,
@@ -247,8 +247,6 @@ const Post = ({
         <Box flex="1">
           <UserCard
             friendId={postUserId}
-            name={name}
-            userPicturePath={userPicturePath}
           />
         </Box>
         {isCurrentUserPost() && (

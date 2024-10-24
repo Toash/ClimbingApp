@@ -43,7 +43,7 @@ const Posts = () => {
             // ----- user stuff -----
             firstName,
             lastName,
-            userPicturePath,
+            picturePath,
             // ----- climbing stuff -----
             title,
             description,
@@ -62,7 +62,7 @@ const Posts = () => {
               postUserId={cid}
               // ----- user stuff -----
               name={`${firstName} ${lastName}`}
-              userPicturePath={userPicturePath}
+              picturePath={picturePath}
               // ----- climbing stuff -----
               title={title}
               description={description}

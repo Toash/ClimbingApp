@@ -116,7 +116,7 @@ const CreatePost = () => {
     return (
       <WidgetWrapper>
         <FlexBetween gap="1.5rem">
-          <UserImage s3key={data.userPicturePath} />
+          <UserImage s3key={data.picturePath} />
           <Box
             display="flex"
             alignItems="center"

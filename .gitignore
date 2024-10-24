@@ -4,7 +4,7 @@ client/node_modules
 server/node_modules
 lambda/node_modules
 auth-lambda/node_modules
-./node_modules
+node_modules
 
 
 server/.env*

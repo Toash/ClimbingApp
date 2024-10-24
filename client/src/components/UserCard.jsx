@@ -7,6 +7,7 @@ import PropTypes from 'prop-types'
 import useUserById from "data/useUserById";
 import useAuthenticatedUser from "data/useAuthenticatedUser";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { QUERY_KEYS } from "queryKeys";
 
 /**
  * Friend card
@@ -23,7 +24,6 @@ const UserCard = ({ friendId: userId }) => {
   const { data: currentUserData, isLoading: currentUserIsLoading, isSuccess: currentUserIsSuccess } = useAuthenticatedUser();
   const { data: userData, isLoading: userIsLoading, isSuccess: userIsSuccess } = useUserById(userId);
 
-  // useQueryClient to avoid creating a new client every render (QueryClient)
   const queryClient = useQueryClient();
 
   const patchFriendMutation = useMutation({
@@ -43,10 +43,11 @@ const UserCard = ({ friendId: userId }) => {
     },
     onSuccess: () => {
       // get the friends list again.
-      queryClient.invalidateQueries(["currentUser"])
-      queryClient.invalidateQueries(["otherUser", userId])
+      queryClient.invalidateQueries([QUERY_KEYS.CURRENT_USER])
+      queryClient.invalidateQueries([QUERY_KEYS.USER_BY_ID(userId)])
     },
   })
+
 
   if (currentUserIsLoading || userIsLoading) {
     return <Typography>Loading...</Typography>

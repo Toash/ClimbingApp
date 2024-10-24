@@ -1,10 +1,15 @@
+// @ts-ignore
 import fetchWithRetry from "auth/fetchWithRetry";
+// @ts-ignore
 import getCidFromToken from "auth/getCidFromToken";
-import { useQuery } from "@tanstack/react-query";
-import { QUERY_KEYS } from "queryKeys";
+import { QueryKey, useQuery, UseQueryResult } from "@tanstack/react-query";
+// @ts-ignore
+import { QUERY_KEYS } from "queryKeys"; // this wont work with ts?
 import { jwtDecode } from "jwt-decode";
+// @ts-ignore
 import goToLogin from "goToLogin";
 import { useState, useEffect } from "react"
+import { UserData } from "./interfaces";
 
 
 /**
@@ -12,18 +17,11 @@ import { useState, useEffect } from "react"
  * Gets use data from id_token.
  *
  * @param {boolean} [redirect=false] - Determines if the user should be redirected to login if no id_token is avaliable.
- * @returns {object} - The result of the useQuery hook.
- *
- * @example
- * const { data, error, isLoading } = useAuthenticatedUser();
- *
- * @example
- * const { data, error, isLoading } = useAuthenticatedUser(true);
  */
-export default function useAuthenticatedUser(redirect = false) {
+export default function useAuthenticatedUser(redirect = false): UseQueryResult<UserData, Error> {
 
     const idToken = localStorage.getItem("id_token");
-    const [cid, setCid] = useState(null);
+    const [cid, setCid] = useState<string | null | undefined>(null);
 
     useEffect(() => {
         if (!idToken) {
@@ -52,7 +50,7 @@ export default function useAuthenticatedUser(redirect = false) {
         }
     }, [idToken, redirect]);
 
-    return useQuery({
+    return useQuery<UserData, Error, UserData, [string]>({
         enabled: !!cid, //function closure
         queryKey: QUERY_KEYS.CURRENT_USER,
         queryFn: async () => {
