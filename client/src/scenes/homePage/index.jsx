@@ -91,12 +91,10 @@ const HomePage = () => {
   }, []);
 
 
-
-
   /**
    * Extract tokens and get the associated user.
    */
-  const { isSuccess, isError, error, isPending, data, } = useQuery(
+  const { isSuccess, isError, error, data } = useQuery(
     {
       enabled: !!localStorage.getItem("id_token"), // only run query if token is available
       queryKey: QUERY_KEYS.CURRENT_USER,
@@ -117,10 +115,6 @@ const HomePage = () => {
     }
   )
 
-  // why is this running when there is (presumably) no id_token when running on localhost?
-  if (isPending) {
-    return <Typography>Loading...</Typography>
-  }
 
   if (isError) {
     return <Typography>Error trying to fetch user profile. {error}</Typography>
