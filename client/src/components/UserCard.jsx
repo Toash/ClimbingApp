@@ -5,7 +5,7 @@ import FlexBetween from "./FlexBetween";
 import UserImage from "./UserImage";
 import PropTypes from 'prop-types'
 import useUserById from "data/useUserById";
-import useAuthenticatedUser from "data/useAuthenticatedUser";
+import useAuthenticatedUser from "data/useAuthenticatedUser.ts";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { QUERY_KEYS } from "queryKeys";
 
@@ -31,7 +31,7 @@ const UserCard = ({ friendId: userId }) => {
       const token = localStorage.getItem("id_token")
 
       await fetch(
-        process.env.REACT_APP_API_BASE_URL + `/users/${ids.currentUserId}/${ids.userId}`,
+        import.meta.env.VITE_APP_API_BASE_URL + `/users/${ids.currentUserId}/${ids.userId}`,
         {
           method: "PATCH",
           headers: {
@@ -65,7 +65,7 @@ const UserCard = ({ friendId: userId }) => {
     return (
       <FlexBetween>
         <FlexBetween gap="1rem">
-          <UserImage s3key={userData.userPicturePath} size="55px" />
+          <UserImage s3key={userData.picturePath} size="55px" />
           <Box>
             <Typography
               color={main}

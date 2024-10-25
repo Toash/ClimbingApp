@@ -51,7 +51,7 @@ else
 fi
 
 # sync the build folder with the S3 bucket and delete old files
-aws s3 sync ./build s3://boulderstat.com --delete
+aws s3 sync ./dist s3://boulderstat.com --delete
 
 # cloudfront invalidation
 DISTRIBUTION_ID="E1L6NAE7JZXM6G"

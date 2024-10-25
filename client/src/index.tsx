@@ -1,8 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import App from "./App";
-import authReducer from "./state";
+import App from "./App.jsx";
+import authReducer from "./state/index.js";
 import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
 import {
@@ -36,9 +36,14 @@ const store = configureStore({
 
 const queryClient = new QueryClient();
 
+let root
+const element = document.getElementById("root");
+if (element) {
+  root = ReactDOM.createRoot(element);
+} else {
+  throw new Error("Could not get element!");
+}
 
-
-const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>

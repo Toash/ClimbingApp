@@ -15,7 +15,7 @@ export const useHighestVGradePost = (userId) => {
             }
             const response =
                 await fetch(
-                    process.env.REACT_APP_API_BASE_URL + `/posts/user/${userId}/hiscore`,
+                    import.meta.env.VITE_APP_API_BASE_URL + `/posts/user/${userId}/hiscore`,
                     {
                         method: "GET"
                     }

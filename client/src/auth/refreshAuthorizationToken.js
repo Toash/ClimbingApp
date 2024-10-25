@@ -8,7 +8,7 @@ async function refreshIdToken() {
 
     try {
         const tokenResponse = await fetch(
-            process.env.REACT_APP_API_BASE_URL + "/auth/refresh-token",
+            import.meta.env.VITE_APP_API_BASE_URL + "/auth/refresh-token",
             {
                 method: "POST",
                 credentials: "include", // include refresh token (in cookie)

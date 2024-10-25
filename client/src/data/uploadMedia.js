@@ -5,14 +5,14 @@
  * @param {File} media
  */
 export const uploadMedia = async (s3key, media) => {
-  //const fullObjectUrl = process.env.REACT_APP_MEDIA_S3_URL + s3key;
+  //const fullObjectUrl = import.meta.env.VITE_APP_MEDIA_S3_URL + s3key;
 
   // get presigned url for the specific s3key
   console.log("Getting presigned url by passing the following s3 key: ", s3key);
   let response;
   try {
     response = await fetch(
-      process.env.REACT_APP_API_BASE_URL +
+      import.meta.env.VITE_APP_API_BASE_URL +
       "/media/presigned-upload?" +
       new URLSearchParams({ s3key: s3key }).toString(),
       {
@@ -49,5 +49,5 @@ export const uploadMedia = async (s3key, media) => {
   }
 
   console.log("Media successfully uploaded to S3");
-  return process.env.REACT_APP_MEDIA_S3_URL + s3KeyWithVersion;
+  return import.meta.env.VITE_APP_MEDIA_S3_URL + s3KeyWithVersion;
 };

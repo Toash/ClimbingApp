@@ -4,12 +4,12 @@ import fetchWithRetry from "auth/fetchWithRetry";
 import getCidFromToken from "auth/getCidFromToken";
 import { QueryKey, useQuery, UseQueryResult } from "@tanstack/react-query";
 // @ts-ignore
-import { QUERY_KEYS } from "queryKeys"; // this wont work with ts?
+import { QUERY_KEYS } from "queryKeys";
 import { jwtDecode } from "jwt-decode";
 // @ts-ignore
 import goToLogin from "goToLogin";
 import { useState, useEffect } from "react"
-import { UserData } from "./interfaces";
+import { UserData } from "./interfaces.js";
 
 
 /**
@@ -55,7 +55,7 @@ export default function useAuthenticatedUser(redirect = false): UseQueryResult<U
         queryKey: QUERY_KEYS.CURRENT_USER,
         queryFn: async () => {
             const response = await fetchWithRetry(
-                `${process.env.REACT_APP_API_BASE_URL}/users/${cid}`,
+                `${import.meta.env.env.VITE_APP_API_BASE_URL}/users/${cid}`,
                 {
                     method: "GET",
                     headers: { Authorization: `Bearer ${idToken}` },

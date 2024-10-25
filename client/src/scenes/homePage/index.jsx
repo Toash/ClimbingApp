@@ -23,7 +23,7 @@ const HomePage = () => {
     {
       mutationFn: async (authorizationCode) => {
         const response = await fetch(
-          process.env.REACT_APP_API_BASE_URL + `/auth/exchange-code`,
+          import.meta.env.VITE_APP_API_BASE_URL + `/auth/exchange-code`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -60,7 +60,7 @@ const HomePage = () => {
     if (!id_token) return false;
 
     const response = await fetch(
-      process.env.REACT_APP_API_BASE_URL + "/auth/check-token",
+      import.meta.env.VITE_APP_API_BASE_URL + "/auth/check-token",
       {
         method: "GET",
         headers: { Authorization: `Bearer ${id_token}` },
@@ -103,7 +103,7 @@ const HomePage = () => {
         const cid = getCidFromToken();
 
         const response = await fetch(
-          process.env.REACT_APP_API_BASE_URL + `/users/${cid}`,
+          import.meta.env.VITE_APP_API_BASE_URL + `/users/${cid}`,
           {
             method: "GET",
             headers: { Authorization: `Bearer ${localStorage.getItem("id_token")}` },

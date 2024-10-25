@@ -12,7 +12,7 @@ const Posts = () => {
     queryKey: QUERY_KEYS.POSTS,
     queryFn: async () => {
       const response = await fetch(
-        process.env.REACT_APP_API_BASE_URL + "/posts",
+        import.meta.env.VITE_APP_API_BASE_URL + "/posts",
         {
           method: "GET",
         }

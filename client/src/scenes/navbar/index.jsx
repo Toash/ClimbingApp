@@ -19,7 +19,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import FlexBetween from "components/FlexBetween";
 import logout from "auth/logout";
-import useAuthenticatedUser from "data/useAuthenticatedUser";
+import useAuthenticatedUser from "data/useAuthenticatedUser.ts";
 
 const NavBar = () => {
   const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
@@ -33,7 +33,7 @@ const NavBar = () => {
   const alt = theme.palette.background.alt;
 
   const signInButton = (
-    <Button onClick={() => window.location.href = process.env.REACT_APP_LOGIN_URL}>
+    <Button onClick={() => window.location.href = import.meta.env.VITE_APP_LOGIN_URL}>
       Sign Up!
     </Button>
   );

@@ -34,7 +34,7 @@ import fetchWithRetry from "auth/fetchWithRetry";
 import PropTypes from 'prop-types'
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "queryKeys";
-import useAuthenticatedUser from "data/useAuthenticatedUser";
+import useAuthenticatedUser from "data/useAuthenticatedUser.ts";
 
 const Post = ({
   createdAt,
@@ -84,7 +84,7 @@ const Post = ({
   const togglePostLikeMutation = useMutation({
     mutationFn: async () => {
       await fetchWithRetry(
-        process.env.REACT_APP_API_BASE_URL + `/posts/post/${postId}/like`,
+        import.meta.env.VITE_APP_API_BASE_URL + `/posts/post/${postId}/like`,
         {
           method: "PATCH",
           headers: {
@@ -111,7 +111,7 @@ const Post = ({
       if (variables.comment.trim() === "") return;
 
       const response = fetchWithRetry(
-        process.env.REACT_APP_API_BASE_URL + `/posts/post/${postId}/comment`,
+        import.meta.env.VITE_APP_API_BASE_URL + `/posts/post/${postId}/comment`,
         {
           method: "POST",
           headers: {
@@ -138,7 +138,7 @@ const Post = ({
   const toggleCommentLikeMutation = useMutation({
     mutationFn: async (variables) => {
       await fetchWithRetry(
-        process.env.REACT_APP_API_BASE_URL +
+        import.meta.env.VITE_APP_API_BASE_URL +
         `/posts/post/${postId}/${variables.commentId}/like`,
         {
           method: "PATCH",
@@ -165,7 +165,7 @@ const Post = ({
     mutationFn: async () => {
       if (window.confirm("Are you sure you want to delete this post?")) {
         await fetchWithRetry(
-          process.env.REACT_APP_API_BASE_URL + `/posts/post/${postId}/`,
+          import.meta.env.VITE_APP_API_BASE_URL + `/posts/post/${postId}/`,
           {
             method: "DELETE",
             headers: {
@@ -196,7 +196,7 @@ const Post = ({
         };
 
         const response = await fetchWithRetry(
-          process.env.REACT_APP_API_BASE_URL + `/posts/post/${postId}`,
+          import.meta.env.VITE_APP_API_BASE_URL + `/posts/post/${postId}`,
           {
             method: "PATCH",
             headers: {
@@ -375,7 +375,7 @@ const Post = ({
                 >
                   <Avatar
                     src={
-                      process.env.REACT_APP_API_BASE_URL +
+                      import.meta.env.VITE_APP_API_BASE_URL +
                       `/assets/${comment.userImage}`
                     }
                   />
@@ -513,7 +513,7 @@ Post.propTypes = {
   postUserId: PropTypes.string.isRequired,
   //user info
   name: PropTypes.string.isRequired,
-  userPicturePath: PropTypes.string.isRequired,
+  picturePath: PropTypes.string.isRequired,
 
   //climbing info
   vGrade: PropTypes.number.isRequired,

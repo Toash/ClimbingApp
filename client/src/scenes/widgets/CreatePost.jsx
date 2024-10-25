@@ -20,7 +20,7 @@ import fetchWithRetry from "auth/fetchWithRetry";
 import { uploadMedia } from "data/uploadMedia";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { QUERY_KEYS } from "queryKeys";
-import useAuthenticatedUser from "data/useAuthenticatedUser";
+import useAuthenticatedUser from "data/useAuthenticatedUser.ts";
 
 
 /**
@@ -72,7 +72,7 @@ const CreatePost = () => {
         }
 
         const response = await fetchWithRetry(
-          process.env.REACT_APP_API_BASE_URL + "/posts",
+          import.meta.env.VITE_APP_API_BASE_URL + "/posts",
           {
             method: "POST",
             headers: { Authorization: `Bearer ${localStorage.getItem("id_token")}` },
