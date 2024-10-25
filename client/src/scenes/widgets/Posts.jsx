@@ -24,7 +24,7 @@ const Posts = () => {
   });
 
 
-  if (isError) {
+  if (isError || error) {
     return <Typography>Oops! Something went wrong while loading posts. Please try again later.</Typography>
   }
 

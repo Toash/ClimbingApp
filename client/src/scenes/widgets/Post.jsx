@@ -42,7 +42,6 @@ const Post = ({
   postUserId,
   //user info
   name,
-  picturePath,
 
   //climbing info
   vGrade,
@@ -513,7 +512,7 @@ Post.propTypes = {
   postUserId: PropTypes.string.isRequired,
   //user info
   name: PropTypes.string.isRequired,
-  picturePath: PropTypes.string.isRequired,
+  //picturePath: PropTypes.string.isRequired,
 
   //climbing info
   vGrade: PropTypes.number.isRequired,
@@ -522,8 +521,8 @@ Post.propTypes = {
   description: PropTypes.string.isRequired,
 
   //media
-  mediaPath: PropTypes.string.isRequired,
-  likes: PropTypes.number.isRequired,
+  mediaPath: PropTypes.string,
+  likes: PropTypes.object.isRequired,
   comments: PropTypes.array.isRequired,
 }
 

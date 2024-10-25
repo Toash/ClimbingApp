@@ -153,7 +153,10 @@ const HomePage = () => {
           flexBasis={isNonMobileScreens ? "70%" : undefined}
           flexGrow={3}
           // margin for mobile since widgets are stacked
-          mt={isNonMobileScreens ? undefined : "2rem"}
+          mt={isNonMobileScreens ? undefined : "20rem"}
+          display="flex"
+          flexDirection="column"
+          gap="2rem"
         >
           {isSuccess && <CreatePost />}
           <Posts />
