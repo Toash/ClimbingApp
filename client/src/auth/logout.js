@@ -1,4 +1,4 @@
 export default function logout() {
     localStorage.clear();
-    // TODO go to login page.
+    window.location.href = import.meta.env.VITE_APP_BASE_URL;
 }
