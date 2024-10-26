@@ -1,6 +1,7 @@
 import Post from "../models/Post.js";
 import User from "../models/User.js";
 import { S3Client, DeleteObjectCommand, waitUntilObjectNotExists, S3ServiceException } from "@aws-sdk/client-s3";
+import updateHiscore from "./helpers/updateHiscore.js";
 
 // returns json with errors if there are any int he postData
 const validatePostInput = (postData) => {
@@ -21,6 +22,12 @@ const validatePostInput = (postData) => {
 };
 
 /* CREATE */
+/**
+ * Creates a post and then updates the user hiscore
+ * @param {*} req 
+ * @param {*} res 
+ * @returns 
+ */
 export const createPost = async (req, res) => {
   try {
     const {
@@ -81,6 +88,9 @@ export const createPost = async (req, res) => {
     await newPost.save();
 
     const posts = await Post.find();
+
+    //update user highscore
+    await updateHiscore(userId);
     res.status(201).json(posts); //send posts in res
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -112,6 +122,10 @@ export const editPost = async (req, res) => {
       post.attempts = attempts;
 
       const updatedPost = await post.save();
+
+      //update user highscore
+      await updateHiscore(userId);
+
       res.json(updatedPost);
     } else {
       res.status(404).send("Post not found");
@@ -179,6 +193,9 @@ export const deletePost = async (req, res) => {
 
     // Find and delete the post by id
     const deletedPost = await Post.findByIdAndDelete(postId);
+
+    //update user highscore
+    await updateHiscore(userId);
 
     if (deletedPost) {
       res

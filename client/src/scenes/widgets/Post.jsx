@@ -241,11 +241,11 @@ const Post = ({
 
   // inline styling is bloating this component so much
   return (
-    <WidgetWrapper m="2rem 0">
+    <WidgetWrapper m="0rem 0">
       <Box display="flex">
         <Box flex="1">
           <UserCard
-            friendId={postUserId}
+            userId={postUserId}
           />
         </Box>
         {isCurrentUserPost() && (

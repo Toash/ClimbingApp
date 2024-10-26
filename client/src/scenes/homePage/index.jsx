@@ -133,13 +133,14 @@ const HomePage = () => {
         padding="2rem 6%"
         // widgets will be on top of eachother on mobile
         display={isNonMobileScreens ? "flex" : "block"}
-        gap="1rem"
+        gap="2rem"
         justifyContent="space-between"
       >
         {/* Flex basis defines the starting size, flex grow defines how much it grows past */}
         <Box
-          flexBasis={isNonMobileScreens ? "26%" : undefined}
+          //flexBasis={isNonMobileScreens ? "30%" : undefined}
           flexGrow={1}
+          minWidth={"300px"}
         >
           {isSuccess && (
             <>
@@ -150,10 +151,10 @@ const HomePage = () => {
           )}
         </Box>
         <Box
-          flexBasis={isNonMobileScreens ? "70%" : undefined}
+          //flexBasis={isNonMobileScreens ? "70%" : undefined}
           flexGrow={3}
           // margin for mobile since widgets are stacked
-          mt={isNonMobileScreens ? undefined : "20rem"}
+          mt={isNonMobileScreens ? undefined : "2rem"}
           display="flex"
           flexDirection="column"
           gap="2rem"

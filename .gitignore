@@ -1,5 +1,8 @@
 # .gitignore
 
+server/backend-dependencies.zip
+server/dist
+
 client/node_modules
 server/node_modules
 lambda/node_modules

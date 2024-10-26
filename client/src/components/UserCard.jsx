@@ -14,7 +14,7 @@ import { QUERY_KEYS } from "queryKeys";
  * @param {*} object containing friendId(cid), userPicturePath 
  * @returns 
  */
-const UserCard = ({ friendId: userId }) => {
+const UserCard = ({ userId }) => {
   const { palette } = useTheme();
   const primaryLight = palette.primary.light;
   const primaryDark = palette.primary.dark;
@@ -98,7 +98,7 @@ const UserCard = ({ friendId: userId }) => {
 };
 
 UserCard.propTypes = {
-  friendId: PropTypes.string.isRequired,
+  userId: PropTypes.string.isRequired,
 }
 
 export default UserCard;

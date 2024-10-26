@@ -31,7 +31,7 @@ const FriendListWidget = () => {
             {data.friends.map((friend) => (
               <UserCard
                 key={friend._id}
-                friendId={friend._id}
+                userId={friend._id}
                 name={`${friend.firstName} ${friend.lastName}`}
                 subtitle={friend.occupation}
                 userPicturePath={friend.picturePath}
