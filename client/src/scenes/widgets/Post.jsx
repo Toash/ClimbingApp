@@ -241,7 +241,8 @@ const Post = ({
 
   // inline styling is bloating this component so much
   return (
-    <WidgetWrapper m="0rem 0">
+    //TODO: image proportions might break on different resolutions.
+    <WidgetWrapper width="500px" m="0rem 0">
       <Box display="flex">
         <Box flex="1">
           <UserCard
@@ -300,7 +301,7 @@ const Post = ({
             mediaPath.endsWith(".mov") ||
             mediaPath.endsWith(".avi") ? (
             <video
-              width="100%"
+              width="auto"
               height="auto"
               controls
               style={{ borderRadius: "0.75rem", marginTop: "0.75rem" }}
@@ -310,7 +311,7 @@ const Post = ({
             </video>
           ) : (
             <img
-              width="100%"
+              width="auto"
               height="auto"
               alt="post"
               style={{ borderRadius: "0.75rem", marginTop: "0.75rem" }}

@@ -10,6 +10,7 @@ import CurrentUserStats from "scenes/widgets/CurrentUserStats";
 import { QUERY_KEYS } from "queryKeys";
 import getCidFromToken from "auth/getCidFromToken";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import Week from "scenes/widgets/Week.jsx";
 
 
 const HomePage = () => {
@@ -140,28 +141,35 @@ const HomePage = () => {
         <Box
           //flexBasis={isNonMobileScreens ? "30%" : undefined}
           flexGrow={1}
-          minWidth={"300px"}
+
         >
           {isSuccess && (
             <>
               <CurrentUserCard />
-              <FriendListWidget />
+
               <CurrentUserStats />
+              <FriendListWidget />
+
             </>
           )}
         </Box>
         <Box
           //flexBasis={isNonMobileScreens ? "70%" : undefined}
-          flexGrow={3}
+          flexGrow={5}
           // margin for mobile since widgets are stacked
           mt={isNonMobileScreens ? undefined : "2rem"}
           display="flex"
           flexDirection="column"
+
           gap="2rem"
         >
+
+          <Week></Week>
           {isSuccess && <CreatePost />}
           <Posts />
+
         </Box>
+
       </Box>
     </Box >
   );

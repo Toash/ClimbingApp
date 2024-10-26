@@ -16,31 +16,31 @@ const FriendListWidget = () => {
   }
 
   if (isSuccess) {
-    if (data.friends.length > 0) {
-      return (
-        <WidgetWrapper>
-          <Typography
-            color={palette.neutral.dark}
-            variant="h5"
-            fontWeight="500"
-            sx={{ mb: "1.5rem" }}
-          >
-            Friend List
-          </Typography>
-          <Box display="flex" flexDirection="column" gap="1.5rem">
-            {data.friends.map((friend) => (
-              <UserCard
-                key={friend._id}
-                userId={friend._id}
-                name={`${friend.firstName} ${friend.lastName}`}
-                subtitle={friend.occupation}
-                userPicturePath={friend.picturePath}
-              />
-            ))}
-          </Box>
-        </WidgetWrapper>
-      );
-    }
+
+    return (
+      <WidgetWrapper>
+        <Typography
+          color={palette.neutral.dark}
+          variant="h5"
+          fontWeight="500"
+          sx={{ mb: "1.5rem" }}
+        >
+          Friend List
+        </Typography>
+        <Box display="flex" flexDirection="column" gap="1.5rem">
+          {data.friends.map((friend) => (
+            <UserCard
+              key={friend._id}
+              userId={friend._id}
+              name={`${friend.firstName} ${friend.lastName}`}
+              subtitle={friend.occupation}
+              userPicturePath={friend.picturePath}
+            />
+          ))}
+        </Box>
+      </WidgetWrapper>
+    );
+
 
   }
 
