@@ -11,6 +11,7 @@ import { QUERY_KEYS } from "queryKeys";
 import getCidFromToken from "auth/getCidFromToken";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Week from "scenes/widgets/Week.jsx";
+import SideDrawer from "scenes/drawer/SideDrawer.jsx";
 
 
 const HomePage = () => {
@@ -126,53 +127,60 @@ const HomePage = () => {
     console.log("User data: ", data);
   }
 
-  return (
-    <Box>
-      < NavBar ></NavBar >
-      <Box
-        width="100%"
-        padding="2rem 6%"
-        // widgets will be on top of eachother on mobile
-        display={isNonMobileScreens ? "flex" : "block"}
-        gap="2rem"
-        justifyContent="space-between"
-      >
-        {/* Flex basis defines the starting size, flex grow defines how much it grows past */}
+  if (isNonMobileScreens) {
+
+
+    return (
+      <Box>
+
         <Box
-          //flexBasis={isNonMobileScreens ? "30%" : undefined}
-          flexGrow={1}
-
-        >
-          {isSuccess && (
-            <>
-              <CurrentUserCard />
-
-              <CurrentUserStats />
-              <FriendListWidget />
-
-            </>
-          )}
-        </Box>
-        <Box
-          //flexBasis={isNonMobileScreens ? "70%" : undefined}
-          flexGrow={5}
-          // margin for mobile since widgets are stacked
-          mt={isNonMobileScreens ? undefined : "2rem"}
-          display="flex"
-          flexDirection="column"
-
+          width="100%"
+          padding="2rem"
+          // widgets will be on top of eachother on mobile
+          display={"flex"}
           gap="2rem"
+          justifyContent="space-between"
         >
+          <SideDrawer></SideDrawer>
+          <Box
+            //flexBasis={isNonMobileScreens ? "70%" : undefined}
+            flexGrow={5}
+            // margin for mobile since widgets are stacked
+            mt={isNonMobileScreens ? undefined : "2rem"}
+            display="flex"
+            flexDirection="column"
+            alignItems={"center"}
+            gap="2rem"
+          >
 
-          <Week></Week>
-          {isSuccess && <CreatePost />}
-          <Posts />
+
+            <Week style={{ width: "100%" }}></Week>
+
+            <Posts />
+
+          </Box>
+          {/* Flex basis defines the starting size, flex grow defines how much it grows past */}
+          <Box
+            //flexBasis={isNonMobileScreens ? "30%" : undefined}
+            flexGrow={1}
+
+          >
+            {isSuccess && (
+              <>
+                <CurrentUserCard />
+
+                <CurrentUserStats />
+                <FriendListWidget />
+
+              </>
+            )}
+          </Box>
+
 
         </Box>
-
-      </Box>
-    </Box >
-  );
+      </Box >
+    );
+  }
 }
 
 

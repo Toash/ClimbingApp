@@ -23,18 +23,19 @@ function CurrentUserStats() {
             color: palette.neutral.main,
           }}
         >
-          Your Stats
+          Stats
         </Typography>
         <Divider sx={{ marginBottom: "1rem" }}></Divider>
 
-        {data.vGrade != null ? (
-          <Typography>
-            {"Max Grade: "}
-            {data.vGrade}
-          </Typography>
-        ) : (
-          <Typography>Post something to view stats</Typography>
-        )}
+        <Typography>
+          {"Max Grade: " + data.vGrade}
+
+        </Typography>
+        <Typography>
+
+          {"Preferred Style:"}
+
+        </Typography>
       </WidgetWrapper>
     );
   }

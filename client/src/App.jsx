@@ -1,6 +1,7 @@
+import { CssBaseline, ThemeProvider } from "@mui/material";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HomePage from "./scenes/homePage/index.jsx";
-import { CssBaseline, ThemeProvider } from "@mui/material";
+
 import { createTheme } from "@mui/material/styles";
 import { themeSettings } from "./theme.js";
 import { LocalizationProvider } from "@mui/x-date-pickers";
