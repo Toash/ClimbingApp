@@ -55,7 +55,7 @@ export default function useAuthenticatedUser(redirect = false): UseQueryResult<U
         queryKey: QUERY_KEYS.CURRENT_USER,
         queryFn: async () => {
             const response = await fetchWithRetry(
-                `${import.meta.env.env.VITE_APP_API_BASE_URL}/users/${cid}`,
+                `${import.meta.env.VITE_APP_API_BASE_URL}/users/${cid}`,
                 {
                     method: "GET",
                     headers: { Authorization: `Bearer ${idToken}` },

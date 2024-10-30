@@ -9,6 +9,10 @@ STAGING_LAMBDA_FUNCTION_NAME="backend-staging"
 STAGING_S3_BUCKET="toash-climbing-staging"
 STAGING_DISTRIBUTION_ID="EW9BUDUWG0IMV"
 
+LAYER_NAME="backend-dependencies"
+LAYER_DIR="./server"
+LAYER_ZIP_FILE="lambda-layer-dependencies.zip"
+
 ZIP_FILE="lambda-deployment-package.zip"
 BACKEND_DIR="./server"
 AWS_REGION="us-east-2"
@@ -40,6 +44,49 @@ if [ "$ENV_CHOICE" = "production" ]; then
     fi
 fi
 
+
+# Option to update dependencies
+echo "Would you like to update dependencies in the Lambda layer? (yes/no)"
+read UPDATE_LAYER
+
+if [ "$UPDATE_LAYER" = "yes" ]; then
+  mkdir -p $LAYER_DIR/nodejs
+  cp -r $LAYER_DIR/node_modules $LAYER_DIR/nodejs/
+
+  cd $LAYER_DIR
+
+  if [ -f $LAYER_ZIP_FILE ]; then
+    rm $LAYER_ZIP_FILE
+    echo "Old layer zip file removed."
+  fi
+
+  zip -r $LAYER_ZIP_FILE nodejs/
+  echo "Dependencies layer zipped into $LAYER_ZIP_FILE with nodejs/node_modules format."
+
+  # Publish the new layer version and capture the ARN
+  layer_arn=$(aws lambda publish-layer-version --layer-name $LAYER_NAME --zip-file fileb://$LAYER_ZIP_FILE --region $AWS_REGION --query 'LayerVersionArn' --output text)
+
+  if [ $? -eq 0 ]; then
+    echo "Lambda layer '$LAYER_NAME' updated successfully with ARN: $layer_arn."
+  else
+    echo "Failed to update Lambda layer '$LAYER_NAME'."
+    exit 1
+  fi
+
+  # Update the Lambda function to use the new layer version
+  aws lambda update-function-configuration --function-name $LAMBDA_FUNCTION_NAME --layers $layer_arn --region $AWS_REGION
+
+  if [ $? -eq 0 ]; then
+    echo "Lambda function '$LAMBDA_FUNCTION_NAME' updated to use the new layer version."
+  else
+    echo "Failed to update Lambda function '$LAMBDA_FUNCTION_NAME' with the new layer."
+    exit 1
+  fi
+
+  # Clean up the copied nodejs folder after zipping
+  rm -rf $LAYER_DIR/nodejs
+  cd ..
+fi
 
 
 cd $BACKEND_DIR

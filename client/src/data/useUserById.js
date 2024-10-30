@@ -17,10 +17,7 @@ export default function useUserById(userId) {
             try {
                 const response = await fetch(import.meta.env.VITE_APP_API_BASE_URL + `/users/${userId}`,
                     {
-                        method: "GET",
-                        headers: {
-                            Authorization: `Bearer ${localStorage.getItem("id_token")}`
-                        }
+                        method: "GET"
                     })
                 const data = await response.json();
                 return data;

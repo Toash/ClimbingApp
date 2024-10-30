@@ -58,18 +58,26 @@ const HomePage = () => {
    * @returns {boolean} true if user has valid token, false otherwise
    */
   const userHasValidToken = async () => {
-    const id_token = localStorage.getItem("id_token")
+    const id_token = localStorage.getItem("id_token");
     if (!id_token) return false;
 
-    const response = await fetch(
-      import.meta.env.VITE_APP_API_BASE_URL + "/auth/check-token",
-      {
-        method: "GET",
-        headers: { Authorization: `Bearer ${id_token}` },
+    try {
+      const response = await fetch(
+        import.meta.env.VITE_APP_API_BASE_URL + "/auth/check-token",
+        {
+          method: "GET",
+          headers: { Authorization: `Bearer ${id_token}` },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Token is invalid or expired");
       }
-    );
-    const { status } = await response.json();
-    return status;
+      const { status } = await response.json();
+      return status;
+    } catch (error) {
+      console.error("Token validation failed:", error);
+      return false;
+    }
   };
 
 
@@ -119,7 +127,7 @@ const HomePage = () => {
 
 
   if (isError) {
-    return <Typography>Error trying to fetch user profile. {error}</Typography>
+    return <><Typography>Error trying to fetch user profile. </Typography>{console.log(error)}</>
   }
 
 

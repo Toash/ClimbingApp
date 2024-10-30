@@ -72,10 +72,10 @@ const UserCard = ({ userId }) => {
               variant="h5"
               fontWeight="500"
             >
-              {userData.name}
+              {userData.firstName} {userData.lastName}
             </Typography>
             <Typography color={medium} fontSize="0.75rem">
-              {userData.vGrade}
+              V{userData.vGrade}
             </Typography>
           </Box>
         </FlexBetween>

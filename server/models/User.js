@@ -19,6 +19,9 @@ const UserSchema = new mongoose.Schema(
       min: 2,
       max: 50,
     },
+    vGrade: {
+      type: String,
+    },
     picturePath: {
       type: String,
       default: "",

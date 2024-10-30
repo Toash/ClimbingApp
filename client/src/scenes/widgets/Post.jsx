@@ -64,10 +64,6 @@ const Post = ({
   const [isComments, setIsComments] = useState(false);
   const [newComment, setNewComment] = useState("");
 
-
-
-  const likeCount = Object.keys(likes).length;
-
   const formattedDate = format(new Date(createdAt), "MMMM d, yyyy");
 
   const { palette } = useTheme();
@@ -94,7 +90,33 @@ const Post = ({
         }
       );
 
-    }, onSuccess: () => {
+    }, onMutate: async () => {
+      await queryClient.cancelQueries(QUERY_KEYS.POSTS);
+      const previousData = queryClient.getQueryData(QUERY_KEYS.POSTS);
+
+      // directly set the query data to update the UI
+      queryClient.setQueryData(QUERY_KEYS.POSTS, (old) => {
+        return old.map((post) => {
+          if (post._id === postId) {
+            return {
+              ...post,
+              likes: {
+                ...post.likes,
+                [data.cid]: !post.likes[data.cid],
+              },
+            };
+          }
+          return post; // return unchanged post
+        });
+      });
+
+      // return previous data to rollback if mutation fails (as context)
+      return { previousData };
+    }, onError: (err, newData, context) => {
+
+      //rollback to previous data
+      queryClient.setQueryData(QUERY_KEYS.POSTS, context.previousData);
+    }, onSettled: () => {
       //invalid posts
       //TODO implement infinite scrolling
       queryClient.invalidateQueries(QUERY_KEYS.POSTS);
@@ -215,7 +237,10 @@ const Post = ({
       } catch (error) {
         console.error("An error occurred while updating the post:", error);
       }
-    }, onSuccess: () => {
+    },
+    onSuccess: () => {
+
+    }, onSettled: () => {
       //invalid posts
       //TODO implement infinite scrolling
       queryClient.invalidateQueries(QUERY_KEYS.POSTS);
@@ -232,12 +257,6 @@ const Post = ({
     return false;
   }
 
-  const isLiked = () => {
-    if (isSuccess) {
-      return !!likes[data.cid];
-    }
-    return false;
-  }
 
   // inline styling is bloating this component so much
   return (
@@ -333,7 +352,7 @@ const Post = ({
             {isSuccess ? (
               <>
                 <IconButton onClick={() => togglePostLikeMutation.mutate()}>
-                  {isLiked ? (
+                  {!!likes[data.cid] ? (
                     <FavoriteOutlined sx={{ color: primary }} />
                   ) : (
                     <FavoriteBorderOutlined />
@@ -343,7 +362,7 @@ const Post = ({
             ) : (
               <FavoriteBorderOutlined />
             )}
-            <Typography>{likeCount}</Typography>
+            <Typography>{Object.keys(likes).length}</Typography>
           </FlexBetween>
           {/* COMMENT SECTION */}
           <FlexBetween gap="0.3rem">
