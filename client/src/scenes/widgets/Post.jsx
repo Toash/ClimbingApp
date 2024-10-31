@@ -67,7 +67,7 @@ const Post = ({
   const formattedDate = format(new Date(createdAt), "MMMM d, yyyy");
 
   const { palette } = useTheme();
-  const main = palette.neutral.main;
+
   const primary = palette.primary.main;
 
   const queryClient = useQueryClient();
@@ -257,11 +257,12 @@ const Post = ({
     return false;
   }
 
+  const [isFlash, setIsFlash] = useState(attempts === 1);
 
   // inline styling is bloating this component so much
   return (
     //TODO: image proportions might break on different resolutions.
-    <WidgetWrapper width="500px" m="0rem 0">
+    <WidgetWrapper width="600px" m="0rem 0" lightning={false}>
       <Box display="flex">
         <Box flex="1">
           <UserCard
@@ -297,14 +298,15 @@ const Post = ({
         )}
       </Box>
       {/* TITLE AND GRADE */}
-      <Typography color={main} sx={{ mt: "1rem", fontSize: "2rem" }}>
+      <Typography color={palette.neutral.main} sx={{ mt: "1rem", fontSize: "1.5rem" }}>
         {vGrade !== null ? title + " - V" + vGrade : title}
       </Typography>
 
+      <Divider />
       {/* ATTEMPTS */}
       <Typography
-        color={main}
-        sx={{ mt: "0rem", mb: "1rem", fontSize: "1rem" }}
+        color={palette.neutral.main}
+        sx={{ mt: "1rem", mb: "1rem", fontSize: "1rem" }}
       >
         {attempts
           ? attempts !== 1
@@ -315,15 +317,19 @@ const Post = ({
 
       {/* MEDIA */}
       {mediaPath && (
-        <>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center", // Optional, for vertical centering
+          }}>
           {mediaPath.endsWith(".mp4") ||
             mediaPath.endsWith(".mov") ||
             mediaPath.endsWith(".avi") ? (
             <video
-              width="auto"
               height="auto"
               controls
-              style={{ borderRadius: "0.75rem", marginTop: "0.75rem" }}
+              style={{ borderRadius: "0.75rem", marginTop: "0.75rem", minWidth: "500px", maxWidth: "600px" }}
             >
               <source src={mediaPath} type="video/mp4" />
               Your browser does not support the video tag.
@@ -331,17 +337,16 @@ const Post = ({
           ) : (
             <img
               width="auto"
-              height="auto"
               alt="post"
-              style={{ borderRadius: "0.75rem", marginTop: "0.75rem" }}
+              style={{ borderRadius: "0.75rem", marginTop: "0.75rem", minHeight: "500px", maxHeight: "600px" }}
               src={mediaPath}
             />
           )}
-        </>
+        </div>
       )}
 
       {/* DESCRIPTION */}
-      <Typography color={main} sx={{ mt: "1rem", fontSize: "1rem" }}>
+      <Typography color={palette.neutral.main} sx={{ mt: "1rem", fontSize: "1rem" }}>
         {description}
       </Typography>
 
@@ -373,7 +378,7 @@ const Post = ({
           </FlexBetween>
         </FlexBetween>
         {/* DATE */}
-        <Typography color={main} sx={{ fontSize: "0.875rem" }}>
+        <Typography color={palette.neutral.main} sx={{ fontSize: "0.875rem" }}>
           {formattedDate}
         </Typography>
       </FlexBetween>
@@ -405,7 +410,7 @@ const Post = ({
                       wordBreak: "break-word",
                     }}
                   >
-                    <Typography sx={{ color: main }}>
+                    <Typography sx={{ color: palette.neutral.main }}>
                       <strong>{comment.name}</strong> {comment.comment}
                     </Typography>
                   </Box>

@@ -48,7 +48,7 @@ export const themeSettings = (mode) => {
             main: "#FFFFFF",
             mediumMain: colorTokens.grey[300],
             medium: colorTokens.grey[400],
-            light: "#1a1a1a",
+            light: "#646464",
             outline: "#3e3e3e",
           },
           background: {

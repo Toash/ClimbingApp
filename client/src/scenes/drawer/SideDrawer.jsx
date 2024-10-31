@@ -14,7 +14,7 @@ import UploadIcon from '@mui/icons-material/Upload';
 import HomeIcon from '@mui/icons-material/Home';
 import CreatePost from 'scenes/widgets/CreatePost.jsx';
 import useAuthenticatedUser from 'data/useAuthenticatedUser.ts';
-
+import { Box, Typography } from '@mui/material';
 const drawerWidth = 300;
 
 export default function SideDrawer() {
@@ -56,7 +56,19 @@ export default function SideDrawer() {
                     variant="permanent"
                     anchor="left"
                 >
-                    <Toolbar />
+
+
+
+                    <Box sx={{ padding: '1rem' }}>
+                        <Typography
+                            fontWeight="bold"
+                            fontSize="clamp(1rem,2rem,2.25rem)"
+                            color="primary"
+                            ml="2rem"
+                        >
+                            BoulderStat
+                        </Typography>
+                    </Box>
 
                     <Divider />
                     <List>

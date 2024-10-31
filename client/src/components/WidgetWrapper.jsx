@@ -1,14 +1,23 @@
 import { Box } from "@mui/material";
-import { styled } from "@mui/system";
+import { styled, keyframes } from "@mui/system";
 
-// what does styled do and what is theme
-// WidgetWrapper is just a box so it also accepts the respective properties.
-// TODO: look into mui styled function.
-const WidgetWrapper = styled(Box)(({ theme }) => ({
+// Define keyframes for a yellow lightning flash effect with random sparks
+const lightningFlash = keyframes`
+  0% { box-shadow: 0 0 5px 0 #2EAA2E; }
+  100% { box-shadow: 0 0 20px 0 #2EAA2E; }
+`;
+
+
+
+// theme property will be passed in from the parent component 
+const WidgetWrapper = styled(Box)(({ theme, lightning = false }) => ({
   padding: "1.5rem 1.5rem 0.75rem 1.5rem",
   backgroundColor: theme.palette.background.alt,
   borderRadius: "0.75rem",
   outline: `0px solid ${theme.palette.neutral.outline}`,
+  position: "relative",
+  animation: lightning ? `${lightningFlash} 3s infinite ease-in-out alternate` : null,
+
 }));
 
 export default WidgetWrapper;

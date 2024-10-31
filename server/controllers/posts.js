@@ -2,6 +2,7 @@ import Post from "../models/Post.js";
 import User from "../models/User.js";
 import { S3Client, DeleteObjectCommand, waitUntilObjectNotExists, S3ServiceException } from "@aws-sdk/client-s3";
 import updateHiscore from "./helpers/updateHiscore.js";
+import getWeekDates from "./helpers/getWeekDates.js";
 
 // returns json with errors if there are any int he postData
 const validatePostInput = (postData) => {
@@ -237,6 +238,24 @@ export const getHighestVGradePost = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+// Controller function to get posts for the current week
+export const getWeeklyPosts = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { startDate, endDate } = getWeekDates();
+
+    const posts = await Post.find({
+      cid: userId,
+      createdAt: { $gte: startDate, $lte: endDate },
+    }).sort({ createdAt: -1 });
+
+    res.status(200).json(posts);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 
 /* UPDATE */
 /**
