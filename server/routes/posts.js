@@ -9,6 +9,7 @@ import {
   editPost,
   getHighestVGradePost,
   createPost,
+  getWeeklyPosts,
 } from "../controllers/posts.js";
 const router = express.Router();
 
@@ -19,6 +20,7 @@ const upload = multer({ storage });
 
 /* READ */
 router.get("/", getFeedPosts);
+router.get("/user/:userId/weekly", getWeeklyPosts);
 //router.get("/user/:userId", getUserPosts);
 router.get("/user/:userId/hiscore", getHighestVGradePost);
 

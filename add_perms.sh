@@ -15,6 +15,7 @@ API_METHODS=(
   "posts/post/*/like"
   "posts/user/*"
   "posts/user/*/hiscore"
+  "posts/user/*/weekly"
   "users/*"
   "users/*/*"
   "users/*/friends"
