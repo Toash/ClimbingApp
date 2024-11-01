@@ -14,7 +14,7 @@ import getWeekDates from "utils/getWeekDates.js";
  * @returns 
  */
 const Week = () => {
-    const { data: userData, isLoading: isUserLoading, isError: isUserError } = useAuthenticatedUser();
+    const { data: userData, isLoading: isUserLoading, isError: isUserError, isSuccess: loggedIn } = useAuthenticatedUser();
     const { data: weeklyPosts, isLoading: isPostsLoading, isError: isPostError } = useQuery({
         enabled: !!userData?.cid,
         queryKey: ["weeklyPosts"],
@@ -49,54 +49,56 @@ const Week = () => {
 
     const climbsByDay = groupClimbsByDay(weeklyPosts || [], weekDates);
 
-    return (<WidgetWrapper sx={{ width: "100%" }}>
-        <Typography
-            variant="h6"
-            sx={{
-                fontSize: "1.5rem",
-                color: palette.neutral.main,
-            }}
-        >Week</Typography>
-        {/* Table for weekly climbs */}
-        <TableContainer component={Paper} sx={{ marginTop: "1rem" }}>
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        {weekDates.map((day) => (
+    if (loggedIn) {
+        return (<WidgetWrapper sx={{ width: "100%" }}>
+            <Typography
+                variant="h6"
+                sx={{
+                    fontSize: "1.5rem",
+                    color: palette.neutral.main,
+                }}
+            >Your week so far</Typography>
+            {/* Table for weekly climbs */}
+            <TableContainer component={Paper} sx={{ marginTop: "1rem" }}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            {weekDates.map((day) => (
 
-                            <TableCell key={day} align="center">
-                                <Typography variant="h6">{format(day, "EEEE")}</Typography>
-                                <Typography variant="subtitle2">{format(day, "MMM d")}</Typography>
-                            </TableCell>
-
-                        ))}
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {/* Create rows based on the maximum number of climbs on any single day */}
-                    {Array.from({ length: Math.max(...climbsByDay.map(day => day.climbs.length), 1) }).map((_, rowIndex) => (
-                        <TableRow key={rowIndex}>
-                            {/* Create a cell for each day in the current row */}
-                            {climbsByDay.map((day, colIndex) => (
-                                <TableCell key={colIndex} align="center">
-                                    {/* Display the climb if available, or a dash if not */}
-                                    {day.climbs[rowIndex] ? (
-                                        <Typography variant="body2">
-                                            {day.climbs[rowIndex].title} - V{day.climbs[rowIndex].vGrade}
-                                        </Typography>
-                                    ) : (
-                                        <Typography variant="body2" sx={{ color: "grey.500" }}>
-                                            -
-                                        </Typography>
-                                    )}
+                                <TableCell key={day} align="center">
+                                    <Typography variant="h6">{format(day, "EEEE")}</Typography>
+                                    <Typography variant="subtitle2">{format(day, "MMM d")}</Typography>
                                 </TableCell>
+
                             ))}
                         </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
-    </WidgetWrapper>)
+                    </TableHead>
+                    <TableBody>
+                        {/* Create rows based on the maximum number of climbs on any single day */}
+                        {Array.from({ length: Math.max(...climbsByDay.map(day => day.climbs.length), 1) }).map((_, rowIndex) => (
+                            <TableRow key={rowIndex}>
+                                {/* Create a cell for each day in the current row */}
+                                {climbsByDay.map((day, colIndex) => (
+                                    <TableCell key={colIndex} align="center">
+                                        {/* Display the climb if available, or a dash if not */}
+                                        {day.climbs[rowIndex] ? (
+                                            <Typography variant="body2">
+                                                {day.climbs[rowIndex].title} - V{day.climbs[rowIndex].vGrade}
+                                            </Typography>
+                                        ) : (
+                                            <Typography variant="body2" sx={{ color: "grey.500" }}>
+                                                -
+                                            </Typography>
+                                        )}
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </WidgetWrapper>)
+    }
 }
 
 export default Week

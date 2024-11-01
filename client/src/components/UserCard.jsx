@@ -49,7 +49,7 @@ const UserCard = ({ userId }) => {
   })
 
 
-  if (currentUserIsLoading || userIsLoading) {
+  if (currentUserIsLoading) {
     return <Typography>Loading...</Typography>
   }
 
@@ -57,10 +57,19 @@ const UserCard = ({ userId }) => {
     return <Typography>Error trying to patch friend</Typography>
   }
 
-  if (currentUserIsSuccess && userIsSuccess) {
-    let isFriend = currentUserData.friends
-      ? currentUserData.friends.find((user) => user.cid === userData.cid)
-      : null;
+  if (userIsSuccess) {
+    let isFriend;
+
+    // if we have a current user, check if the user is a friend for conditional rendering of the add friend button.
+    if (currentUserIsSuccess) {
+      isFriend = currentUserData.friends
+        ? currentUserData.friends.find((user) => user.cid === userData.cid)
+        : null;
+    } else {
+      isFriend = false;
+    }
+
+    let differentUser = currentUserData?.cid != userData?.cid;
 
     return (
       <FlexBetween>
@@ -79,7 +88,7 @@ const UserCard = ({ userId }) => {
             </Typography>
           </Box>
         </FlexBetween>
-        {currentUserData.cid != userData.cid && (
+        {currentUserIsSuccess && differentUser && (
           <IconButton
             onClick={() => patchFriendMutation.mutate({ currentUserId: currentUserData.cid, userId: userData.cid })}
             sx={{ backgroundColor: primaryLight, p: "0.6rem" }}

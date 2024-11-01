@@ -12,9 +12,13 @@ import { SvgIcon } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import UploadIcon from '@mui/icons-material/Upload';
 import HomeIcon from '@mui/icons-material/Home';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import CreatePost from 'scenes/widgets/CreatePost.jsx';
 import useAuthenticatedUser from 'data/useAuthenticatedUser.ts';
 import { Box, Typography } from '@mui/material';
+import logout from "auth/logout.js"
+import signin from 'auth/signin.js';
+
 const drawerWidth = 300;
 
 export default function SideDrawer() {
@@ -39,73 +43,97 @@ export default function SideDrawer() {
         </svg>
     </SvgIcon>
 
-    const { isSuccess } = useAuthenticatedUser();
+    const { isSuccess: loggedIn } = useAuthenticatedUser();
 
-    if (isSuccess) {
-        return (
-            <>
-                <Drawer
-                    sx={{
+    return (
+        <>
+            <Drawer
+                sx={{
+                    width: drawerWidth,
+                    flexShrink: 0,
+                    '& .MuiDrawer-paper': {
                         width: drawerWidth,
-                        flexShrink: 0,
-                        '& .MuiDrawer-paper': {
-                            width: drawerWidth,
-                            boxSizing: 'border-box',
-                        },
-                    }}
-                    variant="permanent"
-                    anchor="left"
-                >
+                        boxSizing: 'border-box',
+                    },
+                }}
+                variant="permanent"
+                anchor="left"
+            >
 
 
 
-                    <Box sx={{ padding: '1rem' }}>
-                        <Typography
-                            fontWeight="bold"
-                            fontSize="clamp(1rem,2rem,2.25rem)"
-                            color="primary"
-                            ml="2rem"
-                        >
-                            BoulderStat
-                        </Typography>
-                    </Box>
+                <Box sx={{ padding: '1rem' }}>
+                    <Typography
+                        fontWeight="bold"
+                        fontSize="clamp(1rem,2rem,2.25rem)"
+                        color="primary"
+                        ml="2rem"
+                    >
+                        BoulderStat
+                    </Typography>
+                </Box>
 
-                    <Divider />
-                    <List>
-                        <ListItem key={"Home"} disablePadding>
-                            <ListItemButton onClick={handleHomeButton}>
+                <Divider />
+                <List>
+                    <ListItem key={"Home"} disablePadding>
+                        <ListItemButton onClick={handleHomeButton}>
+                            <ListItemIcon>
+                                <HomeIcon />
+                            </ListItemIcon>
+                            <ListItemText primary={"Home"} />
+                        </ListItemButton>
+                    </ListItem>
+                    {loggedIn &&
+                        <>
+                            <ListItem key={"Log Climb"} disablePadding>
+                                <ListItemButton onClick={handleOpenDialog} >
+                                    <ListItemIcon>
+                                        <UploadIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary={"Log Climb"} />
+                                </ListItemButton>
+                            </ListItem>
+                            <ListItem key={"Log Project"} disablePadding>
+                                <ListItemButton>
+                                    <ListItemIcon>
+                                        <StarIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary={"Log Project"} />
+                                </ListItemButton>
+                            </ListItem>
+                        </>
+                    }
+                </List>
+                <Divider />
+                <Box sx={{ flexGrow: 1 }} />
+                <Divider />
+                <List>
+                    {loggedIn ?
+                        <ListItem key={"Sign Out"} disablePadding>
+                            <ListItemButton onClick={logout}>
                                 <ListItemIcon>
-                                    <HomeIcon />
+                                    <ExitToAppIcon />
                                 </ListItemIcon>
-                                <ListItemText primary={"Home"} />
+                                <ListItemText primary={"Sign Out"} />
                             </ListItemButton>
                         </ListItem>
-                        <ListItem key={"Log Climb"} disablePadding>
-                            <ListItemButton onClick={handleOpenDialog} >
+                        : <ListItem key={"Sign In \ Sign Up"} disablePadding>
+                            <ListItemButton onClick={signin}>
                                 <ListItemIcon>
-                                    <UploadIcon />
-                                </ListItemIcon>
-                                <ListItemText primary={"Log Climb"} />
-                            </ListItemButton>
-                        </ListItem>
-                        <ListItem key={"Log Project"} disablePadding>
-                            <ListItemButton>
-                                <ListItemIcon>
-                                    <StarIcon />
-                                </ListItemIcon>
-                                <ListItemText primary={"Log Project"} />
-                            </ListItemButton>
-                        </ListItem>
-                    </List>
-                    <Divider />
-                    <List>
 
-                    </List>
-                </Drawer>
-                <Dialog open={isDialogOpen} onClose={handleCloseDialog} fullWidth maxWidth="md">
-                    <CreatePost />
-                </Dialog>
-            </>
-        );
-    }
+                                </ListItemIcon>
+                                <ListItemText primary={"Sign In"} />
+                            </ListItemButton>
+                        </ListItem>}
+
+
+
+                </List>
+            </Drawer>
+            <Dialog open={isDialogOpen} onClose={handleCloseDialog} fullWidth maxWidth="md">
+                <CreatePost />
+            </Dialog>
+        </>
+    );
 }
+

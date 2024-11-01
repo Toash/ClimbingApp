@@ -10,7 +10,10 @@ const lightningFlash = keyframes`
 
 
 // theme property will be passed in from the parent component 
-const WidgetWrapper = styled(Box)(({ theme, lightning = false }) => ({
+// should forward prop to prevent passing to dom. (remove error)
+const WidgetWrapper = styled(Box, {
+  shouldForwardProp: (prop) => prop !== "lightning",
+})(({ theme, lightning = false }) => ({
   padding: "1.5rem 1.5rem 0.75rem 1.5rem",
   backgroundColor: theme.palette.background.alt,
   borderRadius: "0.75rem",
