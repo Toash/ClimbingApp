@@ -131,7 +131,7 @@ export default function SideDrawer() {
                 </List>
             </Drawer>
             <Dialog open={isDialogOpen} onClose={handleCloseDialog} fullWidth maxWidth="md">
-                <CreatePost />
+                <CreatePost onSubmit={handleCloseDialog} />
             </Dialog>
         </>
     );

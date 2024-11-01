@@ -1,35 +1,31 @@
 import React from "react";
+import { useState } from "react";
+
 import { EditOutlined, DeleteOutlined, Add, Remove } from "@mui/icons-material";
-import {
-  Box,
-  Divider,
-  Typography,
-  InputBase,
-  useTheme,
-  Button,
-  IconButton,
-} from "@mui/material";
+import { Box, Button, Divider, Typography, Select, MenuItem, FormControl, InputLabel, InputBase } from '@mui/material';
 
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import Dropzone from "react-dropzone";
 import FlexBetween from "components/FlexBetween";
 import UserImage from "components/UserImage";
 import WidgetWrapper from "components/WidgetWrapper";
-import { useState } from "react";
+
 import fetchWithRetry from "auth/fetchWithRetry";
 import { uploadMedia } from "data/uploadMedia";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { QUERY_KEYS } from "queryKeys";
 import useAuthenticatedUser from "data/useAuthenticatedUser.ts";
+import { useTheme } from "@mui/material";
 
 
 /**
  * Allows user to specify post attributes then post a post.
  * Contains Dropzone to hold files.
- * @param {*} param0
  * @returns
  */
-const CreatePost = () => {
+const CreatePost = ({ onSubmit }) => {
+  const [angle, setAngle] = useState("")
+  const [style, setStyle] = useState("")
   const [media, setMedia] = useState(null);
   const [post, setPost] = useState("");
   const [vGrade, setVGrade] = useState(0);
@@ -105,13 +101,28 @@ const CreatePost = () => {
     setAttempts((prev) => Math.max(prev - 1, 1));
   };
 
+  const handleAngleChange = (event) => {
+    setAngle(event.target.value);
+  };
+
+  const handleStyleChange = (event) => {
+    setStyle(event.target.value);
+  }
+
   const { data, isSuccess, isLoading } = useAuthenticatedUser();
 
   if (isLoading) {
     return <Typography>Fetching user data...</Typography>
   }
 
+
   if (isSuccess) {
+
+    const handleSubmit = () => {
+      postMutation.mutate()
+      onSubmit();
+    }
+
 
     return (
       <WidgetWrapper>
@@ -214,6 +225,38 @@ const CreatePost = () => {
           </Typography>
         </Box>
         <Divider sx={{ marginTop: "1.5rem", marginBottom: "2rem" }}></Divider>
+
+
+
+        {/* OPTIONAL DATA */}
+        {/* ADD ANGLE DROPDOWN */}
+        <FormControl fullWidth sx={{ marginTop: '1rem' }}>
+          <InputLabel id="angle-label">Angle</InputLabel>
+          <Select
+            labelId="angle-label"
+            value={angle}
+            label="angle"
+            onChange={handleAngleChange}
+          >
+            <MenuItem value="Slab">Slab</MenuItem>
+            <MenuItem value="Vertical">Vertical</MenuItem>
+            <MenuItem value="Overhang">Overhang (5-30 degrees)</MenuItem>
+            <MenuItem value="Overhang">Overhang (30+ degrees)</MenuItem>
+          </Select>
+        </FormControl>
+        {/*STYLE*/}
+        <FormControl fullWidth sx={{ marginTop: '1rem' }}>
+          <InputLabel id="style-label">Style</InputLabel>
+          <Select
+            labelId="style-label"
+            value={style}
+            label="style"
+            onChange={handleStyleChange}
+          >
+            <MenuItem value="Fingery">Fingery</MenuItem>
+
+          </Select>
+        </FormControl>
         {/* ADD MEDIA  */}
         <Box
           sx={{
@@ -308,7 +351,7 @@ const CreatePost = () => {
 
         <Button
           disabled={!post}
-          onClick={() => postMutation.mutate()}
+          onClick={handleSubmit}
           sx={{
             color: palette.background.alt,
             backgroundColor: palette.primary.main,
