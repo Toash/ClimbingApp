@@ -1,7 +1,7 @@
 import React from "react";
 import { ManageAccountsOutlined } from "@mui/icons-material";
 
-import { Box, Typography, Divider, useTheme } from "@mui/material";
+import { Box, Typography, Divider, useTheme, CircularProgress } from "@mui/material";
 import UserImage from "components/UserImage";
 import FlexBetween from "components/FlexBetween";
 import WidgetWrapper from "components/WidgetWrapper";
@@ -15,7 +15,7 @@ const CurrentUserCard = () => {
   const { data, isLoading, isSuccess } = useAuthenticatedUser();
 
   if (isLoading) {
-    return <Typography>Fetching user data...</Typography>
+    return <CircularProgress />;
   }
 
 
@@ -37,7 +37,6 @@ const CurrentUserCard = () => {
               >
                 {data.firstName} {data.lastName}
               </Typography>
-              <Typography color={medium}>{data.friends.length} friends</Typography>
             </Box>
           </FlexBetween>
           <ManageAccountsOutlined /> {/* TODO: EDIT NAME */}

@@ -35,6 +35,9 @@ export const createPost = async (req, res) => {
       userId,
       title,
       vGrade,
+      angle,
+      holds,
+      styles,
       attempts,
       description,
       createdAt,
@@ -64,6 +67,10 @@ export const createPost = async (req, res) => {
     const lastName = user.lastName;
     const userPicturePath = user.picturePath;
 
+    // convert comma seperated strings to arrays
+    const holdsArray = holds.split(",");
+    const stylesArray = styles.split(",");
+
     const newPostData = {
       cid: userId,
       firstName,
@@ -74,6 +81,9 @@ export const createPost = async (req, res) => {
       description,
       vGrade,
       attempts,
+      angle,
+      holds: holdsArray,
+      styles: stylesArray,
 
       mediaPath,
 

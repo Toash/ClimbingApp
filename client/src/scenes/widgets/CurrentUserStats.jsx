@@ -1,5 +1,5 @@
 import React from "react";
-import { Divider, Typography, useTheme } from "@mui/material";
+import { CircularProgress, Divider, Typography, useTheme } from "@mui/material";
 import WidgetWrapper from "components/WidgetWrapper";
 import useAuthenticatedUser from "data/useAuthenticatedUser.ts";
 
@@ -10,7 +10,7 @@ function CurrentUserStats() {
   const { data, isSuccess, isLoading } = useAuthenticatedUser();
 
   if (isLoading) {
-    return <Typography>Fetching user data...</Typography>
+    return <CircularProgress />;
   }
 
   if (isSuccess) {

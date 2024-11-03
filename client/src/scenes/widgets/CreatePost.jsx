@@ -2,7 +2,7 @@ import React from "react";
 import { useState } from "react";
 
 import { EditOutlined, DeleteOutlined, Add, Remove } from "@mui/icons-material";
-import { Box, Button, Divider, Typography, Select, MenuItem, FormControl, InputLabel, InputBase } from '@mui/material';
+import { useTheme, Box, Button, Divider, Typography, Select, MenuItem, FormControl, InputLabel, InputBase, FormGroup, FormControlLabel, IconButton, Checkbox, FormLabel } from '@mui/material';
 
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import Dropzone from "react-dropzone";
@@ -15,7 +15,7 @@ import { uploadMedia } from "data/uploadMedia";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { QUERY_KEYS } from "queryKeys";
 import useAuthenticatedUser from "data/useAuthenticatedUser.ts";
-import { useTheme } from "@mui/material";
+
 
 
 /**
@@ -25,7 +25,8 @@ import { useTheme } from "@mui/material";
  */
 const CreatePost = ({ onSubmit }) => {
   const [angle, setAngle] = useState("")
-  const [style, setStyle] = useState("")
+  const [holdTypes, setHoldTypes] = useState([])
+  const [styles, setStyles] = useState([])
   const [media, setMedia] = useState(null);
   const [post, setPost] = useState("");
   const [vGrade, setVGrade] = useState(0);
@@ -50,6 +51,11 @@ const CreatePost = ({ onSubmit }) => {
         formData.append("vGrade", vGrade);
         formData.append("attempts", attempts);
         formData.append("description", description);
+        formData.append("angle", angle);
+        formData.append("holds", holdTypes);
+        formData.append("styles", styles);
+
+
         if (selectedDate) {
           formData.append("createdAt", selectedDate.toISOString()); // Add selected date to form data
         }
@@ -85,6 +91,11 @@ const CreatePost = ({ onSubmit }) => {
         setVGrade(0);
         setAttempts(1);
         setSelectedDate(null);
+        setDescription("");
+        setAngle("");
+        setHoldTypes([])
+        setStyles([])
+
       },
       onError: (error) => {
         console.log("Error posting:", error)
@@ -105,8 +116,29 @@ const CreatePost = ({ onSubmit }) => {
     setAngle(event.target.value);
   };
 
+  const holdNames = ["Crimp", "Sloper", "Pocket", "Pinch"]
+  const styleNames = ["Static", "Dynamic", "Coordination"]
+
+  const handleHoldChange = (event) => {
+    const hold = event.target.value;
+    if (holdTypes.includes(hold)) {
+      // toggle off
+      setHoldTypes(holdTypes.filter(s => s !== hold))
+    } else {
+      // toggle on
+      setHoldTypes([...holdTypes, hold])
+    }
+  }
+
   const handleStyleChange = (event) => {
-    setStyle(event.target.value);
+    const style = event.target.value;
+    if (styles.includes(style)) {
+      // toggle off
+      setStyles(styles.filter(s => s !== style))
+    } else {
+      // toggle on
+      setStyles([...styles, style])
+    }
   }
 
   const { data, isSuccess, isLoading } = useAuthenticatedUser();
@@ -224,13 +256,20 @@ const CreatePost = ({ onSubmit }) => {
             Attempts
           </Typography>
         </Box>
-        <Divider sx={{ marginTop: "1.5rem", marginBottom: "2rem" }}></Divider>
+        <Divider sx={{ marginTop: "1.5rem", marginBottom: "1.5rem" }}></Divider>
 
 
 
         {/* OPTIONAL DATA */}
+        <Box display="flex" justifyContent={"center"}>
+          <Typography variant="h6" sx={{ color: palette.neutral.main, fontSize: "1.5rem" }}>
+            Optional Data
+          </Typography>
+        </Box>
+        <Divider sx={{ margin: "1rem 0" }} />
         {/* ADD ANGLE DROPDOWN */}
-        <FormControl fullWidth sx={{ marginTop: '1rem' }}>
+
+        <FormControl fullWidth sx={{ marginBottom: "1rem" }}>
           <InputLabel id="angle-label">Angle</InputLabel>
           <Select
             labelId="angle-label"
@@ -244,19 +283,33 @@ const CreatePost = ({ onSubmit }) => {
             <MenuItem value="Overhang">Overhang (30+ degrees)</MenuItem>
           </Select>
         </FormControl>
-        {/*STYLE*/}
-        <FormControl fullWidth sx={{ marginTop: '1rem' }}>
-          <InputLabel id="style-label">Style</InputLabel>
-          <Select
-            labelId="style-label"
-            value={style}
-            label="style"
-            onChange={handleStyleChange}
-          >
-            <MenuItem value="Fingery">Fingery</MenuItem>
 
-          </Select>
-        </FormControl>
+        <FormGroup>
+          <Divider sx={{ margin: "1rem 0" }} />
+          <FormLabel component="legend">Holds</FormLabel>
+          <Divider sx={{ margin: "1rem 0" }} />
+          {
+            holdNames.map((hold) => (
+              <FormControlLabel control={<Checkbox checked={holdTypes.includes(hold)} />} onChange={handleHoldChange} value={hold}
+                label={hold} key={hold} />
+
+            ))
+          }
+          <Divider sx={{ margin: "1rem 0" }} />
+          <FormLabel component="legend">Type</FormLabel>
+          <Divider sx={{ margin: "1rem 0" }} />
+          {
+            styleNames.map((style) => (
+              <FormControlLabel control={<Checkbox checked={styles.includes(style)} />} onChange={handleStyleChange} value={style}
+                label={style} key={style} />
+
+            ))
+          }
+
+        </FormGroup>
+
+        <Divider sx={{ margin: "2rem 0" }} />
+
         {/* ADD MEDIA  */}
         <Box
           sx={{

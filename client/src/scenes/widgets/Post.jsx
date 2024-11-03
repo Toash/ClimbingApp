@@ -54,7 +54,6 @@ const Post = ({
   comments,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
-
   const [isComments, setIsComments] = useState(false);
   const [newComment, setNewComment] = useState("");
 
@@ -239,7 +238,7 @@ const Post = ({
         </Box>
         {isCurrentUserPost() && (
           <>
-            <IconButton
+            {/* <IconButton
               sx={{
                 backgroundColor: alpha(palette.info.light, 0.1),
                 color: palette.info.main,
@@ -250,7 +249,7 @@ const Post = ({
               onClick={() => setIsEditing(!isEditing)}
             >
               <EditIcon />
-            </IconButton>
+            </IconButton> */}
             <IconButton
               sx={{
                 backgroundColor: alpha(palette.error.light, 0.1),

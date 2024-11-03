@@ -21,8 +21,11 @@ const postSchema = new mongoose.Schema(
     // ------------- CLIMBING INFO -------------
     vGrade: Number,
     attempts: Number,
-    style: String,
     angle: String,
+
+    holds: Array,
+    styles: Array,
+
 
     title: String,
     description: String,

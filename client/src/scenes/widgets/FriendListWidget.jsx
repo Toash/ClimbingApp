@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, useTheme } from "@mui/material";
+import { Box, CircularProgress, Typography, useTheme } from "@mui/material";
 import UserCard from "components/UserCard";
 import WidgetWrapper from "components/WidgetWrapper";
 import PropTypes from "prop-types"
@@ -12,7 +12,7 @@ const FriendListWidget = () => {
 
 
   if (isLoading) {
-    return <Typography>Getting current user...</Typography>
+    return <CircularProgress />;
   }
 
   if (isSuccess) {

@@ -1,6 +1,6 @@
 import React from "react";
 import { useEffect } from "react";
-import { Box, Typography, useMediaQuery } from "@mui/material";
+import { Box, CircularProgress, Typography, useMediaQuery } from "@mui/material";
 import NavBar from "scenes/navbar";
 import CurrentUserCard from "scenes/widgets/CurrentUserCard";
 import CreatePost from "scenes/widgets/CreatePost";
@@ -104,7 +104,7 @@ const HomePage = () => {
   /**
    * Extract tokens and get the associated user.
    */
-  const { isSuccess, isError, error, data } = useQuery(
+  const { isSuccess, isLoading, isError, error, data } = useQuery(
     {
       enabled: !!localStorage.getItem("id_token"), // only run query if token is available
       queryKey: QUERY_KEYS.CURRENT_USER,
@@ -130,17 +130,19 @@ const HomePage = () => {
     return <><Typography>Error trying to fetch user profile. </Typography>{console.log(error)}</>
   }
 
+  if (isLoading) {
+    return <CircularProgress />
+  }
+
 
   if (isSuccess) {
     console.log("User data: ", data);
   }
 
   if (isNonMobileScreens) {
-
-
+    // Desktop layout
     return (
       <Box>
-
         <Box
           width="100%"
           padding="2rem"
@@ -152,7 +154,7 @@ const HomePage = () => {
           <SideDrawer></SideDrawer>
           <Box
             //flexBasis={isNonMobileScreens ? "70%" : undefined}
-            flexGrow={5}
+            flexGrow={3}
             // margin for mobile since widgets are stacked
             mt={isNonMobileScreens ? undefined : "2rem"}
             display="flex"
@@ -170,18 +172,65 @@ const HomePage = () => {
           {/* Flex basis defines the starting size, flex grow defines how much it grows past */}
           <Box
             //flexBasis={isNonMobileScreens ? "30%" : undefined}
-            flexGrow={1}
+            flexGrow={2}
 
           >
             {isSuccess && (
               <>
                 <CurrentUserCard />
-
                 <CurrentUserStats />
-                <FriendListWidget />
-
               </>
             )}
+          </Box>
+
+
+        </Box>
+      </Box >
+    );
+  } else {
+    // Mobile layout
+    return (
+      <Box>
+        <Box
+          width="100%"
+          padding="2rem"
+          // widgets will be on top of eachother on mobile
+          display={"flex"}
+          gap="2rem"
+          justifyContent="space-between"
+        >
+
+          <Box
+            //flexBasis={isNonMobileScreens ? "70%" : undefined}
+            flexGrow={3}
+            // margin for mobile since widgets are stacked
+            mt={isNonMobileScreens ? undefined : "2rem"}
+            display="flex"
+            flexDirection="column"
+            alignItems={"center"}
+            gap="2rem"
+          >
+
+            <Box>
+              {isSuccess && (
+                <>
+                  <CurrentUserCard />
+                  <CurrentUserStats />
+                </>
+              )}
+            </Box>
+            <Week></Week>
+
+            <Posts />
+
+          </Box>
+          {/* Flex basis defines the starting size, flex grow defines how much it grows past */}
+          <Box
+            //flexBasis={isNonMobileScreens ? "30%" : undefined}
+            flexGrow={2}
+
+          >
+
           </Box>
 
 
