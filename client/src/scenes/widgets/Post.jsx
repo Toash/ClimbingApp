@@ -35,6 +35,7 @@ import PropTypes from 'prop-types'
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "queryKeys";
 import useAuthenticatedUser from "data/useAuthenticatedUser.ts";
+import { styled, keyframes } from "@mui/system";
 
 const Post = ({
   createdAt,
@@ -259,10 +260,29 @@ const Post = ({
 
   const [isFlash, setIsFlash] = useState(attempts === 1);
 
+  // Define keyframes for the flash effect
+  const flashAnimation = keyframes`
+0%, 100% {
+  color: yellow;
+  text-shadow: 0 0 10px yellow, 0 0 10px yellow, 0 0 10px yellow, 0 0 10px yellow, 0 0 10px yellow, 0 0 10px yellow;
+}
+50% {
+  color: white;
+  text-shadow: none;
+}
+`;
+
+
+  // define a styled Typography for the flash text
+  const FlashText = styled(Typography)(({ theme }) => ({
+    animation: `${flashAnimation} 2s infinite`,
+    transform: "scale(2)",
+    display: "inline-block",
+  }));
   // inline styling is bloating this component so much
   return (
-    //TODO: image proportions might break on different resolutions.
-    <WidgetWrapper width="600px" m="0rem 0" lightning={false}>
+
+    <WidgetWrapper width="600px" m="0rem 0">
       <Box display="flex">
         <Box flex="1">
           <UserCard
@@ -311,39 +331,48 @@ const Post = ({
         {attempts
           ? attempts !== 1
             ? attempts + " Attempts "
-            : "Flash⚡︎"
+            : <Typography component="span">
+              Flash
+              <Box component="span" sx={{ ml: "8px" }}>
+                < FlashText component="span" >
+                  ⚡︎
+                </FlashText>
+              </Box>
+            </Typography>
           : null}
       </Typography>
 
       {/* MEDIA */}
-      {mediaPath && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center", // Optional, for vertical centering
-          }}>
-          {mediaPath.endsWith(".mp4") ||
-            mediaPath.endsWith(".mov") ||
-            mediaPath.endsWith(".avi") ? (
-            <video
-              height="auto"
-              controls
-              style={{ borderRadius: "0.75rem", marginTop: "0.75rem", minWidth: "500px", maxWidth: "600px" }}
-            >
-              <source src={mediaPath} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-          ) : (
-            <img
-              width="auto"
-              alt="post"
-              style={{ borderRadius: "0.75rem", marginTop: "0.75rem", minHeight: "500px", maxHeight: "600px" }}
-              src={mediaPath}
-            />
-          )}
-        </div>
-      )}
+      {
+        mediaPath && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center", // Optional, for vertical centering
+            }}>
+            {mediaPath.endsWith(".mp4") ||
+              mediaPath.endsWith(".mov") ||
+              mediaPath.endsWith(".avi") ? (
+              <video
+                height="auto"
+                controls
+                style={{ borderRadius: "0.75rem", marginTop: "0.75rem", minWidth: "500px", maxWidth: "600px" }}
+              >
+                <source src={mediaPath} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            ) : (
+              <img
+                width="auto"
+                alt="post"
+                style={{ borderRadius: "0.75rem", marginTop: "0.75rem", minHeight: "500px", maxHeight: "600px" }}
+                src={mediaPath}
+              />
+            )}
+          </div>
+        )
+      }
 
       {/* DESCRIPTION */}
       <Typography color={palette.neutral.main} sx={{ mt: "1rem", fontSize: "1rem" }}>
@@ -384,146 +413,153 @@ const Post = ({
       </FlexBetween>
 
       <Divider></Divider>
-      {isComments && (
-        <>
-          <Box>
-            {/* Display all comments from array */}
-            {comments.map((comment, i) => (
-              //comment
-              <Box key={i} display="flex" alignItems="center" marginTop="1rem">
-                <Box
-                  key={`${name}-${i}`}
-                  display="flex"
-                  alignItems="center"
-                  mb="0.5rem"
-                >
-                  <Avatar
-                    src={
-                      import.meta.env.VITE_APP_API_BASE_URL +
-                      `/assets/${comment.userImage}`
-                    }
-                  />
+      {
+        isComments && (
+          <>
+            <Box>
+              {/* Display all comments from array */}
+              {comments.map((comment, i) => (
+                //comment
+                <Box key={i} display="flex" alignItems="center" marginTop="1rem">
                   <Box
-                    ml="1rem"
-                    flex="1"
+                    key={`${name}-${i}`}
+                    display="flex"
+                    alignItems="center"
+                    mb="0.5rem"
+                  >
+                    <Avatar
+                      src={
+                        import.meta.env.VITE_APP_API_BASE_URL +
+                        `/assets/${comment.userImage}`
+                      }
+                    />
+                    <Box
+                      ml="1rem"
+                      flex="1"
+                      sx={{
+                        wordBreak: "break-word",
+                      }}
+                    >
+                      <Typography sx={{ color: palette.neutral.main }}>
+                        <strong>{comment.name}</strong> {comment.comment}
+                      </Typography>
+                    </Box>
+                  </Box>
+                  <Box
                     sx={{
-                      wordBreak: "break-word",
+                      display: "flex",
+                      ml: "auto",
                     }}
                   >
-                    <Typography sx={{ color: palette.neutral.main }}>
-                      <strong>{comment.name}</strong> {comment.comment}
-                    </Typography>
+                    {/* LIKE COMMENT */}
+                    {isSuccess && (
+                      <>
+                        <FlexBetween gap="1rem">
+                          <FlexBetween gap="0rem">
+                            <IconButton
+                              onClick={() => toggleCommentLikeMutation({ commentId: comment._id })}
+                            >
+                              {!!comment.likeCount[data.cid] ? (
+                                <FavoriteOutlined sx={{ color: primary }} />
+                              ) : (
+                                <FavoriteBorderOutlined />
+                              )}
+                            </IconButton>
+                            <Typography>{comment.likeCount.length}</Typography>
+                          </FlexBetween>
+                          <IconButton>
+                            <DeleteIcon></DeleteIcon>
+                          </IconButton>
+                        </FlexBetween>
+                      </>
+                    )}
                   </Box>
                 </Box>
-                <Box
-                  sx={{
-                    display: "flex",
-                    ml: "auto",
-                  }}
-                >
-                  {/* LIKE COMMENT */}
-                  {isSuccess && (
-                    <>
-                      <FlexBetween gap="1rem">
-                        <FlexBetween gap="0rem">
-                          <IconButton
-                            onClick={() => toggleCommentLikeMutation({ commentId: comment._id })}
-                          >
-                            {!!comment.likeCount[data.cid] ? (
-                              <FavoriteOutlined sx={{ color: primary }} />
-                            ) : (
-                              <FavoriteBorderOutlined />
-                            )}
-                          </IconButton>
-                          <Typography>{comment.likeCount.length}</Typography>
-                        </FlexBetween>
-                        <IconButton>
-                          <DeleteIcon></DeleteIcon>
-                        </IconButton>
-                      </FlexBetween>
-                    </>
-                  )}
-                </Box>
-              </Box>
-            ))}
+              ))}
+              <Divider />
+            </Box>
+            {/* COMMENT SOMETHING */}
             <Divider />
-          </Box>
-          {/* COMMENT SOMETHING */}
-          <Divider />
-          {isSuccess && (
-            <>
-              <Box mt="1rem">
-                <TextField
-                  fullWidth
-                  variant="outlined"
-                  placeholder="Comment something..."
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                />
-                <Button
-                  fullWidth
-                  variant="contained"
-                  color="primary"
-                  sx={{ mt: "0.5rem" }}
-                  onClick={postCommentMutation({ comment: newComment })}
-                >
-                  Post Comment
-                </Button>
-              </Box>
-            </>
-          )}
-        </>
-      )}
+            {isSuccess && (
+              <>
+                <Box mt="1rem">
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    placeholder="Comment something..."
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                  />
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    sx={{ mt: "0.5rem" }}
+                    onClick={postCommentMutation({ comment: newComment })}
+                  >
+                    Post Comment
+                  </Button>
+                </Box>
+              </>
+            )}
+          </>
+        )
+      }
 
       {/* Edit Post Dialog */}
       <Dialog open={isEditing} onClose={() => setIsEditing(false)}>
-        <DialogTitle>Edit Post</DialogTitle>
-        <DialogContent>
-          <TextField
-            fullWidth
-            variant="outlined"
-            label="Title"
-            value={editedTitle}
-            onChange={(e) => setEditedTitle(e.target.value)}
-            sx={{ mt: 2 }}
-          />
-          <TextField
-            fullWidth
-            variant="outlined"
-            label="V-Grade"
-            value={editedVGrade}
-            onChange={(e) => setEditedVGrade(e.target.value)}
-            sx={{ mt: 2 }}
-          />
-          <TextField
-            fullWidth
-            variant="outlined"
-            label="Attempts"
-            value={editedAttempts}
-            onChange={(e) => setEditedAttempts(e.target.value)}
-            sx={{ mt: 2 }}
-          />
-          <TextField
-            fullWidth
-            variant="outlined"
-            label="Description"
-            value={editedDescription}
-            onChange={(e) => setEditedDescription(e.target.value)}
-            multiline
-            rows={4}
-            sx={{ mt: 2 }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setIsEditing(false)} color="secondary">
-            Cancel
-          </Button>
-          <Button onClick={() => updatePostMutation.mutate()} color="primary" variant="contained">
-            Save
-          </Button>
-        </DialogActions>
+        <WidgetWrapper>
+          <DialogTitle>Edit Post</DialogTitle>
+          <DialogContent>
+            <TextField
+              fullWidth
+              variant="outlined"
+              label="Title"
+              value={editedTitle}
+              onChange={(e) => setEditedTitle(e.target.value)}
+              sx={{ mt: 2 }}
+            />
+            <TextField
+              fullWidth
+              variant="outlined"
+              label="V-Grade"
+              value={editedVGrade}
+              onChange={(e) => setEditedVGrade(e.target.value)}
+              sx={{ mt: 2 }}
+            />
+            <TextField
+              fullWidth
+              variant="outlined"
+              label="Attempts"
+              value={editedAttempts}
+              onChange={(e) => setEditedAttempts(e.target.value)}
+              sx={{ mt: 2 }}
+            />
+            <TextField
+              fullWidth
+              variant="outlined"
+              label="Description"
+              value={editedDescription}
+              onChange={(e) => setEditedDescription(e.target.value)}
+              multiline
+              rows={4}
+              sx={{ mt: 2 }}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setIsEditing(false)} color="secondary">
+              Cancel
+            </Button>
+            <Button onClick={() => {
+              updatePostMutation.mutate();
+              setIsEditing(false)
+            }} color="primary" variant="contained">
+              Save
+            </Button>
+          </DialogActions>
+        </WidgetWrapper>
       </Dialog>
-    </WidgetWrapper>
+    </WidgetWrapper >
   );
 };
 

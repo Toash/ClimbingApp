@@ -3,7 +3,7 @@ import Post from "./Post";
 import { Typography } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "queryKeys";
-
+import CircleProgress from "@mui/material/CircularProgress";
 
 
 const Posts = () => {
@@ -29,7 +29,7 @@ const Posts = () => {
   }
 
   if (isLoading) {
-    return <Typography>Loading posts...</Typography>
+    return <CircleProgress />
   }
 
   if (isSuccess && data.length > 0) {

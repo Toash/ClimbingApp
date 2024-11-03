@@ -1,6 +1,6 @@
 import React from "react";
 import { PersonAddOutlined, PersonRemoveOutlined } from "@mui/icons-material";
-import { Box, IconButton, Typography, useTheme } from "@mui/material";
+import { Box, IconButton, LinearProgress, Typography, useTheme } from "@mui/material";
 import FlexBetween from "./FlexBetween";
 import UserImage from "./UserImage";
 import PropTypes from 'prop-types'
@@ -50,7 +50,7 @@ const UserCard = ({ userId }) => {
 
 
   if (currentUserIsLoading) {
-    return <Typography>Loading...</Typography>
+    return <LinearProgress />
   }
 
   if (patchFriendMutation.isError) {

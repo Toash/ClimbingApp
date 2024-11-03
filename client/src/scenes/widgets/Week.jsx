@@ -1,5 +1,6 @@
 
-import { Typography, useTheme, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
+import { Typography, useTheme, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Divider } from "@mui/material";
+import { Box, Container } from "@mui/system";
 import { useQuery } from "@tanstack/react-query";
 import WidgetWrapper from "components/WidgetWrapper.jsx";
 import useAuthenticatedUser from "data/useAuthenticatedUser.ts";
@@ -35,19 +36,24 @@ const Week = () => {
     if (isPostError) return <Typography>Error loading posts</Typography>;
 
 
-    // Group climbs by day of the week
+    /**
+     * Groups climbs by day based on the provided week dates.
+     *
+     * @param {Array} weeklyPosts - An array of climb objects, each containing a `createdAt` property.
+     * @param {Array} weekDates - An array of Date objects representing the days of the week.
+     * @returns {Array} An array of objects, each containing a `date` and an array of `climbs` for that date.
+     */
     const groupClimbsByDay = (weeklyPosts, weekDates) => {
-        console.log("weekDates:", weekDates);
         return weekDates.map((date) => ({
             date,
-            climbs: (weeklyPosts || []).filter((climb) => {
-                console.log("climb date:", new Date(climb.createdAt), "the date:", date);
-                return isSameDay(new Date(climb.createdAt), date);
-            }),
+            climbs: (weeklyPosts || []).filter((climb) => isSameDay(new Date(climb.createdAt), date)),
+
         }));
     };
 
+
     const climbsByDay = groupClimbsByDay(weeklyPosts || [], weekDates);
+    const weeklyPostsLength = weeklyPosts?.length || 0;
 
     if (loggedIn) {
         return (<WidgetWrapper sx={{ width: "100%" }}>
@@ -58,28 +64,37 @@ const Week = () => {
                     color: palette.neutral.main,
                 }}
             >Your week so far</Typography>
+            <Divider />
+            <Typography>Grade Breakdown</Typography>
+            <Typography>Angle Preference</Typography>
+            <Typography>Style preference</Typography>
             {/* Table for weekly climbs */}
-            <TableContainer component={Paper} sx={{ marginTop: "1rem" }}>
+            <TableContainer component={WidgetWrapper} sx={{ marginTop: "1rem" }}>
                 <Table>
                     <TableHead>
                         <TableRow>
                             {weekDates.map((day) => (
 
-                                <TableCell key={day} align="center">
+                                <TableCell key={day} align="center" sx={{
+                                    "outline": isSameDay(day, new Date()) ? 3 : null,
+                                    "borderRadius": isSameDay(day, new Date()) ? 3 : null,
+                                    "outlineColor": isSameDay(day, new Date()) ? palette.primary.main : null
+                                }}>
                                     <Typography variant="h6">{format(day, "EEEE")}</Typography>
                                     <Typography variant="subtitle2">{format(day, "MMM d")}</Typography>
                                 </TableCell>
-
                             ))}
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {/* Create rows based on the maximum number of climbs on any single day */}
+                        {/*Create empty array of specified length, map each entry to a TableRow. 
+                        Number of rows are based on the max number of climbs in a given day for the week.  */}
                         {Array.from({ length: Math.max(...climbsByDay.map(day => day.climbs.length), 1) }).map((_, rowIndex) => (
                             <TableRow key={rowIndex}>
                                 {/* Create a cell for each day in the current row */}
                                 {climbsByDay.map((day, colIndex) => (
-                                    <TableCell key={colIndex} align="center">
+
+                                    <TableCell key={colIndex} align="center" >
                                         {/* Display the climb if available, or a dash if not */}
                                         {day.climbs[rowIndex] ? (
                                             <Typography variant="body2">
@@ -97,6 +112,9 @@ const Week = () => {
                     </TableBody>
                 </Table>
             </TableContainer>
+
+            {/*Proportions*/}
+
         </WidgetWrapper>)
     }
 }

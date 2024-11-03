@@ -22,6 +22,8 @@ const postSchema = new mongoose.Schema(
     vGrade: Number,
     attempts: Number,
     style: String,
+    angle: String,
+
     title: String,
     description: String,
 
