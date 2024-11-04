@@ -156,6 +156,7 @@ const HomePage = () => {
             gap="2rem"
           >
 
+            {!isSuccess && <Typography>Login to post something!</Typography>}
 
             <Week style={{ width: "100%" }}></Week>
 
@@ -203,6 +204,7 @@ const HomePage = () => {
           >
 
             <Box>
+              {!isSuccess && <Typography>Login to post something!</Typography>}
               {isSuccess && (
                 <>
                   <CurrentUserCard />
@@ -210,6 +212,7 @@ const HomePage = () => {
                   <Week></Week>
                 </>
               )}
+
             </Box>
 
 

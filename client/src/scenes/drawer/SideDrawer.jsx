@@ -8,7 +8,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Dialog from '@mui/material/Dialog';
-import { IconButton, SvgIcon, useMediaQuery } from '@mui/material';
+import { IconButton, SvgIcon, useMediaQuery, useTheme } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import UploadIcon from '@mui/icons-material/Upload';
 import HomeIcon from '@mui/icons-material/Home';
@@ -19,10 +19,13 @@ import { Box, Typography } from '@mui/material';
 import logout from "auth/logout.js"
 import signin from 'auth/signin.js';
 import MenuIcon from '@mui/icons-material/Menu';
+import CircleIcon from '@mui/icons-material/Circle';
 
 
 
 export default function SideDrawer() {
+
+    const { palette } = useTheme();
 
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [isDialogOpen, setDialogOpen] = useState(false);
@@ -60,9 +63,10 @@ export default function SideDrawer() {
     return (
         <>
             {!isNonMobileScreens &&
-                <Box position="fixed" top="2rem" left="2rem" sx={{ zIndex: 1 }}>
-                    <IconButton onClick={() => toggleMobileDrawer(true)} sx={{ minWidth: "50px", minHeight: "50px" }}>
-                        <MenuIcon sx={{ minWidth: "30px", minHeight: "30px" }} />
+                <Box position="fixed" top=".7rem" left=".7rem" sx={{ zIndex: 1 }}>
+                    <IconButton onClick={() => toggleMobileDrawer(true)} sx={{ minWidth: "70px", minHeight: "70px" }}>
+                        <CircleIcon sx={{ position: "absolute", minWidth: "60px", minHeight: "60px", color: "rgba(0, 0, 0, 0)" }} />
+                        <MenuIcon sx={{ position: "relative", minWidth: "30px", minHeight: "30px" }} />
                     </IconButton>
                 </Box >}
 
