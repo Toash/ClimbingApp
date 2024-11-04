@@ -130,9 +130,6 @@ const HomePage = () => {
     return <><Typography>Error trying to fetch user profile. </Typography>{console.log(error)}</>
   }
 
-  if (isLoading) {
-    return <CircularProgress />
-  }
 
 
   if (isSuccess) {
@@ -146,17 +143,13 @@ const HomePage = () => {
         <Box
           width="100%"
           padding="2rem"
-          // widgets will be on top of eachother on mobile
           display={"flex"}
           gap="2rem"
           justifyContent="space-between"
         >
           <SideDrawer></SideDrawer>
           <Box
-            //flexBasis={isNonMobileScreens ? "70%" : undefined}
             flexGrow={3}
-            // margin for mobile since widgets are stacked
-            mt={isNonMobileScreens ? undefined : "2rem"}
             display="flex"
             flexDirection="column"
             alignItems={"center"}
@@ -177,8 +170,10 @@ const HomePage = () => {
           >
             {isSuccess && (
               <>
-                <CurrentUserCard />
-                <CurrentUserStats />
+                <Box sx={{ position: "sticky", top: "1rem" }}>
+                  <CurrentUserCard />
+                  <CurrentUserStats />
+                </Box>
               </>
             )}
           </Box>
@@ -193,22 +188,18 @@ const HomePage = () => {
       <Box>
         <Box
           width="100%"
-          padding="2rem"
           // widgets will be on top of eachother on mobile
-          display={"flex"}
-          gap="2rem"
-          justifyContent="space-between"
+          display={"block"}
         >
-
+          <SideDrawer></SideDrawer>
           <Box
             //flexBasis={isNonMobileScreens ? "70%" : undefined}
-            flexGrow={3}
             // margin for mobile since widgets are stacked
-            mt={isNonMobileScreens ? undefined : "2rem"}
+            mt="2rem"
             display="flex"
             flexDirection="column"
             alignItems={"center"}
-            gap="2rem"
+            gap="1rem"
           >
 
             <Box>
@@ -216,20 +207,13 @@ const HomePage = () => {
                 <>
                   <CurrentUserCard />
                   <CurrentUserStats />
+                  <Week></Week>
                 </>
               )}
             </Box>
-            <Week></Week>
+
 
             <Posts />
-
-          </Box>
-          {/* Flex basis defines the starting size, flex grow defines how much it grows past */}
-          <Box
-            //flexBasis={isNonMobileScreens ? "30%" : undefined}
-            flexGrow={2}
-
-          >
 
           </Box>
 

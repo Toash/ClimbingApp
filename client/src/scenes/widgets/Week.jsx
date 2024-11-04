@@ -7,7 +7,7 @@ import useAuthenticatedUser from "data/useAuthenticatedUser.ts";
 import { startOfWeek, endOfWeek, format, isSameDay } from "date-fns";
 import getWeekDates from "utils/getWeekDates.js";
 import { PieChart } from "@mui/x-charts/PieChart";
-
+import { useMediaQuery } from "@mui/material";
 
 
 
@@ -100,6 +100,8 @@ const Week = () => {
     }
 
 
+    const smallScreen = useMediaQuery("(min-width: 1500px)");
+
     if (isUserLoading || isPostsLoading) {
         return <CircularProgress />
     }
@@ -130,7 +132,7 @@ const Week = () => {
                                         "borderRadius": isSameDay(day, new Date()) ? 3 : null,
                                         "outlineColor": isSameDay(day, new Date()) ? palette.primary.main : null
                                     }}>
-                                        <Typography variant="h6">{format(day, "EEEE")}</Typography>
+                                        <Typography variant="h6">{format(day, smallScreen ? "EEEE" : "EEE")}</Typography>
                                         <Typography variant="subtitle2">{format(day, "MMM d")}</Typography>
                                     </TableCell>
                                 ))}
@@ -165,13 +167,13 @@ const Week = () => {
 
                 <Divider sx={{ margin: "1rem 0" }} />
 
-                <Box sx={{ display: "flex", justifyContent: "space-evenly" }}>
+                <Box sx={{ display: smallScreen ? "flex" : "flex-column", justifyContent: "space-evenly" }}>
                     <Box>
                         <Typography align="center"> Style Count</Typography>
                         <Divider />
                         <PieChart
                             series={[{ data: getStyleCountsForPie() }]}
-                            width={400}
+                            width={350}
                             height={200}
                         />
                     </Box>
@@ -180,7 +182,7 @@ const Week = () => {
                         <Divider />
                         <PieChart
                             series={[{ data: getHoldCountsForPie() }]}
-                            width={300}
+                            width={350}
                             height={200}
                         />
                     </Box>

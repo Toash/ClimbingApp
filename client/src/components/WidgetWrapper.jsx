@@ -1,13 +1,11 @@
 import { Box } from "@mui/material";
-import { styled, keyframes } from "@mui/system";
+import { styled } from "@mui/system";
 
 
-// theme property will be passed in from the parent component 
-// should forward prop to prevent passing to dom. (remove error)
 const WidgetWrapper = styled(Box)(({ theme }) => ({
-  padding: "1.5rem 1.5rem 0.75rem 1.5rem",
+  padding: "1.25rem",
   backgroundColor: theme.palette.background.alt,
-  borderRadius: "0.75rem",
+  borderRadius: "0.25rem",
   outline: `0px solid ${theme.palette.neutral.outline}`,
   position: "relative",
 }));

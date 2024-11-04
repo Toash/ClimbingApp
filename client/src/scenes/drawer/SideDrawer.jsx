@@ -8,7 +8,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Dialog from '@mui/material/Dialog';
-import { SvgIcon } from '@mui/material';
+import { IconButton, SvgIcon, useMediaQuery } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import UploadIcon from '@mui/icons-material/Upload';
 import HomeIcon from '@mui/icons-material/Home';
@@ -18,12 +18,20 @@ import useAuthenticatedUser from 'data/useAuthenticatedUser.ts';
 import { Box, Typography } from '@mui/material';
 import logout from "auth/logout.js"
 import signin from 'auth/signin.js';
+import MenuIcon from '@mui/icons-material/Menu';
 
-const drawerWidth = 300;
+
 
 export default function SideDrawer() {
 
+    const [drawerOpen, setDrawerOpen] = useState(false);
     const [isDialogOpen, setDialogOpen] = useState(false);
+
+
+    const toggleMobileDrawer = (open) => {
+        console.log("Opening side drawer for mobile view")
+        setDrawerOpen(open);
+    }
 
     const handleHomeButton = () => { window.location.href = "/"; };
     const handleOpenDialog = () => { setDialogOpen(true) };
@@ -44,9 +52,21 @@ export default function SideDrawer() {
     </SvgIcon>
 
     const { isSuccess: loggedIn } = useAuthenticatedUser();
+    const isNonMobileScreens = useMediaQuery("(min-width: 1500px)");
+
+    const drawerWidth = 300;
+
 
     return (
         <>
+            {!isNonMobileScreens &&
+                <Box position="fixed" top="2rem" left="2rem" sx={{ zIndex: 1 }}>
+                    <IconButton onClick={() => toggleMobileDrawer(true)} sx={{ minWidth: "50px", minHeight: "50px" }}>
+                        <MenuIcon sx={{ minWidth: "30px", minHeight: "30px" }} />
+                    </IconButton>
+                </Box >}
+
+
             <Drawer
                 sx={{
                     width: drawerWidth,
@@ -56,8 +76,11 @@ export default function SideDrawer() {
                         boxSizing: 'border-box',
                     },
                 }}
-                variant="permanent"
+                variant={isNonMobileScreens ? "permanent" : undefined}
                 anchor="left"
+
+                open={drawerOpen}
+                onClose={() => toggleMobileDrawer(false)}
             >
 
 
@@ -130,6 +153,7 @@ export default function SideDrawer() {
 
                 </List>
             </Drawer>
+
             <Dialog open={isDialogOpen} onClose={handleCloseDialog} fullWidth maxWidth="md">
                 <CreatePost onSubmit={handleCloseDialog} />
             </Dialog>
