@@ -110,7 +110,7 @@ const Week = () => {
 
     if (gotWeeklyPosts && loggedIn) {
         return (
-            <WidgetWrapper sx={{ width: "100%" }}>
+            <WidgetWrapper width="100%" >
                 <Typography
                     variant="h6"
                     align="center"
@@ -167,9 +167,9 @@ const Week = () => {
 
                 <Divider sx={{ margin: "1rem 0" }} />
 
-                <Box sx={{ display: smallScreen ? "flex" : "flex-column", justifyContent: "space-evenly" }}>
+                <Box sx={{ display: smallScreen ? "flex" : "flex-column", justifyContent: "space-evenly", overflow: "auto" }}>
                     <Box>
-                        <Typography align="center"> Style Count</Typography>
+                        <Typography align="center" fontSize={"1rem"}> Styles </Typography>
                         <Divider />
                         <PieChart
                             series={[{ data: getStyleCountsForPie() }]}
@@ -178,7 +178,7 @@ const Week = () => {
                         />
                     </Box>
                     <Box>
-                        <Typography align="center"> Hold Count</Typography>
+                        <Typography align="center" fontSize={"1rem"}> Holds used</Typography>
                         <Divider />
                         <PieChart
                             series={[{ data: getHoldCountsForPie() }]}

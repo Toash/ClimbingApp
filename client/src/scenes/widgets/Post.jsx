@@ -229,7 +229,7 @@ const Post = ({
   // inline styling is bloating this component so much
   return (
 
-    <WidgetWrapper width="600px" m="0rem 0">
+    <WidgetWrapper minWidth="100%" m="0rem 0">
       <Box display="flex">
         <Box flex="1">
           <UserCard

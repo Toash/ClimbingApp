@@ -62,6 +62,7 @@ export default function SideDrawer() {
 
     return (
         <>
+            {/* Hamburger button */}
             {!isNonMobileScreens &&
                 <Box position="fixed" top=".7rem" left=".7rem" sx={{ zIndex: 1 }}>
                     <IconButton onClick={() => toggleMobileDrawer(true)} sx={{ minWidth: "70px", minHeight: "70px" }}>

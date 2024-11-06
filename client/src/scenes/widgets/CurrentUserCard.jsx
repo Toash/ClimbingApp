@@ -21,7 +21,7 @@ const CurrentUserCard = () => {
 
   if (isSuccess) {
     return (
-      <WidgetWrapper>
+      <WidgetWrapper width="100%">
         {/* FIRST ROW*/}
         <FlexBetween
           gap="0.5rem"

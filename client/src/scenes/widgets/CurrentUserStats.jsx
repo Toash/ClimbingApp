@@ -15,7 +15,7 @@ function CurrentUserStats() {
 
   if (isSuccess) {
     return (
-      <WidgetWrapper m="2rem 0">
+      <WidgetWrapper width="100%">
         <Typography
           variant="h6"
           sx={{
@@ -31,11 +31,11 @@ function CurrentUserStats() {
           {"Max Grade: " + data.vGrade}
 
         </Typography>
-        <Typography>
+        {/* <Typography>
 
           {"Preferred Style:"}
 
-        </Typography>
+        </Typography> */}
       </WidgetWrapper>
     );
   }

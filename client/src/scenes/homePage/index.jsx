@@ -171,22 +171,20 @@ const HomePage = () => {
           >
             {isSuccess && (
               <>
-                <Box sx={{ position: "sticky", top: "1rem" }}>
+                <Box sx={{ display: "flex", flexDirection: "column", position: "sticky", top: "1rem", gap: "2rem" }}>
                   <CurrentUserCard />
                   <CurrentUserStats />
                 </Box>
               </>
             )}
           </Box>
-
-
         </Box>
       </Box >
     );
   } else {
     // Mobile layout
     return (
-      <Box>
+      <Box m="0 1rem">
         <Box
           width="100%"
           // widgets will be on top of eachother on mobile
@@ -196,24 +194,25 @@ const HomePage = () => {
           <Box
             //flexBasis={isNonMobileScreens ? "70%" : undefined}
             // margin for mobile since widgets are stacked
-            mt="2rem"
+            mt="4rem"
+
             display="flex"
             flexDirection="column"
             alignItems={"center"}
             gap="1rem"
           >
 
-            <Box>
-              {!isSuccess && <Typography>Login to post something!</Typography>}
-              {isSuccess && (
-                <>
-                  <CurrentUserCard />
-                  <CurrentUserStats />
-                  <Week></Week>
-                </>
-              )}
 
-            </Box>
+            {!isSuccess && <Typography>Login to post something!</Typography>}
+            {isSuccess && (
+              <>
+                <CurrentUserCard />
+                <CurrentUserStats />
+                <Week></Week>
+              </>
+            )}
+
+
 
 
             <Posts />
