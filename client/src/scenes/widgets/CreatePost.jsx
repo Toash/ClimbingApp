@@ -15,7 +15,7 @@ import { uploadMedia } from "data/uploadMedia";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { QUERY_KEYS } from "queryKeys";
 import useAuthenticatedUser from "data/useAuthenticatedUser.ts";
-
+import { useMediaQuery } from "@mui/material";
 
 
 /**
@@ -147,7 +147,7 @@ const CreatePost = ({ onSubmit }) => {
     return <Typography>Fetching user data...</Typography>
   }
 
-
+  const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
   if (isSuccess) {
 
     const handleSubmit = () => {
@@ -159,12 +159,14 @@ const CreatePost = ({ onSubmit }) => {
     return (
       <WidgetWrapper>
         <FlexBetween gap="1.5rem">
-          <UserImage s3key={data.picturePath} />
+          {isNonMobileScreens && <UserImage s3key={data.picturePath} />}
+
           <Box
-            display="flex"
+            display={isNonMobileScreens ? "flex" : "block"}
             alignItems="center"
             justifyContent="space-between"
             sx={{ width: "100%" }}
+
           >
             {/* TITLE */}
             <InputBase
@@ -179,14 +181,17 @@ const CreatePost = ({ onSubmit }) => {
                 color: palette.neutral.main,
                 fontSize: "1rem", // Optional: ensure consistent font size
                 outline: `1px solid ${palette.neutral.outline}`,
+                width: "100%",
+                mb: isNonMobileScreens ? undefined : "1rem"
               }}
             />
 
             {/* V-Grade Input */}
-            <Box display="flex" alignItems="center" sx={{ marginLeft: "2rem" }}>
+            <Box display="flex" alignItems="center" sx={{ marginLeft: isNonMobileScreens ? "2rem" : "1rem" }}>
               <Typography
                 variant="h6"
-                sx={{ marginRight: "1rem", color: palette.neutral.main }}
+                sx={{ marginRight: "1rem", color: palette.neutral.main, whiteSpace: "nowrap" }}
+
               >
                 V-Grade:
               </Typography>
@@ -196,7 +201,7 @@ const CreatePost = ({ onSubmit }) => {
                 value={vGrade}
                 onChange={(e) => setVGrade(e.target.value)}
                 sx={{
-                  width: "100px",
+                  width: isNonMobileScreens ? "100px" : "100%",
                   backgroundColor: palette.neutral.light,
                   borderRadius: "2rem",
                   padding: "1rem 2rem",

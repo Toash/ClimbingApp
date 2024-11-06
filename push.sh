@@ -120,8 +120,10 @@ else
   exit 1
 fi
 
+cd ../.. # undo backend dist traversal
+
 if [ "$ENV_CHOICE" = "production" ]; then
-  cd ../client
+  cd ./client
   $FRONTEND_BUILD_CMD
 
   if [ $? -eq 0 ]; then

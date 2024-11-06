@@ -206,6 +206,7 @@ const HomePage = () => {
             {!isSuccess && <Typography>Login to post something!</Typography>}
             {isSuccess && (
               <>
+
                 <CurrentUserCard />
                 <CurrentUserStats />
                 <Week></Week>
