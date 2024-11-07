@@ -311,9 +311,8 @@ const Post = ({
               </video>
             ) : (
               <img
-                width="auto"
                 alt="post"
-                style={{ borderRadius: "0.75rem", marginTop: "0.75rem", minHeight: "500px", maxHeight: "600px" }}
+                style={{ borderRadius: "0.75rem", marginTop: "0.75rem", width: "100%" }}
                 src={mediaPath}
               />
             )}
