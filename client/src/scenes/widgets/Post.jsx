@@ -34,6 +34,7 @@ import { QUERY_KEYS } from "queryKeys";
 import useAuthenticatedUser from "data/useAuthenticatedUser.ts";
 import { styled, keyframes } from "@mui/system";
 import EditPost from "./EditPost.jsx";
+import { useMediaQuery } from "@mui/system";
 
 const Post = ({
   createdAt,
@@ -226,10 +227,13 @@ const Post = ({
     transform: "scale(2)",
     display: "inline-block",
   }));
+
+  const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
+
   // inline styling is bloating this component so much
   return (
 
-    <WidgetWrapper minWidth="100%" m="0rem 0">
+    <WidgetWrapper minWidth={isNonMobileScreens ? "75%" : "100%"} maxWidth="50%" m="0rem 0">
       <Box display="flex">
         <Box flex="1">
           <UserCard
@@ -302,9 +306,8 @@ const Post = ({
               mediaPath.endsWith(".mov") ||
               mediaPath.endsWith(".avi") ? (
               <video
-                height="auto"
                 controls
-                style={{ borderRadius: "0.75rem", marginTop: "0.75rem", minWidth: "500px", maxWidth: "600px" }}
+                style={{ borderRadius: "0.75rem", marginTop: "0.75rem", width: "100%" }}
               >
                 <source src={mediaPath} type="video/mp4" />
                 Your browser does not support the video tag.
