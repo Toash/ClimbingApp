@@ -1,6 +1,6 @@
 import React from "react";
-import { useEffect } from "react";
-import { Box, CircularProgress, Typography, useMediaQuery } from "@mui/material";
+import { useEffect, useState } from "react";
+import { Box, CircularProgress, Typography, useMediaQuery, IconButton } from "@mui/material";
 import NavBar from "scenes/navbar";
 import CurrentUserCard from "scenes/widgets/CurrentUserCard";
 import CreatePost from "scenes/widgets/CreatePost";
@@ -13,8 +13,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Week from "scenes/widgets/Week.jsx";
 import SideDrawer from "scenes/drawer/SideDrawer.jsx";
 
-
 const HomePage = () => {
+
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
   const queryClient = useQueryClient();
 
@@ -139,90 +139,78 @@ const HomePage = () => {
   if (isNonMobileScreens) {
     // Desktop layout
     return (
-      <Box>
-        <Box
-          width="100%"
-          padding="2rem"
-          display={"flex"}
-          gap="2rem"
-          justifyContent="space-between"
-        >
-          <SideDrawer></SideDrawer>
+      <>
+        <Box>
           <Box
-            flexGrow={3}
-            display="flex"
-            flexDirection="column"
-            alignItems={"center"}
+            width="100%"
+            padding="2rem"
+            display={"flex"}
             gap="2rem"
+            justifyContent="space-between"
           >
+            <SideDrawer></SideDrawer>
+            <Box
+              flexGrow={3}
+              display="flex"
+              flexDirection="column"
+              alignItems={"center"}
+              gap="2rem"
+            >
 
-            {!isSuccess && <Typography>Login to post something!</Typography>}
+              <Week style={{ width: "100%" }}></Week>
+              <Posts />
 
-            <Week style={{ width: "100%" }}></Week>
-
-            <Posts />
-
+            </Box>
+            {/* Flex basis defines the starting size, flex grow defines how much it grows past */}
+            <Box
+              //flexBasis={isNonMobileScreens ? "30%" : undefined}
+              flexGrow={10}
+            >
+              {isSuccess && (
+                <>
+                  <Box sx={{ display: "flex", flexDirection: "column", position: "sticky", top: "1rem", gap: "2rem" }}>
+                    <CurrentUserCard />
+                    <CurrentUserStats />
+                  </Box>
+                </>
+              )}
+            </Box>
           </Box>
-          {/* Flex basis defines the starting size, flex grow defines how much it grows past */}
-          <Box
-            //flexBasis={isNonMobileScreens ? "30%" : undefined}
-            flexGrow={2}
-
-          >
-            {isSuccess && (
-              <>
-                <Box sx={{ display: "flex", flexDirection: "column", position: "sticky", top: "1rem", gap: "2rem" }}>
-                  <CurrentUserCard />
-                  <CurrentUserStats />
-                </Box>
-              </>
-            )}
-          </Box>
-        </Box>
-      </Box >
+        </Box >
+      </>
     );
   } else {
     // Mobile layout
     return (
-      <Box m="0 1rem">
-        <Box
-          width="100%"
-          // widgets will be on top of eachother on mobile
-          display={"block"}
-        >
-          <SideDrawer></SideDrawer>
+      <>
+        <Box m="0 1rem">
           <Box
-            //flexBasis={isNonMobileScreens ? "70%" : undefined}
-            // margin for mobile since widgets are stacked
-            mt="4rem"
-
-            display="flex"
-            flexDirection="column"
-            alignItems={"center"}
-            gap="1rem"
+            width="100%"
+            // widgets will be on top of eachother on mobile
+            display={"block"}
           >
-
-
-            {!isSuccess && <Typography>Login to post something!</Typography>}
-            {isSuccess && (
-              <>
-
-                <CurrentUserCard />
-                <CurrentUserStats />
-                <Week></Week>
-              </>
-            )}
-
-
-
-
-            <Posts />
-
+            <SideDrawer></SideDrawer>
+            <Box
+              //flexBasis={isNonMobileScreens ? "70%" : undefined}
+              // margin for mobile since widgets are stacked
+              mt="4rem"
+              display="flex"
+              flexDirection="column"
+              alignItems={"center"}
+              gap="1rem"
+            >
+              {isSuccess && (
+                <>
+                  <CurrentUserCard />
+                  <CurrentUserStats />
+                  <Week></Week>
+                </>
+              )}
+              <Posts />
+            </Box>
           </Box>
-
-
-        </Box>
-      </Box >
+        </Box >
+      </>
     );
   }
 }

@@ -38,7 +38,10 @@ export default function SideDrawer() {
 
     const handleHomeButton = () => { window.location.href = "/"; };
     const handleOpenDialog = () => { setDialogOpen(true) };
-    const handleCloseDialog = () => { setDialogOpen(false) };
+    const handleCloseDialog = () => {
+        setDialogOpen(false);
+        setDrawerOpen(false);
+    };
 
     const ClimbIcon = () => <SvgIcon>
         {/* credit: https://www.svgrepo.com/svg/124252/climbing */}
@@ -83,7 +86,6 @@ export default function SideDrawer() {
                 }}
                 variant={isNonMobileScreens ? "permanent" : undefined}
                 anchor="left"
-
                 open={drawerOpen}
                 onClose={() => toggleMobileDrawer(false)}
             >

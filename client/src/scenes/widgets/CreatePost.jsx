@@ -16,6 +16,9 @@ import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { QUERY_KEYS } from "queryKeys";
 import useAuthenticatedUser from "data/useAuthenticatedUser.ts";
 import { useMediaQuery } from "@mui/material";
+import Snackbar from "@mui/material/Snackbar";
+import CloseIcon from '@mui/icons-material/Close';
+import { enqueueSnackbar } from "notistack";
 
 
 /**
@@ -24,6 +27,8 @@ import { useMediaQuery } from "@mui/material";
  * @returns
  */
 const CreatePost = ({ onSubmit }) => {
+
+  // FORM DATA
   const [angle, setAngle] = useState("")
   const [holdTypes, setHoldTypes] = useState([])
   const [styles, setStyles] = useState([])
@@ -33,8 +38,10 @@ const CreatePost = ({ onSubmit }) => {
   const [attempts, setAttempts] = useState(1);
   const [description, setDescription] = useState("");
   const [selectedDate, setSelectedDate] = useState(null); // State for date
-  const { palette } = useTheme();
 
+
+
+  const { palette } = useTheme();
 
   const queryClient = useQueryClient();
 
@@ -96,9 +103,11 @@ const CreatePost = ({ onSubmit }) => {
         setHoldTypes([])
         setStyles([])
 
+        enqueueSnackbar("Successfully logged climb!", { variant: "success" });
       },
       onError: (error) => {
         console.log("Error posting:", error)
+        enqueueSnackbar("There was an error when trying to log the climb.");
       }
     }
   )
@@ -146,6 +155,7 @@ const CreatePost = ({ onSubmit }) => {
   if (isLoading) {
     return <Typography>Fetching user data...</Typography>
   }
+
 
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
   if (isSuccess) {
@@ -326,9 +336,11 @@ const CreatePost = ({ onSubmit }) => {
           }}
         >
           <Dropzone
-            acceptedFiles=".jpg,.jpeg,.png,video/*"
+            accept=".jpg,.jpeg,.png,video/*"
+            maxSize={100000000} // 100 MB
             multiple={false}
             onDrop={(acceptedFiles) => setMedia(acceptedFiles[0])}
+            onDropRejected={() => enqueueSnackbar("Maximum file size is 100 MB.")}
           >
             {({ getRootProps, getInputProps }) => (
               <FlexBetween>
