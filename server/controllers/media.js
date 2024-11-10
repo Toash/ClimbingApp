@@ -5,7 +5,7 @@ import {
   S3Client,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { MediaConvertClient, CreateJobCommand } from "@aws-sdk/client-mediaconvert";
+import { MediaConvertClient, CreateJobCommand, GetJobCommand, JobStatus, InputRotate, ScalingBehavior, PadVideo, AudioDefaultSelection } from "@aws-sdk/client-mediaconvert";
 
 /**
  * Get presigned put url for media s3 bucket
@@ -86,6 +86,7 @@ export const compressMedia = async (req, res) => {
 
   const { rawUrl, compressedUrl } = req.body;
 
+  const extension = rawUrl.split(".").pop();
   const mediaConvertClient = new MediaConvertClient({
     endpoint: "https://wa11sy9gb.mediaconvert-fips.us-east-2.amazonaws.com",
     region: "us-east-2",
@@ -97,6 +98,15 @@ export const compressMedia = async (req, res) => {
       Inputs: [
         {
           FileInput: rawUrl,
+          VideoSelector: {
+            Rotate: InputRotate.AUTO,
+            PadVideo: PadVideo.BLACK
+          },
+          AudioSelectors: {
+            "Audio Selector 1": {
+              DefaultSelection: AudioDefaultSelection.DEFAULT
+            }
+          }
         },
       ],
       OutputGroups: [
@@ -111,18 +121,31 @@ export const compressMedia = async (req, res) => {
           Outputs: [
             {
               ContainerSettings: {
-                Container: 'MP4',
+                // Container: "MP4"
+                Container: extension.toUpperCase()
               },
               VideoDescription: {
                 CodecSettings: {
                   Codec: 'H_264',
                   H264Settings: {
-                    RateControlMode: 'QVBR', // Set the rate control mode
-                    MaxBitrate: 5000000, // Specify max bitrate for QVBR
-                    QvbrQualityLevel: 7, // Optional: Adjust quality level (1-10, higher is better)
+                    RateControlMode: 'QVBR', // bit rate will change depending on how complex the video is
+                    MaxBitrate: 4000000, // bit rate cap
+                    QvbrQualityLevel: 4, // quality (1-10), higher is better
                   },
                 },
               },
+              AudioDescriptions: [
+                {
+                  CodecSettings: {
+                    Codec: "AAC",
+                    AacSettings: {
+                      Bitrate: 64000,
+                      CodingMode: "CODING_MODE_2_0",
+                      SampleRate: 48000,
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -134,15 +157,32 @@ export const compressMedia = async (req, res) => {
   try {
     const job = await mediaConvertClient.send(new CreateJobCommand(params))
     console.log("MediaConvert job created successfully:", job);
-    if (job.Job.Status == "COMPLETE") {
-      res.status(200)
-    } else {
-      res.status(500)
+
+    const jobId = job.Job.Id;
+    console.log("Analyzing the status for mediaconvert job id:", jobId)
+
+    let jobStatus = "";
+    let jobDetails;
+    while (jobStatus !== JobStatus.COMPLETE && jobStatus !== JobStatus.ERROR) {
+      jobDetails = await mediaConvertClient.send(new GetJobCommand({ Id: jobId }))
+      jobStatus = jobDetails.Job.Status;
+      console.log("Job status:", jobStatus);
+
+      if (jobStatus === JobStatus.COMPLETE) {
+        console.log("MediaConvert job completed successfully");
+        return res.status(200).json({ message: "MediaConvert job completed successfully" });
+      }
+
+      if (jobStatus === JobStatus.ERROR) {
+        console.error("MediaConvert job failed");
+        return res.status(500).json({ message: "MediaConvert job failed" });
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 2000));
     }
 
   } catch (e) {
     console.log("Error creating MediaConvert job: ", e);
-    res.status(500)
-    throw new Error("MediaConvert job creation failed.");
+    return res.status(500).json({ message: "MediaConvert job failed" });
   }
 }

@@ -1,8 +1,10 @@
-// Uploads media into raw and compressed format.
+// Uploads media into raw and compressed format. Videos are compressed.
 export const uploadMedia = async (s3key, media) => {
-  //const fullObjectUrl = import.meta.env.VITE_APP_MEDIA_S3_URL + s3key;
 
+  const videoExtensions = [".mp4", ".mov"]
+  const extension = s3key.slice(s3key.lastIndexOf(".")).toLowerCase().trim();
   // get presigned url for the specific s3key
+  // example s3key: 016bf520-c011-70ee-c024-6761acd7bf31/ForBiggerJoyrides.mp4
   console.log("Getting presigned url by passing the following s3 key: ", s3key);
   let response;
   try {
@@ -25,6 +27,7 @@ export const uploadMedia = async (s3key, media) => {
 
   console.log("Json object retrieved: ", data);
   console.log("Presigned URL retrieved: ", presignedUrl);
+  console.log("Full raw url: ", rawS3KeyWithVersion)
 
   if (!data || !presignedUrl) {
     throw new Error("Did not get presigned url");
@@ -49,29 +52,50 @@ export const uploadMedia = async (s3key, media) => {
     throw e;
   }
 
-  const rawUrl = import.meta.env.VITE_APP_MEDIA_S3_URL + rawS3KeyWithVersion;
+  let compressedWebUrl;
+  let compressedVideo = false;
+  if (videoExtensions.includes(extension)) {
+    compressedVideo = true;
+    console.log("Compressing video...")
 
-  console.log("Raw media successfully uploaded.")
-  console.log("URL", rawUrl)
+    const compressedS3KeyWithVersion = rawS3KeyWithVersion.replace("raw", "compressed") // TODO dont depend on this
+    compressedWebUrl = import.meta.env.VITE_APP_MEDIA_S3_URL + compressedS3KeyWithVersion;
+    //compressedWebUrl = compressedWebUrl.slice(0, -4) // mediaconvert will convert to mp4
+    const fullS3RawUrl = "s3://toash-climbing-media/" + rawS3KeyWithVersion
+    let fullS3CompressedUrl = "s3://toash-climbing-media/" + compressedS3KeyWithVersion
 
-  // Call backend to compress the video.
-  const compressedUrl = import.meta.env.VITE_APP_MEDIA_S3_URL + "compressed/" + rawS3KeyWithVersion;
-  const compressedS3KeyWithVersion = rawS3KeyWithVersion.replace("raw", "compressed")
-  // compress media
-  const compressResponse = await fetch(import.meta.env.VITE_APP_API_BASE_URL + "/media/compress", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ rawUrl: "s3://toash-climbing-media/" + rawS3KeyWithVersion, compressedUrl: "s3://toash-climbing-media/" + compressedS3KeyWithVersion })
-  })
 
-  if (compressResponse.status >= 200 && compressResponse.status <= 299) {
-    console.log("Media successfully compressed!")
-  } else {
-    // TODO: delete raw media
-    throw new Error("An error occured when trying to compress the media")
+    const fullCompressedUrlWithoutExtension = fullS3CompressedUrl.slice(0, -4); // TODO use regex
+    console.log({ fullRawUrl: fullS3RawUrl, fullCompressedUrl: fullS3CompressedUrl, fullCompressedUrlWithoutExtension })
+    let compressResponse;
+    // compress media
+    try {
+      compressResponse = await fetch(import.meta.env.VITE_APP_API_BASE_URL + "/media/compress", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ rawUrl: fullS3RawUrl, compressedUrl: fullCompressedUrlWithoutExtension })
+      })
+    } catch (e) {
+      console.log("Error calling media compress endpoint", e)
+      throw e
+    }
+    console.log("Video compression status code: ", compressResponse.status)
+    if (compressResponse.status >= 200 && compressResponse.status <= 299) {
+      console.log("Media successfully compressed!")
+    } else {
+      // TODO: delete raw media
+      throw new Error("An error occured when trying to compress the media")
+    }
   }
   console.log("Media successfully uploaded to S3");
-  return compressedUrl;
+
+  const rawWebUrl = import.meta.env.VITE_APP_MEDIA_S3_URL + rawS3KeyWithVersion;
+  if (compressedVideo) {
+    return compressedWebUrl; // videos should always be compressed
+  } else {
+    return rawWebUrl // images are not compressed.
+  }
+
 };
