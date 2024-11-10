@@ -5,6 +5,7 @@ import {
   S3Client,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { MediaConvertClient, CreateJobCommand } from "@aws-sdk/client-mediaconvert";
 
 /**
  * Get presigned put url for media s3 bucket
@@ -74,3 +75,74 @@ export const getPresignedPutUrl = async (req, res) => {
   res.status(200).json({ fullUrl: s3keyToUse, presignedUrl });
 };
 
+
+/**
+ * Compress media using aws convert.
+ *   const { rawUrl, compressedUrl } = req.body;
+ * @param {*} req 
+ * @param {*} res 
+ */
+export const compressMedia = async (req, res) => {
+
+  const { rawUrl, compressedUrl } = req.body;
+
+  const mediaConvertClient = new MediaConvertClient({
+    endpoint: "https://wa11sy9gb.mediaconvert-fips.us-east-2.amazonaws.com",
+    region: "us-east-2",
+  })
+
+  const params = {
+    Role: 'arn:aws:iam::443370702352:role/service-role/MediaConvert_Default_Role',
+    Settings: {
+      Inputs: [
+        {
+          FileInput: rawUrl,
+        },
+      ],
+      OutputGroups: [
+        {
+          Name: 'File Group',
+          OutputGroupSettings: {
+            Type: 'FILE_GROUP_SETTINGS',
+            FileGroupSettings: {
+              Destination: compressedUrl,
+            },
+          },
+          Outputs: [
+            {
+              ContainerSettings: {
+                Container: 'MP4',
+              },
+              VideoDescription: {
+                CodecSettings: {
+                  Codec: 'H_264',
+                  H264Settings: {
+                    RateControlMode: 'QVBR', // Set the rate control mode
+                    MaxBitrate: 5000000, // Specify max bitrate for QVBR
+                    QvbrQualityLevel: 7, // Optional: Adjust quality level (1-10, higher is better)
+                  },
+                },
+              },
+            },
+          ],
+        },
+      ],
+    },
+  };
+
+
+  try {
+    const job = await mediaConvertClient.send(new CreateJobCommand(params))
+    console.log("MediaConvert job created successfully:", job);
+    if (job.Job.Status == "COMPLETE") {
+      res.status(200)
+    } else {
+      res.status(500)
+    }
+
+  } catch (e) {
+    console.log("Error creating MediaConvert job: ", e);
+    res.status(500)
+    throw new Error("MediaConvert job creation failed.");
+  }
+}

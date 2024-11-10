@@ -238,12 +238,11 @@ const Post = ({
     display: "inline-block",
   }));
 
-  const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
 
   // inline styling is bloating this component so much
   return (
     <>
-      <WidgetWrapper minWidth={isNonMobileScreens ? "75%" : "100%"} maxWidth="50%" m="0rem 0">
+      <WidgetWrapper width="100%" maxWidth="1000px" m="0rem 0">
         <Box display="flex">
           <Box flex="1">
             <UserCard

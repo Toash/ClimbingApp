@@ -8,6 +8,7 @@ API_METHODS=(
   "auth/check-token"
   "auth/exchange-code"
   "media/presigned-upload"
+  "media/compress"
   "posts"
   "posts/post/*"
   "posts/post/*/*/like"

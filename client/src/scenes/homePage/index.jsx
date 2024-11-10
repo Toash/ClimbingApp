@@ -1,6 +1,6 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import { Box, CircularProgress, Typography, useMediaQuery, IconButton } from "@mui/material";
+import { Box, CircularProgress, Typography, useMediaQuery, IconButton, Modal, LinearProgress } from "@mui/material";
 import NavBar from "scenes/navbar";
 import CurrentUserCard from "scenes/widgets/CurrentUserCard";
 import CreatePost from "scenes/widgets/CreatePost";
@@ -17,6 +17,23 @@ const HomePage = () => {
 
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
   const queryClient = useQueryClient();
+
+  const [loadingModalActive, setLoadingModalActive] = useState(false);
+
+  const LoadingModal = () => {
+    return (
+      <Modal
+        open={loadingModalActive}
+        onClose={() => { }}>
+        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}>
+          <Box sx={{ width: "50%", display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem" }}>
+            <Typography sx={{ fontSize: "1rem" }}>Logging climb...</Typography>
+            <LinearProgress sx={{ width: "100%" }} />
+          </Box>
+        </Box>
+      </Modal>
+    )
+  }
 
   /**
    * Exchanges the auth code for tokens, sets the tokens in local storage.
@@ -130,16 +147,11 @@ const HomePage = () => {
     return <><Typography>Error trying to fetch user profile. </Typography>{console.log(error)}</>
   }
 
-
-
-  if (isSuccess) {
-    console.log("User data: ", data);
-  }
-
   if (isNonMobileScreens) {
     // Desktop layout
     return (
       <>
+        <LoadingModal />
         <Box>
           <Box
             width="100%"
@@ -148,7 +160,12 @@ const HomePage = () => {
             gap="2rem"
             justifyContent="space-between"
           >
-            <SideDrawer></SideDrawer>
+            <SideDrawer
+              onPostButtonClicked={() => {
+                setLoadingModalActive(true)
+              }}
+              onPostCreateResolved={() => setLoadingModalActive(false)}
+            />
             <Box
               flexGrow={3}
               display="flex"
@@ -156,19 +173,17 @@ const HomePage = () => {
               alignItems={"center"}
               gap="2rem"
             >
-
               <Week style={{ width: "100%" }}></Week>
               <Posts />
-
             </Box>
             {/* Flex basis defines the starting size, flex grow defines how much it grows past */}
             <Box
               //flexBasis={isNonMobileScreens ? "30%" : undefined}
-              flexGrow={10}
+              flexGrow={2}
             >
               {isSuccess && (
                 <>
-                  <Box sx={{ display: "flex", flexDirection: "column", position: "sticky", top: "1rem", gap: "2rem" }}>
+                  <Box sx={{ display: "flex", flexDirection: "column", position: "sticky", top: "1rem", gap: "2rem", minWidth: "300px" }}>
                     <CurrentUserCard />
                     <CurrentUserStats />
                   </Box>
@@ -183,13 +198,17 @@ const HomePage = () => {
     // Mobile layout
     return (
       <>
+        <LoadingModal />
         <Box m="0 1rem">
           <Box
             width="100%"
             // widgets will be on top of eachother on mobile
             display={"block"}
           >
-            <SideDrawer></SideDrawer>
+            <SideDrawer
+              onPostButtonClicked={() => setLoadingModalActive(true)}
+              onPostCreateResolved={() => setLoadingModalActive(false)}
+            />
             <Box
               //flexBasis={isNonMobileScreens ? "70%" : undefined}
               // margin for mobile since widgets are stacked

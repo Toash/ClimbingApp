@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-mediaconvert": "^3.687.0",
     "@aws-sdk/client-s3": "^3.666.0",
     "@aws-sdk/s3-request-presigner": "^3.666.0",
     "@codegenie/serverless-express": "^4.15.0",

@@ -53,9 +53,6 @@ const Week = () => {
 
 
     const climbsByDay = groupClimbsByDay(weeklyPosts || [], weekDates);
-    const weeklyPostsLength = weeklyPosts?.length || 0;
-
-
 
     const getStyleCountsForPie = () => {
         if (gotWeeklyPosts) {
@@ -120,51 +117,7 @@ const Week = () => {
                     }}
                 >Your week so far</Typography>
                 <Divider sx={{ marginTop: "1rem" }} />
-                {/* Table for weekly climbs */}
-                <TableContainer component={WidgetWrapper}>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                {weekDates.map((day) => (
-
-                                    <TableCell key={day} align="center" sx={{
-                                        "outline": isSameDay(day, new Date()) ? 3 : null,
-                                        "borderRadius": isSameDay(day, new Date()) ? 3 : null,
-                                        "outlineColor": isSameDay(day, new Date()) ? palette.primary.main : null
-                                    }}>
-                                        <Typography variant="h6">{format(day, smallScreen ? "EEEE" : "EEE")}</Typography>
-                                        <Typography variant="subtitle2">{format(day, "MMM d")}</Typography>
-                                    </TableCell>
-                                ))}
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {/*Create empty array of specified length, map each entry to a TableRow. 
-                        Number of rows are based on the max number of climbs in a given day for the week.  */}
-                            {Array.from({ length: Math.max(...climbsByDay.map(day => day.climbs.length), 1) }).map((_, rowIndex) => (
-                                <TableRow key={rowIndex}>
-                                    {/* Create a cell for each day in the current row */}
-                                    {climbsByDay.map((day, colIndex) => (
-
-                                        <TableCell key={colIndex} align="center" >
-                                            {/* Display the climb if available, or a dash if not */}
-                                            {day.climbs[rowIndex] ? (
-                                                <Typography variant="body2">
-                                                    {day.climbs[rowIndex].title} - V{day.climbs[rowIndex].vGrade}
-                                                </Typography>
-                                            ) : (
-                                                <Typography variant="body2" sx={{ color: "grey.500" }}>
-                                                    -
-                                                </Typography>
-                                            )}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-
+                <WeeklyClimbsTable />
                 <Divider sx={{ margin: "1rem 0" }} />
 
                 <Box sx={{ display: smallScreen ? "flex" : "flex-column", justifyContent: "space-evenly", overflow: "auto" }}>
@@ -191,6 +144,52 @@ const Week = () => {
 
 
             </WidgetWrapper>)
+    }
+
+    function WeeklyClimbsTable() {
+        return <TableContainer component={WidgetWrapper}>
+            <Table>
+                <TableHead>
+                    <TableRow>
+                        {weekDates.map((day) => (
+
+                            <TableCell key={day} align="center" sx={{
+                                "outline": isSameDay(day, new Date()) ? 3 : null,
+                                "borderRadius": isSameDay(day, new Date()) ? 3 : null,
+                                "outlineColor": isSameDay(day, new Date()) ? palette.primary.main : null
+                            }}>
+                                <Typography variant="h6">{format(day, smallScreen ? "EEEE" : "EEE")}</Typography>
+                                <Typography variant="subtitle2">{format(day, "MMM d")}</Typography>
+                            </TableCell>
+                        ))}
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {/*Create empty array of specified length, map each entry to a TableRow.
+    Number of rows are based on the max number of climbs in a given day for the week.  */}
+                    {Array.from({ length: Math.max(...climbsByDay.map(day => day.climbs.length), 1) }).map((_, rowIndex) => (
+                        <TableRow key={rowIndex}>
+                            {/* Create a cell for each day in the current row */}
+                            {climbsByDay.map((day, colIndex) => (
+
+                                <TableCell key={colIndex} align="center">
+                                    {/* Display the climb if available, or a dash if not */}
+                                    {day.climbs[rowIndex] ? (
+                                        <Typography variant="body2">
+                                            {day.climbs[rowIndex].title} - V{day.climbs[rowIndex].vGrade}
+                                        </Typography>
+                                    ) : (
+                                        <Typography variant="body2" sx={{ color: "grey.500" }}>
+                                            -
+                                        </Typography>
+                                    )}
+                                </TableCell>
+                            ))}
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </TableContainer>;
     }
 }
 

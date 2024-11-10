@@ -20,6 +20,7 @@
     "@testing-library/jest-dom": "^6.6.2",
     "@testing-library/react": "^16.0.1",
     "@vitejs/plugin-react": "^4.3.3",
+    "aws-sdk": "^2.1692.0",
     "date-fns": "^2.30.0",
     "env-cmd": "^10.1.0",
     "jest": "^27.5.1",
