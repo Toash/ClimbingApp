@@ -88,8 +88,12 @@ export const getPresignedPutUrl = async (req, res) => {
  */
 export const compressMedia = async (req, res) => {
 
-  const { deleteRaw } = req.params;
+  const { deleteRaw } = req.query;
   const { rawUrl, compressedUrl } = req.body;
+
+  if (!rawUrl || !compressedUrl) {
+    throw new Error("Must specify raw url and compressed url when compressing media")
+  }
 
   const extension = rawUrl.split(".").pop();
   const mediaConvertClient = new MediaConvertClient({
@@ -133,8 +137,8 @@ export const compressMedia = async (req, res) => {
                   Codec: 'H_264',
                   H264Settings: {
                     RateControlMode: 'QVBR', // bit rate will change depending on how complex the video is
-                    MaxBitrate: 3000000, // bit rate cap
-                    QvbrQualityLevel: 4, // quality (1-10), higher is better
+                    MaxBitrate: 1500000, // bit rate cap
+                    QvbrQualityLevel: 1, // quality (1-10), higher is better
                   },
                 },
               },
@@ -177,6 +181,7 @@ export const compressMedia = async (req, res) => {
 
         // delete old raw media
         if (deleteRaw === "true") {
+          console.log("Deleting raw media file.")
           const s3Client = new S3Client({
             region: process.env.AWS_REGION,
           });
