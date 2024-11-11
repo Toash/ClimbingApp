@@ -187,7 +187,7 @@ const Post = ({
     mutationFn: async () => {
       if (window.confirm("Are you sure you want to delete this post?")) {
         await fetchWithRetry(
-          import.meta.env.VITE_APP_API_BASE_URL + `/posts/post/${postId}/`,
+          import.meta.env.VITE_APP_API_BASE_URL + `/posts/post/${postId}?userId=${data.cid}`,
           {
             method: "DELETE",
             headers: {
@@ -200,6 +200,7 @@ const Post = ({
       //invalid posts
       //TODO implement infinite scrolling
       queryClient.invalidateQueries(QUERY_KEYS.POSTS);
+      queryClient.invalidateQueries(QUERY_KEYS.CURRENT_USER)
       enqueueSnackbar("Successfully deleted climb.", { variant: "info" })
     }, onError: () => {
       enqueueSnackbar("There was an error when trying to delete a climb. Please try again later.", { variant: "error" })
@@ -215,28 +216,6 @@ const Post = ({
     }
     return false;
   }
-
-  const [isFlash, setIsFlash] = useState(attempts === 1);
-
-  // Define keyframes for the flash effect
-  const flashAnimation = keyframes`
-0%, 100% {
-  color: yellow;
-  text-shadow: 0 0 10px yellow, 0 0 10px yellow, 0 0 10px yellow, 0 0 10px yellow, 0 0 10px yellow, 0 0 10px yellow;
-}
-50% {
-  color: white;
-  text-shadow: none;
-}
-`;
-
-
-  // define a styled Typography for the flash text
-  const FlashText = styled(Typography)(({ theme }) => ({
-    animation: `${flashAnimation} 2s infinite`,
-    transform: "scale(2)",
-    display: "inline-block",
-  }));
 
 
   // inline styling is bloating this component so much
@@ -293,11 +272,6 @@ const Post = ({
               ? attempts + " Attempts "
               : <Typography component="span">
                 Flash
-                <Box component="span" sx={{ ml: "8px" }}>
-                  < FlashText component="span" >
-                    ⚡︎
-                  </FlashText>
-                </Box>
               </Typography>
             : null}
         </Typography>
@@ -312,22 +286,22 @@ const Post = ({
                 alignItems: "center", // Optional, for vertical centering
               }}>
               {mediaPath.endsWith(".mp4") ||
-                mediaPath.endsWith(".mov") ||
-                mediaPath.endsWith(".avi") ? (
-                <video
-                  controls
-                  style={{ borderRadius: "0.75rem", marginTop: "0.75rem", width: "100%" }}
-                >
-                  <source src={mediaPath} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-              ) : (
-                <img
-                  alt="post"
-                  style={{ borderRadius: "0.75rem", marginTop: "0.75rem", width: "100%" }}
-                  src={mediaPath}
-                />
-              )}
+                mediaPath.endsWith(".mov")
+                ? (
+                  <video
+                    controls
+                    style={{ borderRadius: "0.75rem", marginTop: "0.75rem", width: "100%" }}
+                  >
+                    <source src={mediaPath} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                ) : (
+                  <img
+                    alt="post"
+                    style={{ borderRadius: "0.75rem", marginTop: "0.75rem", width: "100%" }}
+                    src={mediaPath}
+                  />
+                )}
             </div>
           )
         }

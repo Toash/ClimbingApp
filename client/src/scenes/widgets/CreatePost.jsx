@@ -16,9 +16,9 @@ import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { QUERY_KEYS } from "queryKeys";
 import useAuthenticatedUser from "data/useAuthenticatedUser.ts";
 import { useMediaQuery } from "@mui/material";
-import Snackbar from "@mui/material/Snackbar";
-import CloseIcon from '@mui/icons-material/Close';
 import { enqueueSnackbar } from "notistack";
+import { v4 as uuidv4 } from 'uuid';
+
 
 
 /**
@@ -32,7 +32,7 @@ const CreatePost = ({ onPostButtonClicked, onPostCreateResolved }) => {
   const [angle, setAngle] = useState("")
   const [holdTypes, setHoldTypes] = useState([])
   const [styles, setStyles] = useState([])
-  const [media, setMedia] = useState(null);
+  const [media, setMedia] = useState(null); // of type File
   const [post, setPost] = useState("");
   const [vGrade, setVGrade] = useState(0);
   const [attempts, setAttempts] = useState(1);
@@ -65,15 +65,20 @@ const CreatePost = ({ onPostButtonClicked, onPostCreateResolved }) => {
 
           if (selectedDate) {
             formData.append("createdAt", selectedDate.toISOString()); // Add selected date to form data
+          } else if (media.lastModifiedDate) {
+            formData.append("createdAt", media.lastModifiedDate.toISOString());
           }
 
           if (media) {
+            console.log("Last modified date for file: ", media.lastModifiedDate)
             // upload media
-            const path = `${data.cid}/${media.name}`;
+            const fileName = uuidv4(); // ⇨ '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d'
+            const extension = media.name.split(".").pop();
+            const path = `${data.cid}/${fileName}.${extension}`;
 
-            const fullUrl = await uploadMedia(path, media);
+            const { url: fullUrl, message } = await uploadMedia(path, media);
             formData.append("mediaPath", fullUrl);
-
+            enqueueSnackbar(message, { variant: "success" });
           }
 
           const response = await fetchWithRetry(
@@ -349,7 +354,7 @@ const CreatePost = ({ onPostButtonClicked, onPostCreateResolved }) => {
               maxSize={100000000} // 100 MB
               multiple={false}
               onDrop={(acceptedFiles) => setMedia(acceptedFiles[0])}
-              onDropRejected={() => enqueueSnackbar("Maximum file size is 100 MB.")}
+              onDropRejected={() => enqueueSnackbar("Maximum file size is 100 MB. Allowed video types are mp4 and mov, Allowed image types are png, gif, jpeg / jpg")}
             >
               {({ getRootProps, getInputProps }) => (
                 <FlexBetween>

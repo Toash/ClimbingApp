@@ -1,4 +1,5 @@
 import {
+  DeleteObjectCommand,
   HeadObjectCommand,
   NotFound,
   PutObjectCommand,
@@ -77,13 +78,17 @@ export const getPresignedPutUrl = async (req, res) => {
 
 
 /**
- * Compress media using aws convert.
+ * Compress media using aws mediaconvert.
+ * 
+ *   const { deleteRaw } = req.params;
+ * 
  *   const { rawUrl, compressedUrl } = req.body;
  * @param {*} req 
  * @param {*} res 
  */
 export const compressMedia = async (req, res) => {
 
+  const { deleteRaw } = req.params;
   const { rawUrl, compressedUrl } = req.body;
 
   const extension = rawUrl.split(".").pop();
@@ -99,7 +104,7 @@ export const compressMedia = async (req, res) => {
         {
           FileInput: rawUrl,
           VideoSelector: {
-            Rotate: InputRotate.AUTO,
+            Rotate: InputRotate.AUTO, // get from metadata
             PadVideo: PadVideo.BLACK
           },
           AudioSelectors: {
@@ -121,15 +126,14 @@ export const compressMedia = async (req, res) => {
           Outputs: [
             {
               ContainerSettings: {
-                // Container: "MP4"
-                Container: extension.toUpperCase()
+                Container: extension.toUpperCase() // same extension as input.
               },
               VideoDescription: {
                 CodecSettings: {
                   Codec: 'H_264',
                   H264Settings: {
                     RateControlMode: 'QVBR', // bit rate will change depending on how complex the video is
-                    MaxBitrate: 4000000, // bit rate cap
+                    MaxBitrate: 3000000, // bit rate cap
                     QvbrQualityLevel: 4, // quality (1-10), higher is better
                   },
                 },
@@ -139,7 +143,7 @@ export const compressMedia = async (req, res) => {
                   CodecSettings: {
                     Codec: "AAC",
                     AacSettings: {
-                      Bitrate: 64000,
+                      Bitrate: 128000,
                       CodingMode: "CODING_MODE_2_0",
                       SampleRate: 48000,
                     },
@@ -161,20 +165,44 @@ export const compressMedia = async (req, res) => {
     const jobId = job.Job.Id;
     console.log("Analyzing the status for mediaconvert job id:", jobId)
 
+    // repeatedly check the status of the job to return respond accordingly.
     let jobStatus = "";
     let jobDetails;
     while (jobStatus !== JobStatus.COMPLETE && jobStatus !== JobStatus.ERROR) {
       jobDetails = await mediaConvertClient.send(new GetJobCommand({ Id: jobId }))
       jobStatus = jobDetails.Job.Status;
-      console.log("Job status:", jobStatus);
 
       if (jobStatus === JobStatus.COMPLETE) {
-        console.log("MediaConvert job completed successfully");
-        return res.status(200).json({ message: "MediaConvert job completed successfully" });
+        console.log("JobStatus.COMPLETE: MediaConvert job completed successfully");
+
+        // delete old raw media
+        if (deleteRaw === "true") {
+          const s3Client = new S3Client({
+            region: process.env.AWS_REGION,
+          });
+          // Extract bucket name and key from rawUrl
+          // "s3://toash-climbing-media/dir/somefile" becomes "[toash-climbing-media, dir, somefile]"
+          const rawUrlParts = rawUrl.replace('s3://', '').split('/');
+          // gets "toash-climbing-media". "[dir, somefile]"
+          const Bucket = rawUrlParts.shift(); //pop from front
+          // gets "dir/somefile"
+          const Key = rawUrlParts.join('/');
+
+          // Delete the raw media file from S3
+          await s3Client.send(new DeleteObjectCommand({ Bucket, Key }))
+          console.log("Raw media file deleted successfully from the following bucket and key:", { Bucket, Key });
+        }
+
+        if (deleteRaw === "true") {
+          return res.status(200).json({ message: "MediaConvert job completed successfully, deleted raw file." });
+        } else {
+          return res.status(200).json({ message: "MediaConvert job completed successfully" });
+        }
+
       }
 
       if (jobStatus === JobStatus.ERROR) {
-        console.error("MediaConvert job failed");
+        console.error("JobStatus.ERROR: MediaConvert job failed");
         return res.status(500).json({ message: "MediaConvert job failed" });
       }
 
@@ -185,4 +213,6 @@ export const compressMedia = async (req, res) => {
     console.log("Error creating MediaConvert job: ", e);
     return res.status(500).json({ message: "MediaConvert job failed" });
   }
+
+
 }

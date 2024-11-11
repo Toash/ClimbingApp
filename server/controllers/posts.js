@@ -110,6 +110,7 @@ export const createPost = async (req, res) => {
 
 export const editPost = async (req, res) => {
   try {
+    const userId = req.query.userId;
     const { postId } = req.params;
     const { title, description, vGrade, attempts } = req.body;
 
@@ -148,9 +149,17 @@ export const editPost = async (req, res) => {
 
 export const deletePost = async (req, res) => {
 
+  const userId = req.query.userId;
+  const { postId } = req.params;
+
+  if (!userId) {
+    throw new Error("userId must be specified in query parameters when deleting.")
+  }
+  if (!postId) {
+    throw new Error("postId must be specified in the URL when deleting.")
+  }
+
   const deleteObject = async (fullS3Key) => {
-
-
     const url = new URL(fullS3Key);
     // The pathname gives us everything after the domain
     const s3key = url.pathname.substring(1); // Remove the leading "/"
@@ -186,7 +195,7 @@ export const deletePost = async (req, res) => {
     }
   }
   try {
-    const { postId } = req.params; // Get the postId from the request parameters
+
 
     // Ensure media attach to post is also deleted if it exists.
     const postToDelete = await Post.findById(postId);
@@ -211,7 +220,7 @@ export const deletePost = async (req, res) => {
     if (deletedPost) {
       res
         .status(200)
-        .json({ message: "Post deleted successfully", deletedPost });
+        .json({ message: "Post deleted successfully, along with associated media (if it existed)", deletedPost });
     } else {
       res.status(404).json({ message: "Post not found" });
     }

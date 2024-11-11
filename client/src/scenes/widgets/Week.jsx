@@ -59,14 +59,17 @@ const Week = () => {
             let counts = {};
             weeklyPosts.forEach((post) => {
                 post.styles.forEach((style) => {
-                    counts[style] = (counts[style] || 0) + 1;
+                    if (style) {
+                        counts[style] = (counts[style] || 0) + 1;
+                    }
                 })
             })
 
             let pieCount = [];
-
-            for (const style in counts) {
-                pieCount.push({ label: style, value: counts[style] });
+            if (counts) {
+                for (const style in counts) {
+                    pieCount.push({ label: style, value: counts[style] });
+                }
             }
 
             return pieCount;
@@ -80,14 +83,18 @@ const Week = () => {
             let counts = {};
             weeklyPosts.forEach((post) => {
                 post.holds.forEach((hold) => {
-                    counts[hold] = (counts[hold] || 0) + 1;
+                    if (hold) {
+                        counts[hold] = (counts[hold] || 0) + 1;
+                    }
                 })
             })
 
             let pieCount = [];
 
-            for (const hold in counts) {
-                pieCount.push({ label: hold, value: counts[hold] });
+            if (counts) {
+                for (const hold in counts) {
+                    pieCount.push({ label: hold, value: counts[hold] });
+                }
             }
 
             return pieCount;
@@ -106,6 +113,11 @@ const Week = () => {
 
 
     if (gotWeeklyPosts && loggedIn) {
+        const pieChartStyles = {
+            highlightScope: { fade: 'global', highlight: 'item' },
+            faded: { innerRadius: 30, additionalRadius: -30, color: 'gray' },
+        }
+
         return (
             <WidgetWrapper width="100%" >
                 <Typography
@@ -125,16 +137,23 @@ const Week = () => {
                         <Typography align="center" fontSize={"1rem"}> Styles </Typography>
                         <Divider />
                         <PieChart
-                            series={[{ data: getStyleCountsForPie() }]}
+                            series={[{
+                                data: getStyleCountsForPie(),
+                                ...pieChartStyles
+                            }]}
                             width={350}
                             height={200}
+
                         />
                     </Box>
                     <Box>
                         <Typography align="center" fontSize={"1rem"}> Holds used</Typography>
                         <Divider />
                         <PieChart
-                            series={[{ data: getHoldCountsForPie() }]}
+                            series={[{
+                                data: getHoldCountsForPie(),
+                                ...pieChartStyles
+                            }]}
                             width={350}
                             height={200}
                         />

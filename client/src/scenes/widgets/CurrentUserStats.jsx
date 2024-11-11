@@ -27,10 +27,10 @@ function CurrentUserStats() {
         </Typography>
         <Divider sx={{ marginBottom: "1rem" }}></Divider>
 
-        <Typography>
+        {data.vGrade && <Typography>
           {"Max Grade: " + data.vGrade}
+        </Typography>}
 
-        </Typography>
         {/* <Typography>
 
           {"Preferred Style:"}
