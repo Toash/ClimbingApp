@@ -2,13 +2,17 @@
 Live Link: https://boulderstat.com
 
 # Things that I learned
-- Token authentication and refreshing. Need to handle cases when access / id token becomes invalid, can wrap fetch function with a function that checks for unauthorized response, if so refresh the token. 
+- For token authentication and refreshing, need to handle cases when access / id token becomes invalid, can wrap fetch function with a function that checks for unauthorized response, if so refresh the token. If using axios you can use intercepters instead to check for the unauthorized response and then refresh.
 
-- Data fetching from an api requires multiple features to be efficient such as caching, making data stale (Keeping data up to date), response handling for success, loading, and error. React query makes this much easier.
+- Data fetching from an api requires multiple features to be efficient such as caching, making data stale (Keeping data up to date), response handling for success, loading, and error. React query makes this much easier, it can keep track of each data fetched from an api through a key, and this can be fetched or invalidated anywhere in the application.
 
 - Creating a seperate staging environment will make development the application easier much, as the frontend can plug directly into it and changes are instant with HMR. Backend can be tested without affecting the main application.
 
 - Putting all dependencies into a lambda layer will make updating the lambda function faster if updating dependencies is not needed.
+
+- Compressing media will make the website load much faster. 55 MB to 8 MB will make a big difference when multiple videos are being loaded.
+
+- IOS Safari will not generate thumbnails for video elements. You can use media fragments (append #t=0.001 at the end of the url), to display the thumbnail. It is telling the browser to skip the first millisecond, which allows IOS Safari to preload the thumbnail.
 
 # About the project
 

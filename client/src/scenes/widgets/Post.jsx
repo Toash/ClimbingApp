@@ -293,7 +293,8 @@ const Post = ({
                     controls
                     style={{ borderRadius: "0.75rem", marginTop: "0.75rem", width: "100%" }}
                   >
-                    <source src={mediaPath} type="video/mp4" />
+                    {/* Add #t=0.001 to generate thumbnail on IOS safari. */}
+                    <source src={mediaPath + "#t=0.001"} />
                     Your browser does not support the video tag.
                   </video>
                 ) : (
