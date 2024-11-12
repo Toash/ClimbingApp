@@ -65,7 +65,7 @@ const CreatePost = ({ onPostButtonClicked, onPostCreateResolved }) => {
 
           if (selectedDate) {
             formData.append("createdAt", selectedDate.toISOString()); // Add selected date to form data
-          } else if (media.lastModifiedDate) {
+          } else if (media?.lastModifiedDate) {
             formData.append("createdAt", media.lastModifiedDate.toISOString());
           }
 

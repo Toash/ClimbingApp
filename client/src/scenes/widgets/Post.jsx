@@ -186,7 +186,7 @@ const Post = ({
   const deletePostMutation = useMutation({
     mutationFn: async () => {
       if (window.confirm("Are you sure you want to delete this post?")) {
-        await fetchWithRetry(
+        const response = await fetchWithRetry(
           import.meta.env.VITE_APP_API_BASE_URL + `/posts/post/${postId}?userId=${data.cid}`,
           {
             method: "DELETE",
@@ -195,15 +195,16 @@ const Post = ({
             },
           }
         );
+        return response.json();
       }
-    }, onSuccess: () => {
+    }, onSuccess: (data) => {
       //invalid posts
       //TODO implement infinite scrolling
       queryClient.invalidateQueries(QUERY_KEYS.POSTS);
       queryClient.invalidateQueries(QUERY_KEYS.CURRENT_USER)
-      enqueueSnackbar("Successfully deleted climb.", { variant: "info" })
-    }, onError: () => {
-      enqueueSnackbar("There was an error when trying to delete a climb. Please try again later.", { variant: "error" })
+      enqueueSnackbar(data.message, { variant: "info" })
+    }, onError: (data) => {
+      enqueueSnackbar(data.message, { variant: "error" })
     }
   })
 

@@ -147,6 +147,7 @@ export const editPost = async (req, res) => {
   }
 };
 
+// deletes post and associated media if it exists.
 export const deletePost = async (req, res) => {
 
   const userId = req.query.userId;
@@ -158,6 +159,9 @@ export const deletePost = async (req, res) => {
   if (!postId) {
     throw new Error("postId must be specified in the URL when deleting.")
   }
+
+  let mediaDeleted = false;
+
 
   const deleteObject = async (fullS3Key) => {
     const url = new URL(fullS3Key);
@@ -205,7 +209,9 @@ export const deletePost = async (req, res) => {
       try {
         await deleteObject(mediaPath)
         console.log("S3 object at " + mediaPath + " successfully deleted.")
+        mediaDeleted = true;
       } catch (e) {
+        res.status(500).json({ message: e.message });
         console.log("error trying to delete bucket, " + e.message)
       }
 
@@ -218,9 +224,16 @@ export const deletePost = async (req, res) => {
     await updateHiscore(userId);
 
     if (deletedPost) {
-      res
-        .status(200)
-        .json({ message: "Post deleted successfully, along with associated media (if it existed)", deletedPost });
+      if (mediaDeleted) {
+        res
+          .status(200)
+          .json({ message: "Post deleted successfully along with associated media.", deletedPost });
+      } else {
+        res
+          .status(200)
+          .json({ message: "Post deleted successfully.", deletedPost });
+      }
+
     } else {
       res.status(404).json({ message: "Post not found" });
     }
