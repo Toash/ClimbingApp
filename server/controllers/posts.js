@@ -98,11 +98,9 @@ export const createPost = async (req, res) => {
     const newPost = new Post(newPostData);
     await newPost.save();
 
-    const posts = await Post.find();
-
     //update user highscore
     await updateHiscore(userId);
-    res.status(201).json(posts); //send posts in res
+    res.status(201).json({ message: "Successfully logged climb." }); //send posts in res
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

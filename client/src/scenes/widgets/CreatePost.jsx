@@ -95,7 +95,7 @@ const CreatePost = ({ onPostButtonClicked, onPostCreateResolved }) => {
         }
       },
 
-      onSuccess: () => {
+      onSuccess: (data) => {
         // we just changed the post so we need to get posts again.
         queryClient.invalidateQueries(QUERY_KEYS.POSTS)
         setMedia(null);
@@ -110,8 +110,7 @@ const CreatePost = ({ onPostButtonClicked, onPostCreateResolved }) => {
 
         enqueueSnackbar("Successfully logged climb!", { variant: "success" });
       },
-      onError: (error) => {
-        console.log("Error posting:", error)
+      onError: (data) => {
         enqueueSnackbar("There was an error when trying to log the climb.", { variant: "error" });
       },
       onSettled: () => {
