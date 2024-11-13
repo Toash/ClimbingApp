@@ -1,8 +1,8 @@
 // Uploads media into raw and compressed format. Videos are compressed.
-export const uploadMedia = async (s3key, media) => {
+export const uploadMedia = async ({ s3key, media, compress = false }) => {
 
   const videoExtensions = [".mp4", ".mov"]
-  const extension = s3key.slice(s3key.lastIndexOf(".")).toLowerCase().trim();
+
 
   // get presigned url for the specific s3key
   // example s3key: 016bf520-c011-70ee-c024-6761acd7bf31/ForBiggerJoyrides.mp4
@@ -68,10 +68,9 @@ export const uploadMedia = async (s3key, media) => {
   // compress if we have a video
   let compressedWebUrl; // the web url that accesses the compressed media.
   let compressedVideo = false;
-  if (videoExtensions.includes(extension)) {
+  const extension = s3key.slice(s3key.lastIndexOf(".")).toLowerCase().trim();
+  if (videoExtensions.includes(extension) && compress) {
     await compressVideo();
-
-    // TODO delete the uncompressed video.
   }
 
 

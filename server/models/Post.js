@@ -30,6 +30,8 @@ const postSchema = new mongoose.Schema(
     title: String,
     description: String,
 
+    climbDate: Date,
+
     // ------------- MEDIA -------------
     // link to object in s3 bucket
     mediaPath: String,

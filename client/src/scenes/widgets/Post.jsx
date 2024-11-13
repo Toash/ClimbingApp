@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { format } from "date-fns";
 import {
   ChatBubbleOutlineOutlined,
   FavoriteBorderOutlined,
   FavoriteOutlined,
+  Menu as MenuIcon,
 } from "@mui/icons-material";
 
 import { alpha } from "@mui/material/styles";
@@ -36,9 +37,13 @@ import { styled, keyframes } from "@mui/system";
 import EditPost from "./EditPost.jsx";
 import { useMediaQuery } from "@mui/system";
 import { enqueueSnackbar } from "notistack";
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import LogClimbForm from "./LogClimbForm.jsx";
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 const Post = ({
-  createdAt,
+  climbDate,
   postId,
   postUserId,
   //user info
@@ -49,6 +54,9 @@ const Post = ({
   attempts,
   title,
   description,
+  angle,
+  holds,
+  styles,
 
   //media
   mediaPath,
@@ -56,11 +64,34 @@ const Post = ({
   comments,
 }) => {
 
+  // data used to pass into the form if editing.
+  let data = {
+    postId,
+
+    title,
+    vGrade,
+    attempts,
+    description,
+    angle,
+    holds,
+    styles,
+    climbDate,
+
+  }
   const [isEditing, setIsEditing] = useState(false);
   const [isComments, setIsComments] = useState(false);
   const [newComment, setNewComment] = useState("");
 
-  const formattedDate = format(new Date(createdAt), "MMMM d, yyyy");
+  // Hamburger menu
+  const [hamburgerAnchorEl, setHamburgerAnchorEl] = React.useState(null);
+  const hamburgerOpen = Boolean(hamburgerAnchorEl);
+  const handleHamburgerClick = (event) => {
+    setHamburgerAnchorEl(event.currentTarget);
+  };
+  const handleHamburgerClose = () => {
+    setHamburgerAnchorEl(null);
+  };
+
 
   const { palette } = useTheme();
 
@@ -82,7 +113,7 @@ const Post = ({
             Authorization: `Bearer ${localStorage.getItem("id_token")}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ userId: data.cid }),
+          body: JSON.stringify({ userId: userData.cid }),
         }
       );
 
@@ -98,7 +129,7 @@ const Post = ({
               ...post,
               likes: {
                 ...post.likes,
-                [data.cid]: !post.likes[data.cid],
+                [userData.cid]: !post.likes[userData.cid],
               },
             };
           }
@@ -137,7 +168,7 @@ const Post = ({
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            userId: data.cid,
+            userId: userData.cid,
             comment: variables.comment,
           }),
         }
@@ -167,7 +198,7 @@ const Post = ({
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            userId: data.cid,
+            userId: userData.cid,
           }),
         }
       );
@@ -187,7 +218,7 @@ const Post = ({
     mutationFn: async () => {
       if (window.confirm("Are you sure you want to delete this post?")) {
         const response = await fetchWithRetry(
-          import.meta.env.VITE_APP_API_BASE_URL + `/posts/post/${postId}?userId=${data.cid}`,
+          import.meta.env.VITE_APP_API_BASE_URL + `/posts/post/${postId}?userId=${userData.cid}`,
           {
             method: "DELETE",
             headers: {
@@ -209,51 +240,52 @@ const Post = ({
   })
 
 
-  const { data, isSuccess } = useAuthenticatedUser();
+  const { data: userData, isSuccess, } = useAuthenticatedUser();
 
   const isCurrentUserPost = () => {
     if (isSuccess) {
-      return data.cid === postUserId;
+      return userData.cid === postUserId;
     }
     return false;
   }
+
+
 
 
   // inline styling is bloating this component so much
   return (
     <>
       <WidgetWrapper width="100%" maxWidth="1000px" m="0rem 0">
-        <Box display="flex">
-          <Box flex="1">
+        <Box display="flex" alignItems="center" justifyContent={"space-between"}>
+          <Box>
             <UserCard
               userId={postUserId}
             />
           </Box>
           {isCurrentUserPost() && (
             <>
-              {/* <IconButton
-              sx={{
-                backgroundColor: alpha(palette.info.light, 0.1),
-                color: palette.info.main,
-                height: "2.5rem",
-                width: "2.5rem",
-                marginRight: "0.5rem",
-              }}
-              onClick={() => setIsEditing(!isEditing)}
-            >
-              <EditIcon />
-            </IconButton> */}
               <IconButton
-                sx={{
-                  backgroundColor: alpha(palette.error.light, 0.1),
-                  color: palette.error.main,
-                  height: "2.5rem",
-                  width: "2.5rem",
-                }}
-                onClick={() => deletePostMutation.mutate()}
-              >
-                <DeleteIcon />
+                sx={{ height: "3rem", width: "3rem" }}
+                id="basic-button"
+                aria-controls={hamburgerOpen ? 'basic-menu' : undefined}
+                aria-haspopup="true"
+                aria-expanded={hamburgerOpen ? 'true' : undefined}
+                onClick={handleHamburgerClick}>
+                <MoreVertIcon></MoreVertIcon>
               </IconButton>
+              <Menu
+                id="basic-menu"
+                anchorEl={hamburgerAnchorEl}
+                open={hamburgerOpen}
+                onClose={handleHamburgerClose}
+                MenuListProps={{
+                  'aria-labelledby': 'basic-button',
+                }}
+              >
+                <MenuItem onClick={() => setIsEditing(!isEditing)}>Edit</MenuItem>
+                <MenuItem onClick={() => deletePostMutation.mutate()}>Delete</MenuItem>
+
+              </Menu>
             </>
           )}
         </Box>
@@ -291,7 +323,7 @@ const Post = ({
                 ? (
                   <video
                     controls
-                    style={{ borderRadius: "0.75rem", marginTop: "0.75rem", width: "100%" }}
+                    style={{ borderRadius: "0.75rem", marginTop: "0.75rem", width: "100%", maxHeight: "800px" }}
                   >
                     {/* Add #t=0.001 to generate thumbnail on IOS safari. */}
                     <source src={mediaPath + "#t=0.001"} />
@@ -300,7 +332,7 @@ const Post = ({
                 ) : (
                   <img
                     alt="post"
-                    style={{ borderRadius: "0.75rem", marginTop: "0.75rem", width: "100%" }}
+                    style={{ borderRadius: "0.75rem", marginTop: "0.75rem", width: "100%", maxHeight: "800px" }}
                     src={mediaPath}
                   />
                 )}
@@ -320,7 +352,7 @@ const Post = ({
               {isSuccess ? (
                 <>
                   <IconButton onClick={() => togglePostLikeMutation.mutate()}>
-                    {!!likes[data.cid] ? (
+                    {!!likes[userData.cid] ? (
                       <FavoriteOutlined sx={{ color: primary }} />
                     ) : (
                       <FavoriteBorderOutlined />
@@ -342,7 +374,7 @@ const Post = ({
           </FlexBetween>
           {/* DATE */}
           <Typography color={palette.neutral.main} sx={{ fontSize: "0.875rem" }}>
-            {formattedDate}
+            {climbDate && format(new Date(climbDate), "MMMM d, yyyy")}
           </Typography>
         </FlexBetween>
 
@@ -393,7 +425,7 @@ const Post = ({
                               <IconButton
                                 onClick={() => toggleCommentLikeMutation({ commentId: comment._id })}
                               >
-                                {!!comment.likeCount[data.cid] ? (
+                                {!!comment.likeCount[userData.cid] ? (
                                   <FavoriteOutlined sx={{ color: primary }} />
                                 ) : (
                                   <FavoriteBorderOutlined />
@@ -441,45 +473,13 @@ const Post = ({
         }
 
         {/* Edit Post Dialog */}
-        <Dialog open={isEditing} onClose={() => setIsEditing(false)}>
-          <EditPost
-            postId={postId}
-            title={title}
-            description={description}
-            vGrade={vGrade}
-            attempts={attempts}
-            createdAt={createdAt}
-            onEdit={() => { setIsEditing(false) }} >
-
-          </EditPost>
+        <Dialog open={isEditing} onClose={() => setIsEditing(false)} fullWidth>
+          <LogClimbForm onPostButtonClicked={() => setIsEditing(false)} edit data={data} />
         </Dialog>
       </WidgetWrapper >
     </>
   );
 };
 
-
-
-
-
-Post.propTypes = {
-  createdAt: PropTypes.string.isRequired,
-  postId: PropTypes.any.isRequired,
-  postUserId: PropTypes.string.isRequired,
-  //user info
-  name: PropTypes.string.isRequired,
-  //picturePath: PropTypes.string.isRequired,
-
-  //climbing info
-  vGrade: PropTypes.number.isRequired,
-  attempts: PropTypes.number.isRequired,
-  title: PropTypes.string.isRequired,
-  description: PropTypes.string.isRequired,
-
-  //media
-  mediaPath: PropTypes.string,
-  likes: PropTypes.object.isRequired,
-  comments: PropTypes.array.isRequired,
-}
 
 export default Post;

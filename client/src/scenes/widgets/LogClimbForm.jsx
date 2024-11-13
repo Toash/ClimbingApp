@@ -2,7 +2,7 @@ import React from "react";
 import { useState } from "react";
 
 import { EditOutlined, DeleteOutlined, Add, Remove } from "@mui/icons-material";
-import { useTheme, Box, Button, Divider, Typography, Select, MenuItem, FormControl, InputLabel, InputBase, FormGroup, FormControlLabel, IconButton, Checkbox, FormLabel, Modal, CircularProgress } from '@mui/material';
+import { useTheme, Box, Button, Divider, Typography, Select, MenuItem, FormControl, InputLabel, InputBase, FormGroup, FormControlLabel, IconButton, Checkbox, FormLabel, Modal, CircularProgress, TextField, Icon } from '@mui/material';
 
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import Dropzone from "react-dropzone";
@@ -18,27 +18,32 @@ import useAuthenticatedUser from "data/useAuthenticatedUser.ts";
 import { useMediaQuery } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 import { v4 as uuidv4 } from 'uuid';
-
-
+import VideocamIcon from '@mui/icons-material/Videocam';
+import Cassette from "/cassette.png"
 
 /**
  * Allows user to specify post attributes then post a post.
  * Contains Dropzone to hold files.
+ * data: contains all of the state (including postId), initializes the state if mode is edit.
  * @returns
  */
-const CreatePost = ({ onPostButtonClicked, onPostCreateResolved }) => {
+const LogClimbForm = ({ onPostButtonClicked, edit, data, compressMedia = false }) => {
 
   // FORM DATA
-  const [angle, setAngle] = useState("")
-  const [holdTypes, setHoldTypes] = useState([])
-  const [styles, setStyles] = useState([])
-  const [media, setMedia] = useState(null); // of type File
-  const [post, setPost] = useState("");
-  const [vGrade, setVGrade] = useState(0);
-  const [attempts, setAttempts] = useState(1);
-  const [description, setDescription] = useState("");
-  const [selectedDate, setSelectedDate] = useState(null); // State for date
 
+  let postId;
+  if (edit) {
+    postId = data?.postId
+  }
+  const [angle, setAngle] = useState(edit ? data?.angle : "")
+  const [holds, setHolds] = useState(edit ? data?.holds : [])
+  const [styles, setStyles] = useState(edit ? data?.styles : [])
+  const [media, setMedia] = useState(edit ? data?.media : null); // of type File
+  const [title, setTitle] = useState(edit ? data?.title : "");
+  const [vGrade, setVGrade] = useState(edit ? data?.vGrade : 0);
+  const [attempts, setAttempts] = useState(edit ? data?.attempts : 1);
+  const [description, setDescription] = useState(edit ? data?.description : "");
+  const [selectedDate, setSelectedDate] = useState(edit && data?.climbDate ? new Date(data?.climbDate) : new Date()); // State for date
 
   const { palette } = useTheme();
 
@@ -53,42 +58,70 @@ const CreatePost = ({ onPostButtonClicked, onPostCreateResolved }) => {
 
         try {
           const formData = new FormData();
-          formData.append("userId", data.cid);
-          formData.append("title", post);
+          formData.append("userId", userData.cid);
+          formData.append("title", title);
           formData.append("vGrade", vGrade);
           formData.append("attempts", attempts);
           formData.append("description", description);
           formData.append("angle", angle);
-          formData.append("holds", holdTypes);
+          formData.append("holds", holds);
           formData.append("styles", styles);
 
-
           if (selectedDate) {
-            formData.append("createdAt", selectedDate.toISOString()); // Add selected date to form data
-          } else if (media?.lastModifiedDate) {
-            formData.append("createdAt", media.lastModifiedDate.toISOString());
+            console.log("selectedDate", selectedDate)
+            formData.append("climbDate", selectedDate.toISOString()); // Add selected date to form data
+          } else if (!edit && media?.lastModifiedDate) {
+            formData.append("climbDate", media.lastModifiedDate.toISOString());
           }
 
           if (media) {
-            console.log("Last modified date for file: ", media.lastModifiedDate)
+            // console.log("Last modified date for file: ", media.lastModifiedDate)
             // upload media
             const fileName = uuidv4(); // ⇨ '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d'
             const extension = media.name.split(".").pop();
             const path = `${data.cid}/${fileName}.${extension}`;
 
-            const { url: fullUrl, message } = await uploadMedia(path, media);
+
+            let message;
+            let fullUrl;
+            if (media.size >= 20000000 && compressMedia) {
+              ({ url: fullUrl, message } = await uploadMedia({ s3key: path, media, compress: true }));
+            } else {
+              ({ url: fullUrl, message } = await uploadMedia({ s3key: path, media, compress: false }));
+            }
             formData.append("mediaPath", fullUrl);
             enqueueSnackbar(message, { variant: "success" });
           }
 
-          const response = await fetchWithRetry(
-            import.meta.env.VITE_APP_API_BASE_URL + "/posts",
-            {
-              method: "POST",
-              headers: { Authorization: `Bearer ${localStorage.getItem("id_token")}` },
-              body: formData,
-            }
-          );
+          if (edit) {
+            formData.append("edit", "true")
+            formData.append("postId", postId)
+          } else {
+            formData.append("edit", "false")
+          }
+
+
+          let response;
+          if (edit) {
+            response = await fetchWithRetry(
+              import.meta.env.VITE_APP_API_BASE_URL + `/posts/post/${postId}`,
+              {
+                method: "PATCH",
+                headers: { Authorization: `Bearer ${localStorage.getItem("id_token")}` },
+                body: formData,
+              }
+            );
+          } else {
+            response = await fetchWithRetry(
+              import.meta.env.VITE_APP_API_BASE_URL + "/posts",
+              {
+                method: "POST",
+                headers: { Authorization: `Bearer ${localStorage.getItem("id_token")}` },
+                body: formData,
+              }
+            );
+          }
+
           return response.json();
         } catch (e) {
           throw e;
@@ -99,22 +132,26 @@ const CreatePost = ({ onPostButtonClicked, onPostCreateResolved }) => {
         // we just changed the post so we need to get posts again.
         queryClient.invalidateQueries(QUERY_KEYS.POSTS)
         setMedia(null);
-        setPost("");
+        setTitle("");
         setVGrade(0);
         setAttempts(1);
         setSelectedDate(null);
         setDescription("");
         setAngle("");
-        setHoldTypes([])
+        setHolds([])
         setStyles([])
 
-        enqueueSnackbar("Successfully logged climb!", { variant: "success" });
+        if (edit) {
+          enqueueSnackbar("Successfully edited climb.", { variant: "success" });
+        } else {
+          enqueueSnackbar("Successfully logged climb!", { variant: "success" });
+        }
+
       },
-      onError: (data) => {
-        enqueueSnackbar("There was an error when trying to log the climb.", { variant: "error" });
+      onError: (error) => {
+        enqueueSnackbar("There was an error when trying to log the climb. " + error, { variant: "error" });
       },
       onSettled: () => {
-        onPostCreateResolved();
       }
     }
   )
@@ -137,12 +174,12 @@ const CreatePost = ({ onPostButtonClicked, onPostCreateResolved }) => {
 
   const handleHoldChange = (event) => {
     const hold = event.target.value;
-    if (holdTypes.includes(hold)) {
+    if (holds.includes(hold)) {
       // toggle off
-      setHoldTypes(holdTypes.filter(s => s !== hold))
+      setHolds(holds.filter(s => s !== hold))
     } else {
       // toggle on
-      setHoldTypes([...holdTypes, hold])
+      setHolds([...holds, hold])
     }
   }
 
@@ -157,12 +194,23 @@ const CreatePost = ({ onPostButtonClicked, onPostCreateResolved }) => {
     }
   }
 
-  const { data, isSuccess, isLoading } = useAuthenticatedUser();
+  const { data: userData, isSuccess, isLoading } = useAuthenticatedUser();
 
 
   if (isLoading) {
     return <Typography>Fetching user data...</Typography>
   }
+
+  // can change this to support other grades (font)
+  const grades =
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17].map((x) => {
+      return (
+        {
+          value: x,
+          label: `V${x}`
+        }
+      )
+    })
 
 
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
@@ -176,61 +224,49 @@ const CreatePost = ({ onPostButtonClicked, onPostCreateResolved }) => {
 
     return (
       <>
+        <WidgetWrapper sx={{ width: "100%" }}>
+          <Typography align="center" variant="h1" sx={{ padding: "1rem", color: palette.neutral.main, fontWeight: "500", mb: "1rem" }}> {!edit ? "Log Climb" : "Edit Climb"}</Typography>
 
-        <WidgetWrapper>
-          <FlexBetween gap="1.5rem">
-            {isNonMobileScreens && <UserImage s3key={data.picturePath} />}
+          <FlexBetween>
 
             <Box
-              display={isNonMobileScreens ? "flex" : "block"}
-              alignItems="center"
-              justifyContent="space-between"
+              display="flex"
+              gap={1}
               sx={{ width: "100%" }}
-
             >
               {/* TITLE */}
-              <InputBase
-                placeholder="Enter a title for your climb"
-                onChange={(e) => setPost(e.target.value)}
-                value={post}
-                sx={{
-                  flexGrow: 1,
-                  backgroundColor: palette.neutral.light,
-                  borderRadius: "2rem",
-                  padding: "1rem 2rem",
-                  color: palette.neutral.main,
-                  fontSize: "1rem", // Optional: ensure consistent font size
-                  outline: `1px solid ${palette.neutral.outline}`,
-                  width: "100%",
-                  mb: isNonMobileScreens ? undefined : "1rem"
-                }}
-              />
+              <Box sx={{ flexGrow: 10 }}>
+                <TextField
+                  label="Title"
+                  onChange={(e) => setTitle(e.target.value)}
+                  value={title}
+                  sx={{
+                    color: palette.neutral.main,
+                    fontSize: "1rem", // Optional: ensure consistent font size
+                    width: "100%",
+
+                  }}
+                />
+              </Box>
 
               {/* V-Grade Input */}
-              <Box display="flex" alignItems="center" sx={{ marginLeft: isNonMobileScreens ? "2rem" : "1rem" }}>
-                <Typography
-                  variant="h6"
-                  sx={{ marginRight: "1rem", color: palette.neutral.main, whiteSpace: "nowrap" }}
-
-                >
-                  V-Grade:
-                </Typography>
-
-                <InputBase
-                  type="number"
+              <Box sx={{ flexGrow: 1 }}>
+                <TextField
+                  label="V-Grade"
+                  select
                   value={vGrade}
                   onChange={(e) => setVGrade(e.target.value)}
                   sx={{
-                    width: isNonMobileScreens ? "100px" : "100%",
-                    backgroundColor: palette.neutral.light,
-                    borderRadius: "2rem",
-                    padding: "1rem 2rem",
                     color: palette.neutral.main,
-                    fontSize: "1rem",
-                    outline: `1px solid ${palette.neutral.outline}`,
+                    width: "100%"
                   }}
-                  inputProps={{ min: 0, max: 17 }}
-                />
+                >
+                  {grades.map((grade) => (
+                    <MenuItem key={grade.value} value={grade.value}>
+                      {grade.label}
+                    </MenuItem>
+                  ))}
+                </TextField>
               </Box>
             </Box>
           </FlexBetween>
@@ -299,7 +335,7 @@ const CreatePost = ({ onPostButtonClicked, onPostCreateResolved }) => {
             <Select
               labelId="angle-label"
               value={angle}
-              label="angle"
+              label="Angle"
               onChange={handleAngleChange}
             >
               <MenuItem value="Slab">Slab</MenuItem>
@@ -315,7 +351,7 @@ const CreatePost = ({ onPostButtonClicked, onPostCreateResolved }) => {
             <Divider sx={{ margin: "1rem 0" }} />
             {
               holdNames.map((hold) => (
-                <FormControlLabel control={<Checkbox checked={holdTypes.includes(hold)} />} onChange={handleHoldChange} value={hold}
+                <FormControlLabel control={<Checkbox checked={holds.includes(hold)} />} onChange={handleHoldChange} value={hold}
                   label={hold} key={hold} />
 
               ))
@@ -336,30 +372,26 @@ const CreatePost = ({ onPostButtonClicked, onPostCreateResolved }) => {
           <Divider sx={{ margin: "2rem 0" }} />
 
           {/* ADD MEDIA  */}
-          <Box
-            sx={{
-              backgroundColor: palette.neutral.light, // Match background color
-              borderRadius: "2rem", // Match border radius
-              padding: "1rem 2rem", // Match padding
-              marginTop: "1rem",
-              outline: `1px solid ${palette.neutral.outline}`,
-            }}
-          >
+
+          {!edit &&
             <Dropzone
               accept={{
                 "image/*": [".png", ".gif", ".jpeg", ".jpg"],
                 "video/*": [".mp4", ".mov",]
               }}
-              maxSize={100000000} // 100 MB
+              maxSize={150000000} // 150 MB
               multiple={false}
               onDrop={(acceptedFiles) => setMedia(acceptedFiles[0])}
-              onDropRejected={() => enqueueSnackbar("Maximum file size is 100 MB. Allowed video types are mp4 and mov, Allowed image types are png, gif, jpeg / jpg")}
+              onDropRejected={() => enqueueSnackbar("Maximum file size is 150 MB. Allowed video types are mp4 and mov, Allowed image types are png, gif, jpeg / jpg")}
             >
               {({ getRootProps, getInputProps }) => (
-                <FlexBetween>
+                <Box
+                  sx={{
+                    display: "flex"
+                  }}>
                   <Box
                     {...getRootProps()}
-                    border={`2px dashed ${palette.primary.main}`}
+                    border={`2px solid ${palette.primary.main}`}
                     p="1rem"
                     width="100%"
                     sx={{
@@ -371,16 +403,31 @@ const CreatePost = ({ onPostButtonClicked, onPostCreateResolved }) => {
                   >
                     <input {...getInputProps()} />
                     {!media ? (
-                      <Typography color={palette.neutral.main}>
-                        Add Media (Optional)
-                      </Typography>
-                    ) : (
-                      <FlexBetween>
+
+                      <Box sx={{
+                        display: "flex",
+                        gap: "1rem",
+                        alignItems: "center"
+                      }}>
+                        {/*<a href="https://www.flaticon.com/free-icons/radio-cassette" title="radio cassette icons">Radio cassette icons created by PIXARTIST - Flaticon</a> */}
+                        <Box
+                          component="img"
+                          src={Cassette}
+                          sx={{
+                            textColor: "white",
+                            width: 36, // Set size to match typical icon dimensions
+                            height: 36,
+                          }}
+                        />
+
                         <Typography color={palette.neutral.main}>
-                          {media.name}
+                          Add Beta
                         </Typography>
-                        <EditOutlined />
-                      </FlexBetween>
+                      </Box>
+                    ) : (
+                      <Typography color={palette.neutral.main}>
+                        {media.name}
+                      </Typography>
                     )}
                   </Box>
                   {media && (
@@ -394,10 +441,12 @@ const CreatePost = ({ onPostButtonClicked, onPostCreateResolved }) => {
                       <DeleteOutlined />
                     </IconButton>
                   )}
-                </FlexBetween>
+                </Box>
               )}
             </Dropzone>
-          </Box>
+          }
+
+
 
           {/* Description */}
           <InputBase
@@ -433,7 +482,7 @@ const CreatePost = ({ onPostButtonClicked, onPostCreateResolved }) => {
           <Divider sx={{ margin: "1.25rem 0" }} />
 
           <Button
-            disabled={!post}
+            disabled={!title}
             onClick={handleSubmit}
             sx={{
               color: palette.background.alt,
@@ -451,4 +500,4 @@ const CreatePost = ({ onPostButtonClicked, onPostCreateResolved }) => {
 
 
 
-export default CreatePost;
+export default LogClimbForm;

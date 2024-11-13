@@ -39,7 +39,7 @@ const Posts = () => {
           ({
             _id,
             cid,
-            createdAt,
+            climbDate,
             // ----- user stuff -----
             firstName,
             lastName,
@@ -49,6 +49,9 @@ const Posts = () => {
             description,
             vGrade,
             attempts,
+            angle,
+            holds,
+            styles,
             // ----- media stuff -----
             mediaPath,
 
@@ -56,7 +59,7 @@ const Posts = () => {
             comments,
           }) => (
             <Post
-              createdAt={createdAt}
+              climbDate={climbDate}
               key={_id}
               postId={_id}
               postUserId={cid}
@@ -68,6 +71,9 @@ const Posts = () => {
               description={description}
               vGrade={vGrade}
               attempts={attempts}
+              angle={angle}
+              holds={holds}
+              styles={styles}
               // ----- media stuff -----
               mediaPath={mediaPath}
               likes={likes}

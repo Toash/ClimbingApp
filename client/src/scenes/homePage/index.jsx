@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Box, CircularProgress, Typography, useMediaQuery, IconButton, Modal, LinearProgress } from "@mui/material";
 import NavBar from "scenes/navbar";
 import CurrentUserCard from "scenes/widgets/CurrentUserCard";
-import CreatePost from "scenes/widgets/CreatePost";
+import LogClimbForm from "scenes/widgets/LogClimbForm";
 import Posts from "scenes/widgets/Posts";
 import FriendListWidget from "scenes/widgets/FriendListWidget";
 import CurrentUserStats from "scenes/widgets/CurrentUserStats";
@@ -17,23 +17,6 @@ const HomePage = () => {
 
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
   const queryClient = useQueryClient();
-
-  const [loadingModalActive, setLoadingModalActive] = useState(false);
-
-  const LoadingModal = () => {
-    return (
-      <Modal
-        open={loadingModalActive}
-        onClose={() => { }}>
-        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}>
-          <Box sx={{ width: "50%", display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem" }}>
-            <Typography sx={{ fontSize: "1rem" }}>Logging climb...</Typography>
-            <LinearProgress sx={{ width: "100%" }} />
-          </Box>
-        </Box>
-      </Modal>
-    )
-  }
 
   /**
    * Exchanges the auth code for tokens, sets the tokens in local storage.
@@ -151,7 +134,6 @@ const HomePage = () => {
     // Desktop layout
     return (
       <>
-        <LoadingModal />
         <Box>
           <Box
             width="100%"
@@ -161,10 +143,6 @@ const HomePage = () => {
             justifyContent="space-between"
           >
             <SideDrawer
-              onPostButtonClicked={() => {
-                setLoadingModalActive(true)
-              }}
-              onPostCreateResolved={() => setLoadingModalActive(false)}
             />
             <Box
               flexGrow={3}
@@ -198,7 +176,6 @@ const HomePage = () => {
     // Mobile layout
     return (
       <>
-        <LoadingModal />
         <Box m="0 1rem">
           <Box
             width="100%"
@@ -206,8 +183,6 @@ const HomePage = () => {
             display={"block"}
           >
             <SideDrawer
-              onPostButtonClicked={() => setLoadingModalActive(true)}
-              onPostCreateResolved={() => setLoadingModalActive(false)}
             />
             <Box
               //flexBasis={isNonMobileScreens ? "70%" : undefined}

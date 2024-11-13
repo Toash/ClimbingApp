@@ -13,7 +13,7 @@ import StarIcon from '@mui/icons-material/Star';
 import UploadIcon from '@mui/icons-material/Upload';
 import HomeIcon from '@mui/icons-material/Home';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
-import CreatePost from 'scenes/widgets/CreatePost.jsx';
+import LogClimbForm from 'scenes/widgets/LogClimbForm.jsx';
 import useAuthenticatedUser from 'data/useAuthenticatedUser.ts';
 import { Box, Typography } from '@mui/material';
 import logout from "auth/logout.js"
@@ -22,9 +22,10 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CircleIcon from '@mui/icons-material/Circle';
 import WIP from 'scenes/widgets/WIP.jsx';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
+import Attributions from 'scenes/widgets/Attributions.jsx';
 
 
-export default function SideDrawer({ onPostButtonClicked, onPostCreateResolved }) {
+export default function SideDrawer() {
 
     const { palette } = useTheme();
 
@@ -39,18 +40,20 @@ export default function SideDrawer({ onPostButtonClicked, onPostCreateResolved }
     // CREATE POST COMPONENT
     const [isCreatePostOpen, setCreatePostOpen] = useState(false);
     const handleOpenCreatePost = () => { setCreatePostOpen(true) };
-
-
     const handleCloseCreatePost = () => {
         setCreatePostOpen(false);
         setDrawerOpen(false);
     }
 
-
     // WIP COMPONENT
     const [isWIPOpen, setWIPOpen] = useState(false);
     const handleOpenWIP = () => { setWIPOpen(true) }
     const handleCloseWIP = () => { setWIPOpen(false) }
+
+    // ATTRIBUTIONS COMPONENT
+    const [isAttributionsOpen, setAttributionsOpen] = useState(false);
+    const handleOpenAttributions = () => { setAttributionsOpen(true) }
+    const handleCloseAttributions = () => { setAttributionsOpen(false) }
 
     const { isSuccess: loggedIn } = useAuthenticatedUser();
     const isNonMobileScreens = useMediaQuery("(min-width: 1500px)");
@@ -138,6 +141,20 @@ export default function SideDrawer({ onPostButtonClicked, onPostCreateResolved }
                         </ListItemIcon>
                         <ListItemText primary={"Upcoming features"} />
                     </ListItemButton>
+                    <ListItemButton onClick={handleOpenAttributions}>
+                        <ListItemIcon>
+                            <Box
+                                component="img"
+                                src={"/soldier.png"}
+                                sx={{
+                                    textColor: "white",
+                                    width: 24, // Set size to match typical icon dimensions
+                                    height: 24,
+                                }}
+                            />
+                        </ListItemIcon>
+                        <ListItemText primary={"Attributions"} />
+                    </ListItemButton>
                 </List>
                 <Divider />
                 <List>
@@ -158,20 +175,19 @@ export default function SideDrawer({ onPostButtonClicked, onPostCreateResolved }
                                 <ListItemText primary={"Sign In"} />
                             </ListItemButton>
                         </ListItem>}
-
-
-
                 </List>
             </Drawer>
 
-            <Dialog open={isCreatePostOpen} onClose={handleCloseCreatePost} fullWidth maxWidth="md">
-                <CreatePost onPostButtonClicked={() => {
+            <Dialog open={isCreatePostOpen} onClose={handleCloseCreatePost} fullWidth>
+                <LogClimbForm onPostButtonClicked={() => {
                     handleCloseCreatePost();
-                    onPostButtonClicked();
-                }} onPostCreateResolved={onPostCreateResolved} />
+                }} />
             </Dialog>
             <Dialog open={isWIPOpen} onClose={handleCloseWIP}>
                 <WIP></WIP>
+            </Dialog>
+            <Dialog open={isAttributionsOpen} onClose={handleCloseAttributions}>
+                <Attributions />
             </Dialog>
         </>
     );

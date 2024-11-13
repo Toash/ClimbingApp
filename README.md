@@ -8,7 +8,7 @@ Live Link: https://boulderstat.com
 
 - Creating a seperate staging environment will make development the application easier much, as the frontend can plug directly into it and changes are instant with HMR. Backend can be tested without affecting the main application.
 
-- Putting all dependencies into a lambda layer will make updating the lambda function faster if updating dependencies is not needed.
+- Putting all dependencies into a lambda layer will make updating the lambda function much faster if updating dependencies is not needed.
 
 - Compressing media will make the website load much faster. 55 MB to 8 MB will make a big difference when multiple videos are being loaded.
 

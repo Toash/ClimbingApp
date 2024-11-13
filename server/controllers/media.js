@@ -137,8 +137,8 @@ export const compressMedia = async (req, res) => {
                   Codec: 'H_264',
                   H264Settings: {
                     RateControlMode: 'QVBR', // bit rate will change depending on how complex the video is
-                    MaxBitrate: 1500000, // bit rate cap
-                    QvbrQualityLevel: 1, // quality (1-10), higher is better
+                    MaxBitrate: 3500000, // bit rate cap
+                    QvbrQualityLevel: 7, // quality (1-10), higher is better
                   },
                 },
               },

@@ -9,6 +9,18 @@ export default function WIP() {
             </DialogTitle>
             <DialogContent dividers>
                 <Typography gutterBottom>
+                    - Editing posts
+                </Typography>
+                <br />
+                <Typography gutterBottom>
+                    - Logging sessions (keep track of hrs per week)
+                </Typography>
+                <br />
+                <Typography gutterBottom>
+                    - Set goals
+                </Typography>
+                <br />
+                <Typography gutterBottom>
                     - Graph based on performance
                 </Typography>
                 <br />
@@ -22,8 +34,6 @@ export default function WIP() {
                 <Typography gutterBottom>
                     - Logging Injuries
                 </Typography>
-
-
             </DialogContent>
         </>
     )

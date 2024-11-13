@@ -16,20 +16,21 @@ const validatePostInput = (postData) => {
   if (!postData.attempts || isNaN(postData.attempts) || postData.attempts < 0) {
     errors.attempts = "A valid number of attempts is required";
   }
-  if (postData.createdAt && isNaN(new Date(postData.createdAt).getTime())) {
-    errors.createdAt = "A valid date is required";
+  if (postData.climbDate && isNaN(new Date(postData.climbDate).getTime())) {
+    errors.climbDate = "A valid date is required";
   }
   return Object.keys(errors).length > 0 ? errors : null;
 };
 
 /* CREATE */
 /**
- * Creates a post and then updates the user hiscore
+ * Creates / edits a post and then updates the user hiscore
  * @param {*} req 
  * @param {*} res 
  * @returns 
  */
-export const createPost = async (req, res) => {
+export const logClimb = async (req, res) => {
+
   try {
     const {
       userId,
@@ -40,15 +41,22 @@ export const createPost = async (req, res) => {
       styles,
       attempts,
       description,
-      createdAt,
       mediaPath,
+
+      climbDate,
+      edit
     } = req.body;
+
+    let postId;
+    if (edit === "true") {
+      ({ postId } = req.params)
+    }
 
     const validationErrors = validatePostInput({
       title,
       vGrade,
       attempts,
-      createdAt,
+      climbDate
     });
     if (validationErrors) {
       return res
@@ -91,59 +99,81 @@ export const createPost = async (req, res) => {
       comments: [],
     };
 
-    if (createdAt) {
-      newPostData.createdAt = createdAt;
+    if (climbDate) {
+      newPostData.climbDate = climbDate;
     }
 
-    const newPost = new Post(newPostData);
-    await newPost.save();
+
+    if (edit === "true") {
+      // edit post
+      if (!postId) throw new Error("post id must be defined when editing a post.")
+
+      //remove undefined values.
+      const editedPostData = Object.fromEntries(
+        Object.entries(newPostData).filter(([_, value]) => value !== undefined)
+      );
+
+      const result = await Post.findByIdAndUpdate(postId, { $set: editedPostData })
+
+      if (!result) {
+        res.status(404).json({ message: "Could not find the post when updating." })
+      }
+
+    } else {
+      // create post
+      const newPost = new Post(newPostData);
+      await newPost.save();
+    }
+
 
     //update user highscore
     await updateHiscore(userId);
-    res.status(201).json({ message: "Successfully logged climb." }); //send posts in res
+
+
+    res.status(201).json({ message: "Successfully logged climb." });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 };
 
-export const editPost = async (req, res) => {
-  try {
-    const userId = req.query.userId;
-    const { postId } = req.params;
-    const { title, description, vGrade, attempts } = req.body;
+// export const editPost = async (req, res) => {
+//   try {
+//     const userId = req.query.userId;
+//     const { postId } = req.params;
+//     const { title, description, vGrade, attempts } = req.body;
 
-    const validationErrors = validatePostInput({
-      title,
-      vGrade,
-      attempts,
-    });
-    if (validationErrors) {
-      return res
-        .status(400)
-        .json({ message: "Validation failed", errors: validationErrors });
-    }
+//     const validationErrors = validatePostInput({
+//       title,
+//       vGrade,
+//       attempts,
+//     });
+//     if (validationErrors) {
+//       return res
+//         .status(400)
+//         .json({ message: "Validation failed", errors: validationErrors });
+//     }
 
-    const post = await Post.findById(postId);
-    // TODO: get the edited fields and update the corresponding post.
-    if (post) {
-      post.title = title;
-      post.description = description;
-      post.vGrade = vGrade;
-      post.attempts = attempts;
+//     const post = await Post.findById(postId);
+//     // TODO: get the edited fields and update the corresponding post.
+//     if (post) {
+//       post.title = title;
+//       post.description = description;
+//       post.vGrade = vGrade;
+//       post.attempts = attempts;
 
-      const updatedPost = await post.save();
+//       const updatedPost = await post.save();
 
-      //update user highscore
-      await updateHiscore(userId);
+//       //update user highscore
+//       await updateHiscore(userId);
 
-      res.json(updatedPost);
-    } else {
-      res.status(404).send("Post not found");
-    }
-  } catch (err) {
-    res.status(404).json({ message: err.message });
-  }
-};
+//       res.json(updatedPost);
+//     } else {
+//       res.status(404).send("Post not found");
+//     }
+//   } catch (err) {
+//     res.status(404).json({ message: err.message });
+//   }
+// };
 
 // deletes post and associated media if it exists.
 export const deletePost = async (req, res) => {
@@ -243,7 +273,7 @@ export const deletePost = async (req, res) => {
 /* READ */
 export const getFeedPosts = async (req, res) => {
   try {
-    const posts = await Post.find().sort({ createdAt: -1 });
+    const posts = await Post.find().sort({ climbDate: -1 });
     res.status(200).json(posts);
   } catch (err) {
     res.status(404).json({ message: err.message });
@@ -277,8 +307,8 @@ export const getWeeklyPosts = async (req, res) => {
 
     const posts = await Post.find({
       cid: userId,
-      createdAt: { $gte: startDate, $lte: endDate },
-    }).sort({ createdAt: -1 });
+      climbDate: { $gte: startDate, $lte: endDate },
+    }).sort({ climbDate: -1 });
 
     res.status(200).json(posts);
   } catch (err) {
