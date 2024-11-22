@@ -17,38 +17,34 @@ import { UserData } from "./interfaces.js";
  * Gets use data from id_token.
  *
  * @param {boolean} [redirect=false] - Determines if the user should be redirected to login if no id_token is avaliable.
+ * @param {boolean} [required=true] - Will throw an error if the id_token is not set.
  */
-export default function useAuthenticatedUser(redirect = false): UseQueryResult<UserData, Error> {
+export default function useAuthenticatedUser({ redirect = false, required = false } = {}): UseQueryResult<UserData, Error> {
 
     const idToken = localStorage.getItem("id_token");
     const [cid, setCid] = useState<string | null | undefined>(null);
 
     useEffect(() => {
-        if (!idToken) {
-            if (redirect) {
-                goToLogin();
-                return;
+
+        // no id token, just go to the login page
+        if (!idToken && redirect) {
+            goToLogin();
+            return;
+        }
+
+        // we have the id token 
+        if (idToken) {
+            console.log("must get authenticated user, trying to ezxtract cid.")
+            setCid(getCidFromToken())
+        }
+
+        if (required) {
+            if (!idToken) {
+                throw new Error("id token must be defined because the required attribute was set to true")
             }
         }
 
-        if (redirect) {
-            setCid(getCidFromToken());
-        } else {
-            try {
-                if (idToken) {
-                    const decodedToken = jwtDecode(idToken);
-                    if (decodedToken && decodedToken.sub) {
-                        setCid(decodedToken.sub);
-                    } else {
-                        throw new Error("Invalid token structure");
-                    }
-                }
-            } catch (error) {
-                console.error("Failed to decode token:", error);
-                goToLogin();
-            }
-        }
-    }, [idToken, redirect]);
+    }, []);
 
     return useQuery<UserData, Error, UserData, [string]>({
         enabled: !!cid, //function closure

@@ -79,7 +79,7 @@ const LogClimbForm = ({ onPostButtonClicked, edit, data, compressMedia = false }
             // upload media
             const fileName = uuidv4(); // ⇨ '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d'
             const extension = media.name.split(".").pop();
-            const path = `${data.cid}/${fileName}.${extension}`;
+            const path = `${userData.cid}/${fileName}.${extension}`;
 
 
             let message;
@@ -218,6 +218,7 @@ const LogClimbForm = ({ onPostButtonClicked, edit, data, compressMedia = false }
 
     const handleSubmit = () => {
       postMutation.mutate()
+      enqueueSnackbar("Logging climb. This may take a while.", { variant: "info" });
       onPostButtonClicked();
     }
 

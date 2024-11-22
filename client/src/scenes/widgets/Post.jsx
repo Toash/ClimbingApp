@@ -240,7 +240,7 @@ const Post = ({
   })
 
 
-  const { data: userData, isSuccess, } = useAuthenticatedUser();
+  const { data: userData, isSuccess, } = useAuthenticatedUser({ required: false });
 
   const isCurrentUserPost = () => {
     if (isSuccess) {

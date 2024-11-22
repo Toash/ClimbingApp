@@ -41,7 +41,7 @@ const NavBar = () => {
 
   let fullName
 
-  const { data, isPending, isSuccess: loggedIn } = useAuthenticatedUser()
+  const { data, isPending, isSuccess: loggedIn } = useAuthenticatedUser({ required: false })
   if (loggedIn) {
     fullName = data.firstName + data.lastName;
   }

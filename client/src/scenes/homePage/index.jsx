@@ -12,6 +12,8 @@ import getCidFromToken from "auth/getCidFromToken";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Week from "scenes/widgets/Week.jsx";
 import SideDrawer from "scenes/drawer/SideDrawer.jsx";
+import ChangeAccount from "scenes/widgets/ChangeAccount.jsx";
+import useAuthenticatedUser from "data/useAuthenticatedUser.ts";
 
 const HomePage = () => {
 
@@ -104,30 +106,35 @@ const HomePage = () => {
   /**
    * Extract tokens and get the associated user.
    */
-  const { isSuccess, isLoading, isError, error, data } = useQuery(
-    {
-      enabled: !!localStorage.getItem("id_token"), // only run query if token is available
-      queryKey: QUERY_KEYS.CURRENT_USER,
-      queryFn: async () => {
+  // const { isSuccess, isLoading, isError, error, data } = useQuery(
+  //   {
+  //     enabled: !!localStorage.getItem("id_token"), // only run query if token is available
+  //     queryKey: QUERY_KEYS.CURRENT_USER,
+  //     queryFn: async () => {
 
-        const cid = getCidFromToken();
+  //       const cid = getCidFromToken();
 
-        const response = await fetch(
-          import.meta.env.VITE_APP_API_BASE_URL + `/users/${cid}`,
-          {
-            method: "GET",
-            headers: { Authorization: `Bearer ${localStorage.getItem("id_token")}` },
-          }
-        );
-        return await response.json();
-      },
-      staleTime: Infinity,
-    }
-  )
+  //       const response = await fetch(
+  //         import.meta.env.VITE_APP_API_BASE_URL + `/users/${cid}`,
+  //         {
+  //           method: "GET",
+  //           headers: { Authorization: `Bearer ${localStorage.getItem("id_token")}` },
+  //         }
+  //       );
+  //       return await response.json();
+  //     },
+  //     staleTime: Infinity,
+  //   }
+  // )
+
+
+
+  const { isSuccess, isLoading, isError, error, data } = useAuthenticatedUser({ redirect: false, required: false });
+
 
 
   if (isError) {
-    return <><Typography>Error trying to fetch user profile. </Typography>{console.log(error)}</>
+    return <><Typography>Error trying to fetch user profile.</Typography>{console.log(error)}</>
   }
 
   if (isNonMobileScreens) {

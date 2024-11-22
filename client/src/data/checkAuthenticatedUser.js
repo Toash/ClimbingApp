@@ -15,7 +15,7 @@ export default function checkAuthenticatedUser() {
 
     if (!queryClient.getQueryData(QUERY_KEYS.CURRENT_USER)) {
         // we have an id token but no current user.
-        useAuthenticatedUser(redirect = true);
+        useAuthenticatedUser({ redirect: true });
     }
 
 

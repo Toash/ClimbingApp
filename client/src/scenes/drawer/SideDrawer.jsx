@@ -55,7 +55,7 @@ export default function SideDrawer() {
     const handleOpenAttributions = () => { setAttributionsOpen(true) }
     const handleCloseAttributions = () => { setAttributionsOpen(false) }
 
-    const { isSuccess: loggedIn } = useAuthenticatedUser();
+    const { isSuccess: loggedIn } = useAuthenticatedUser({ required: false });
     const isNonMobileScreens = useMediaQuery("(min-width: 1500px)");
 
     const drawerWidth = 300;
