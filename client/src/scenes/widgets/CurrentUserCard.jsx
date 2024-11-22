@@ -1,13 +1,13 @@
 import React from "react";
 import { ManageAccountsOutlined } from "@mui/icons-material";
 
-import { Box, Typography, Divider, useTheme, CircularProgress } from "@mui/material";
+import { Box, Typography, Divider, useTheme, CircularProgress, IconButton } from "@mui/material";
 import UserImage from "components/UserImage";
 import FlexBetween from "components/FlexBetween";
 import WidgetWrapper from "components/WidgetWrapper";
 import useAuthenticatedUser from "data/useAuthenticatedUser.ts";
 
-const CurrentUserCard = () => {
+const CurrentUserCard = ({ handleEditAccount }) => {
   const { palette } = useTheme();
   const dark = palette.neutral.dark;
   const medium = palette.neutral.medium;
@@ -39,7 +39,10 @@ const CurrentUserCard = () => {
               </Typography>
             </Box>
           </FlexBetween>
-          <ManageAccountsOutlined /> {/* TODO: EDIT NAME */}
+          <IconButton onClick={handleEditAccount}>
+            <ManageAccountsOutlined />
+          </IconButton>
+
         </FlexBetween>
 
         <Divider />

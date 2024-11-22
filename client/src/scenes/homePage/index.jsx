@@ -8,12 +8,12 @@ import Posts from "scenes/widgets/Posts";
 import FriendListWidget from "scenes/widgets/FriendListWidget";
 import CurrentUserStats from "scenes/widgets/CurrentUserStats";
 import { QUERY_KEYS } from "queryKeys";
-import getCidFromToken from "auth/getCidFromToken";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Week from "scenes/widgets/Week.jsx";
 import SideDrawer from "scenes/drawer/SideDrawer.jsx";
-import ChangeAccount from "scenes/widgets/ChangeAccount.jsx";
+import EditAccount from "scenes/widgets/EditAccount.jsx";
 import useAuthenticatedUser from "data/useAuthenticatedUser.ts";
+import goToLogin from "goToLogin.js";
 
 const HomePage = () => {
 
@@ -46,7 +46,8 @@ const HomePage = () => {
         queryClient.invalidateQueries(QUERY_KEYS.CURRENT_USER);
 
         // TODO display success message
-        console.log("Successfully got user data!")
+        console.log("Successfully got new tokens.!")
+        console.log({ access_token, id_token })
       },
       onError: (error) => {
         console.error('Error exchanging auth code', error);
@@ -91,6 +92,8 @@ const HomePage = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const authorizationCode = urlParams.get("code");
 
+    // console.log("Authorization code extracted: ", authorizationCode)
+
     if (authorizationCode && !await userHasValidToken()) {
       exchangeCodeMutation.mutate(authorizationCode); // Trigger the mutation
     }
@@ -104,43 +107,56 @@ const HomePage = () => {
 
 
   /**
-   * Extract tokens and get the associated user.
-   */
-  // const { isSuccess, isLoading, isError, error, data } = useQuery(
-  //   {
-  //     enabled: !!localStorage.getItem("id_token"), // only run query if token is available
-  //     queryKey: QUERY_KEYS.CURRENT_USER,
-  //     queryFn: async () => {
+    * Extract tokens and get the associated user.
+    */
+  const { isSuccess, isLoading, isError, error, data } = useQuery(
+    {
+      enabled: !!localStorage.getItem("id_token"), // only run query if token is available
+      queryKey: QUERY_KEYS.CURRENT_USER,
+      queryFn: async () => {
 
-  //       const cid = getCidFromToken();
+        const cid = getCidFromToken(localStorage.getItem("id_token"));
 
-  //       const response = await fetch(
-  //         import.meta.env.VITE_APP_API_BASE_URL + `/users/${cid}`,
-  //         {
-  //           method: "GET",
-  //           headers: { Authorization: `Bearer ${localStorage.getItem("id_token")}` },
-  //         }
-  //       );
-  //       return await response.json();
-  //     },
-  //     staleTime: Infinity,
-  //   }
-  // )
+        const response = await fetch(
+          import.meta.env.VITE_APP_API_BASE_URL + `/users/${cid}`,
+          {
+            method: "GET",
+            headers: { Authorization: `Bearer ${localStorage.getItem("id_token")}` },
+          }
+        );
+        return await response.json();
+      },
+      staleTime: Infinity,
+    }
+  )
 
-
-
-  const { isSuccess, isLoading, isError, error, data } = useAuthenticatedUser({ redirect: false, required: false });
 
 
 
   if (isError) {
-    return <><Typography>Error trying to fetch user profile.</Typography>{console.log(error)}</>
+    return <>
+      {goToLogin()}
+      {console.log("Error trying to fetch user profile", error)}
+    </>
   }
+
+
+  const [editAccountOpen, setEditAccountOpen] = useState(false);
+
+  const handleEditAccountOpen = () => {
+    setEditAccountOpen(true);
+  }
+
+  const handleEditAccountClose = () => {
+    setEditAccountOpen(false);
+  }
+
 
   if (isNonMobileScreens) {
     // Desktop layout
     return (
       <>
+        <EditAccount open={editAccountOpen} onClose={handleEditAccountClose} />
         <Box>
           <Box
             width="100%"
@@ -169,7 +185,7 @@ const HomePage = () => {
               {isSuccess && (
                 <>
                   <Box sx={{ display: "flex", flexDirection: "column", position: "sticky", top: "1rem", gap: "2rem", minWidth: "300px" }}>
-                    <CurrentUserCard />
+                    <CurrentUserCard handleEditAccount={handleEditAccountOpen} />
                     <CurrentUserStats />
                   </Box>
                 </>
@@ -183,6 +199,7 @@ const HomePage = () => {
     // Mobile layout
     return (
       <>
+        <EditAccount open={editAccountOpen} onClose={handleEditAccountClose} />
         <Box m="0 1rem">
           <Box
             width="100%"
@@ -202,7 +219,7 @@ const HomePage = () => {
             >
               {isSuccess && (
                 <>
-                  <CurrentUserCard />
+                  <CurrentUserCard handleEditAccount={handleEditAccountOpen} />
                   <CurrentUserStats />
                   <Week></Week>
                 </>

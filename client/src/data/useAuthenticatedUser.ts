@@ -10,6 +10,8 @@ import { jwtDecode } from "jwt-decode";
 import goToLogin from "goToLogin";
 import { useState, useEffect } from "react"
 import { UserData } from "./interfaces.js";
+import { useQueryClient } from "@tanstack/react-query"
+
 
 
 /**
@@ -19,12 +21,13 @@ import { UserData } from "./interfaces.js";
  * @param {boolean} [redirect=false] - Determines if the user should be redirected to login if no id_token is avaliable.
  * @param {boolean} [required=true] - Will throw an error if the id_token is not set.
  */
-export default function useAuthenticatedUser({ redirect = false, required = false } = {}): UseQueryResult<UserData, Error> {
+export default function useAuthenticatedUser({ redirect = true, required = false } = {}): UseQueryResult<UserData, Error> {
 
-    const idToken = localStorage.getItem("id_token");
+    const idToken = localStorage.getItem("id_token"); // why does this have to be outside of useeffect
     const [cid, setCid] = useState<string | null | undefined>(null);
 
     useEffect(() => {
+
 
         // no id token, just go to the login page
         if (!idToken && redirect) {
@@ -34,8 +37,8 @@ export default function useAuthenticatedUser({ redirect = false, required = fals
 
         // we have the id token 
         if (idToken) {
-            console.log("must get authenticated user, trying to ezxtract cid.")
-            setCid(getCidFromToken())
+            //console.log("must get authenticated user, trying to ezxtract cid.")
+            setCid(getCidFromToken(idToken))
         }
 
         if (required) {
@@ -44,7 +47,7 @@ export default function useAuthenticatedUser({ redirect = false, required = fals
             }
         }
 
-    }, []);
+    }, [idToken]);
 
     return useQuery<UserData, Error, UserData, [string]>({
         enabled: !!cid, //function closure
