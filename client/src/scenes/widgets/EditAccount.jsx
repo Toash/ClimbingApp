@@ -1,19 +1,39 @@
 import { Dialog, DialogTitle, FormControl, InputLabel, TextField, Input, Typography, useTheme, Divider } from "@mui/material";
 import { Box } from "@mui/system";
+import { useMutation } from "@tanstack/react-query";
+import useAuthenticatedUser from "data/useAuthenticatedUser.ts";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
 export default function EditAccount({ open, onClose, firstTime = true, data }) {
-    const [userName, setUserName] = useState(data?.userName || "");
+    const [firstName, setFirstName] = useState(data?.firstName || "");
+    const [lastName, setLastName] = useState(data?.lastName || "");
+    const [media, setMedia] = useState(null);
     const [profilePicturePath, setProfilePicturePath] = useState(data?.profilePicturePath || "")
 
     const { palette } = useTheme();
 
     const onDrop = useCallback((acceptedFiles) => {
-
+        setMedia(acceptedFiles[0])
     }, [])
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
+
+    const { data: userData } = useAuthenticatedUser();
+
+    const editAccountMutation = useMutation({
+        mutationFn: async () => {
+            const formData = new FormData();
+            formData.append("firstName", firstName);
+            formData.append("lastName", lastName);
+
+
+            if (media) {
+
+            }
+
+        }
+    })
 
     return (
         <Dialog
@@ -28,9 +48,9 @@ export default function EditAccount({ open, onClose, firstTime = true, data }) {
             <FormControl sx={{ margin: "1.5rem ", gap: "2rem" }}>
                 <Box>
                     <TextField
-                        label="Username"
-                        value={userName}
-                        onChange={(e) => setUserName(e.target.value)}
+                        label="First Name"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
                         fullWidth
                     ></TextField>
                 </Box>

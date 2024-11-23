@@ -13,5 +13,6 @@ router.get("/:userId/friends", getUserFriends);
 
 /* UPDATE */
 router.patch("/:userId/:friendId", addRemoveFriend);
+router.patch("/:userId/edit")
 
 export default router;

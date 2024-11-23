@@ -66,3 +66,12 @@ export const addRemoveFriend = async (req, res) => {
     res.status(404).json({ message: err.message });
   }
 };
+
+
+
+
+/* UPDATE */
+export const editUser = async (req, res) => {
+  const { userId } = req.params;
+  const user = await User.findOne({ cid: userId })
+}

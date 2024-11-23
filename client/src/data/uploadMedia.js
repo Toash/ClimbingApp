@@ -1,8 +1,14 @@
-// Uploads media into raw and compressed format. Videos are compressed.
+/* 
+Uploads media into raw and compressed format. Videos are compressed.
+s3 key is the key that refers to the media. For example "a.mp4"
+
+media is the actual media to upload
+
+compress will compress the media (only mp4 and mov supported)
+*/
 export const uploadMedia = async ({ s3key, media, compress = false }) => {
 
   const videoExtensions = [".mp4", ".mov"]
-
 
   // get presigned url for the specific s3key
   // example s3key: 016bf520-c011-70ee-c024-6761acd7bf31/ForBiggerJoyrides.mp4
@@ -101,13 +107,10 @@ export const uploadMedia = async ({ s3key, media, compress = false }) => {
     // example:  "016bf520-c011-70ee-c024-6761acd7bf31/COMPRESSED_file_example_MOV_480_700kB.mov"
     const compressedS3KeyVersioned = paths.join("/")
 
-
-
     compressedWebUrl = import.meta.env.VITE_APP_MEDIA_S3_URL + compressedS3KeyVersioned;
     //compressedWebUrl = compressedWebUrl.slice(0, -4) // mediaconvert will convert to mp4
     const fullS3RawUrl = "s3://toash-climbing-media/" + s3KeyVersioned;
     const fullS3CompressedUrl = "s3://toash-climbing-media/" + compressedS3KeyVersioned;
-
 
     // media convert will automatically append an extension.
     const fullS3CompressedUrlWithoutExtension = fullS3CompressedUrl.slice(0, -4);

@@ -8,7 +8,7 @@ import Posts from "scenes/widgets/Posts";
 import FriendListWidget from "scenes/widgets/FriendListWidget";
 import CurrentUserStats from "scenes/widgets/CurrentUserStats";
 import { QUERY_KEYS } from "queryKeys";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useIsMutating, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Week from "scenes/widgets/Week.jsx";
 import SideDrawer from "scenes/drawer/SideDrawer.jsx";
 import EditAccount from "scenes/widgets/EditAccount.jsx";
@@ -25,6 +25,7 @@ const HomePage = () => {
    */
   const exchangeCodeMutation = useMutation(
     {
+      mutationKey: ["exchangeCode"],
       mutationFn: async (authorizationCode) => {
         const response = await fetch(
           import.meta.env.VITE_APP_API_BASE_URL + `/auth/exchange-code`,
@@ -38,16 +39,30 @@ const HomePage = () => {
       },
       onSuccess: (data) => {
         const { id_token, access_token } = data;
+        console.log(data)
 
-        localStorage.setItem("access_token", access_token);
-        localStorage.setItem("id_token", id_token)
+        // invalid grant will make access_token and id_token undefined.
+        if (access_token && id_token) {
+          localStorage.setItem("access_token", access_token);
+          localStorage.setItem("id_token", id_token);
+        } else {
+          /* 
+          This is ugly
+          The first time the user signs in, the cache is empty. 
+          It may call the same mutation with the same authorization code, and return an invalid grant (undefined tokens)
+          we dont want cases where the tokens are undefined, but refreshing the page solves this issue.
+
+          Will need to figure out why it is calling the mutation with the same authorization code.
+          
+          */
+          window.location.reload();
+        }
 
         // Refetch user profile with the new token
         queryClient.invalidateQueries(QUERY_KEYS.CURRENT_USER);
 
         // TODO display success message
-        console.log("Successfully got new tokens.!")
-        console.log({ access_token, id_token })
+        console.log("Successfully got new tokens.!", { access_token, id_token })
       },
       onError: (error) => {
         console.error('Error exchanging auth code', error);
@@ -84,7 +99,6 @@ const HomePage = () => {
   };
 
 
-
   /**
    * If there is a code in url and user does not already have a token, attempt to get them.
    */
@@ -95,9 +109,11 @@ const HomePage = () => {
     // console.log("Authorization code extracted: ", authorizationCode)
 
     if (authorizationCode && !await userHasValidToken()) {
-      exchangeCodeMutation.mutate(authorizationCode); // Trigger the mutation
+      exchangeCodeMutation.mutate(authorizationCode);
     }
   };
+
+
 
 
   // extract authorization code from the url
@@ -135,7 +151,10 @@ const HomePage = () => {
 
   if (isError) {
     return <>
+      {localStorage.clear()}
       {goToLogin()}
+
+      {/* {queryClient.removeQueries({ queryKey: QUERY_KEYS.CURRENT_USER })} */}
       {console.log("Error trying to fetch user profile", error)}
     </>
   }
