@@ -32,7 +32,7 @@ import fetchWithRetry from "auth/fetchWithRetry";
 import PropTypes from 'prop-types'
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "queryKeys";
-import useAuthenticatedUser from "data/useAuthenticatedUser.ts";
+import useAuthenticatedUser from "data/useAuthenticatedUser.js";
 import { styled, keyframes } from "@mui/system";
 import EditPost from "./EditPost.jsx";
 import { useMediaQuery } from "@mui/system";

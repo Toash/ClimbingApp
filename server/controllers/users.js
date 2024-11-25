@@ -71,7 +71,42 @@ export const addRemoveFriend = async (req, res) => {
 
 
 /* UPDATE */
+
+
+/**
+ * Edits the user info (firstname, lastname, and profile picture.)
+ * 
+ * const { userId } = req.params;
+ * 
+ * const { firstName, lastName, mediaPath } = req.body;
+ */
 export const editUser = async (req, res) => {
+
   const { userId } = req.params;
+  const { firstName, lastName, mediaPath } = req.body;
+
+  if (!firstName || !lastName) {
+    res.status(400).json({ message: "First and last name must be specified when editing user." })
+  }
+
   const user = await User.findOne({ cid: userId })
+
+  if (!user) {
+    return res.status(404).json({ message: "User not found." });
+  }
+
+  user.firstName = firstName;
+  user.lastName = lastName;
+  let message = "User successfully edited. "
+
+  // if we have receieved a mediaPath then update or create the new profile image
+  if (mediaPath) {
+    user.picturePath = mediaPath;
+    message += "Profile picture updated. "
+  }
+
+  await user.save();
+  res.status(200).json({ message })
+
 }
+

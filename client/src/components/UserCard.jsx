@@ -5,7 +5,7 @@ import FlexBetween from "./FlexBetween";
 import UserImage from "./UserImage";
 import PropTypes from 'prop-types'
 import useUserById from "data/useUserById";
-import useAuthenticatedUser from "data/useAuthenticatedUser.ts";
+import useAuthenticatedUser from "data/useAuthenticatedUser.js";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { QUERY_KEYS } from "queryKeys";
 

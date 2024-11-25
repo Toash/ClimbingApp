@@ -5,7 +5,7 @@ import { Box, Typography, Divider, useTheme, CircularProgress, IconButton } from
 import UserImage from "components/UserImage";
 import FlexBetween from "components/FlexBetween";
 import WidgetWrapper from "components/WidgetWrapper";
-import useAuthenticatedUser from "data/useAuthenticatedUser.ts";
+import useAuthenticatedUser from "data/useAuthenticatedUser.js";
 
 const CurrentUserCard = ({ handleEditAccount }) => {
   const { palette } = useTheme();

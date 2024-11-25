@@ -26,10 +26,10 @@ router.get("/user/:userId/hiscore", getHighestVGradePost);
 
 /* POST */
 // Will send the media (picture, video) in req.file
-router.post("/", upload.single("media"), logClimb);
+router.post("/", upload.none(), logClimb);
 
 /* UPDATE */
-router.patch("/post/:postId", upload.single("media"), logClimb);
+router.patch("/post/:postId", upload.none(), logClimb);
 router.patch("/post/:postId/like", likePost);
 router.patch("/post/:postId/:commentId/like", toggleLikeComment);
 

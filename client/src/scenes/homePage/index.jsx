@@ -12,8 +12,9 @@ import { useIsMutating, useMutation, useQuery, useQueryClient } from "@tanstack/
 import Week from "scenes/widgets/Week.jsx";
 import SideDrawer from "scenes/drawer/SideDrawer.jsx";
 import EditAccount from "scenes/widgets/EditAccount.jsx";
-import useAuthenticatedUser from "data/useAuthenticatedUser.ts";
+import useAuthenticatedUser from "data/useAuthenticatedUser.js";
 import goToLogin from "goToLogin.js";
+import getCidFromToken from "auth/getCidFromToken.js";
 
 const HomePage = () => {
 
@@ -45,17 +46,6 @@ const HomePage = () => {
         if (access_token && id_token) {
           localStorage.setItem("access_token", access_token);
           localStorage.setItem("id_token", id_token);
-        } else {
-          /* 
-          This is ugly
-          The first time the user signs in, the cache is empty. 
-          It may call the same mutation with the same authorization code, and return an invalid grant (undefined tokens)
-          we dont want cases where the tokens are undefined, but refreshing the page solves this issue.
-
-          Will need to figure out why it is calling the mutation with the same authorization code.
-          
-          */
-          window.location.reload();
         }
 
         // Refetch user profile with the new token
@@ -125,41 +115,30 @@ const HomePage = () => {
   /**
     * Extract tokens and get the associated user.
     */
-  const { isSuccess, isLoading, isError, error, data } = useQuery(
-    {
-      enabled: !!localStorage.getItem("id_token"), // only run query if token is available
-      queryKey: QUERY_KEYS.CURRENT_USER,
-      queryFn: async () => {
+  // const { isSuccess, isLoading, isError, error, data } = useQuery(
+  //   {
+  //     enabled: !!localStorage.getItem("id_token"), // only run query if token is available
+  //     queryKey: QUERY_KEYS.CURRENT_USER,
+  //     queryFn: async () => {
 
-        const cid = getCidFromToken(localStorage.getItem("id_token"));
+  //       const cid = getCidFromToken(localStorage.getItem("id_token"));
 
-        const response = await fetch(
-          import.meta.env.VITE_APP_API_BASE_URL + `/users/${cid}`,
-          {
-            method: "GET",
-            headers: { Authorization: `Bearer ${localStorage.getItem("id_token")}` },
-          }
-        );
-        return await response.json();
-      },
-      staleTime: Infinity,
-    }
-  )
+  //       const response = await fetch(
+  //         import.meta.env.VITE_APP_API_BASE_URL + `/users/${cid}`,
+  //         {
+  //           method: "GET",
+  //           headers: { Authorization: `Bearer ${localStorage.getItem("id_token")}` },
+  //         }
+  //       );
+  //       return await response.json();
+  //     },
+  //     staleTime: Infinity,
+  //   }
+  // )
 
+  const { isSuccess, isLoading, isError, error, data } = useAuthenticatedUser()
 
-
-
-  if (isError) {
-    return <>
-      {localStorage.clear()}
-      {goToLogin()}
-
-      {/* {queryClient.removeQueries({ queryKey: QUERY_KEYS.CURRENT_USER })} */}
-      {console.log("Error trying to fetch user profile", error)}
-    </>
-  }
-
-
+  // make sure state occurs before early return, or else hooks will be out of order.
   const [editAccountOpen, setEditAccountOpen] = useState(false);
 
   const handleEditAccountOpen = () => {
@@ -170,6 +149,31 @@ const HomePage = () => {
     setEditAccountOpen(false);
   }
 
+  if (isLoading) {
+    return (
+      <>
+        <Box sx={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <Box>
+            <Typography>Loading user profile...</Typography>
+            <CircularProgress />
+          </Box>
+        </Box>
+      </>
+    )
+  }
+  if (isError) {
+    return (
+      <>
+        <Box sx={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <Box>
+            <Typography>Error tryinng to fetch user profile. Please try again later</Typography>
+          </Box>
+        </Box>
+        {/* {queryClient.removeQueries({ queryKey: QUERY_KEYS.CURRENT_USER })} */}
+        {console.log("Error trying to fetch user profile", error)}
+      </>
+    )
+  }
 
   if (isNonMobileScreens) {
     // Desktop layout

@@ -19,7 +19,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import FlexBetween from "components/FlexBetween";
 import logout from "auth/logout";
-import useAuthenticatedUser from "data/useAuthenticatedUser.ts";
+import useAuthenticatedUser from "data/useAuthenticatedUser.js";
 
 const NavBar = () => {
   const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);

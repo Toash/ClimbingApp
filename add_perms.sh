@@ -3,7 +3,9 @@
 # bash script to automate setting perms to use function names as stage variables.
 
 # Array of Lambda function names
-LAMBDA_FUNCTIONS=("myfunction" "backend-staging")
+# LAMBDA_FUNCTIONS=("myfunction" "backend-staging")
+LAMBDA_FUNCTIONS=("myfunction")
+
 API_METHODS=(
   "auth/check-token"
   "auth/exchange-code"
@@ -20,6 +22,7 @@ API_METHODS=(
   "users/*"
   "users/*/*"
   "users/*/friends"
+  "users/*/edit"
 )
 
 # Loop through each function and add permission

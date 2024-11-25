@@ -3,7 +3,7 @@ import { Box, CircularProgress, Typography, useTheme } from "@mui/material";
 import UserCard from "components/UserCard";
 import WidgetWrapper from "components/WidgetWrapper";
 import PropTypes from "prop-types"
-import useAuthenticatedUser from "data/useAuthenticatedUser.ts";
+import useAuthenticatedUser from "data/useAuthenticatedUser.js";
 
 const FriendListWidget = () => {
   const { palette } = useTheme();

@@ -44,8 +44,8 @@
     "build": "tsc && vite build",
     "dev": "env-cmd -f ./environments/.dev.env vite",
     "preview": "vite preview",
-    "build:prod": "env-cmd -f ./environments/.prod.env npm run-script build",
-    "build:staging": "env-cmd -f ./environments/.staging.env npm run-script build"
+    "build:prod": "env-cmd -f ./environments/.prod.env vite build",
+    "build:staging": "env-cmd -f ./environments/.staging.env vite build"
   },
   "eslintConfig": {
     "extends": [

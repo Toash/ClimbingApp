@@ -14,7 +14,7 @@ import fetchWithRetry from "auth/fetchWithRetry";
 import { uploadMedia } from "data/uploadMedia";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { QUERY_KEYS } from "queryKeys";
-import useAuthenticatedUser from "data/useAuthenticatedUser.ts";
+import useAuthenticatedUser from "data/useAuthenticatedUser.js";
 import { useMediaQuery } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 import { v4 as uuidv4 } from 'uuid';

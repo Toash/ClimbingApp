@@ -3,7 +3,7 @@ import { Typography, useTheme, Table, TableBody, TableCell, TableContainer, Tabl
 import { Box, Container } from "@mui/system";
 import { useQuery } from "@tanstack/react-query";
 import WidgetWrapper from "components/WidgetWrapper.jsx";
-import useAuthenticatedUser from "data/useAuthenticatedUser.ts";
+import useAuthenticatedUser from "data/useAuthenticatedUser.js";
 import { startOfWeek, endOfWeek, format, isSameDay } from "date-fns";
 import getWeekDates from "utils/getWeekDates.js";
 import { PieChart } from "@mui/x-charts/PieChart";

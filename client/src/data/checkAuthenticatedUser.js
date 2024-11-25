@@ -1,6 +1,6 @@
 import { QUERY_KEYS } from "queryKeys";
 import { QueryClient } from "@tanstack/react-query";
-import useAuthenticatedUser from "./useAuthenticatedUser.ts";
+import useAuthenticatedUser from "./useAuthenticatedUser.js";
 
 /**
  * @returns true if authenticated user exists, false otherwise

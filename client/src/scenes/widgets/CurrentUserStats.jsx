@@ -1,7 +1,7 @@
 import React from "react";
 import { CircularProgress, Divider, Typography, useTheme } from "@mui/material";
 import WidgetWrapper from "components/WidgetWrapper";
-import useAuthenticatedUser from "data/useAuthenticatedUser.ts";
+import useAuthenticatedUser from "data/useAuthenticatedUser.js";
 
 function CurrentUserStats() {
 

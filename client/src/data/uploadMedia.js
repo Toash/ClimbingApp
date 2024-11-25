@@ -1,10 +1,10 @@
-/* 
-Uploads media into raw and compressed format. Videos are compressed.
-s3 key is the key that refers to the media. For example "a.mp4"
+/** 
+Uploads media into raw and compressed format. Videos are compressed if specified.
 
-media is the actual media to upload
-
-compress will compress the media (only mp4 and mov supported)
+@param {string} s3key the key that refers to the media. For example "a.mp4"
+@param {File} media the actual media to upload
+@param {boolean} compress will compress the media (only mp4 and mov supported)
+@returns {object} object containing the url (link to the media) and message.
 */
 export const uploadMedia = async ({ s3key, media, compress = false }) => {
 
@@ -43,10 +43,6 @@ export const uploadMedia = async ({ s3key, media, compress = false }) => {
   (Not a full url, just contains the key for the media source.)
   */
   s3KeyVersioned = data.fullUrl;
-
-  // console.log("Json object retrieved: ", data);
-  // console.log("Presigned URL retrieved: ", presignedUrl);
-  // console.log("Full raw url: ", rawS3KeyWithVersion)
 
   if (!data || !presignedUrl) {
     throw new Error("Did not get presigned url");

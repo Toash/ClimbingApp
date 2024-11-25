@@ -14,7 +14,7 @@ import UploadIcon from '@mui/icons-material/Upload';
 import HomeIcon from '@mui/icons-material/Home';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import LogClimbForm from 'scenes/widgets/LogClimbForm.jsx';
-import useAuthenticatedUser from 'data/useAuthenticatedUser.ts';
+import useAuthenticatedUser from 'data/useAuthenticatedUser.js';
 import { Box, Typography } from '@mui/material';
 import logout from "auth/logout.js"
 import signin from 'auth/signin.js';
