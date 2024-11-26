@@ -15,6 +15,7 @@ import EditAccount from "scenes/widgets/EditAccount.jsx";
 import useAuthenticatedUser from "data/useAuthenticatedUser.js";
 import goToLogin from "goToLogin.js";
 import getCidFromToken from "auth/getCidFromToken.js";
+import { enqueueSnackbar } from "notistack";
 
 const HomePage = () => {
 
@@ -103,51 +104,19 @@ const HomePage = () => {
     }
   };
 
-
-
-
   // extract authorization code from the url
   useEffect(() => {
     getTokensFromAuthCode();
   }, []);
 
 
-  /**
-    * Extract tokens and get the associated user.
-    */
-  // const { isSuccess, isLoading, isError, error, data } = useQuery(
-  //   {
-  //     enabled: !!localStorage.getItem("id_token"), // only run query if token is available
-  //     queryKey: QUERY_KEYS.CURRENT_USER,
-  //     queryFn: async () => {
-
-  //       const cid = getCidFromToken(localStorage.getItem("id_token"));
-
-  //       const response = await fetch(
-  //         import.meta.env.VITE_APP_API_BASE_URL + `/users/${cid}`,
-  //         {
-  //           method: "GET",
-  //           headers: { Authorization: `Bearer ${localStorage.getItem("id_token")}` },
-  //         }
-  //       );
-  //       return await response.json();
-  //     },
-  //     staleTime: Infinity,
-  //   }
-  // )
-
   const { isSuccess, isLoading, isError, error, data } = useAuthenticatedUser()
 
+  // after we have gotten the user profile
+  const [needToSetupUserProfile, _] = useState(isSuccess && !(!data?.firstName || !data?.lastName))
+
   // make sure state occurs before early return, or else hooks will be out of order.
-  const [editAccountOpen, setEditAccountOpen] = useState(false);
-
-  const handleEditAccountOpen = () => {
-    setEditAccountOpen(true);
-  }
-
-  const handleEditAccountClose = () => {
-    setEditAccountOpen(false);
-  }
+  const [editAccountOpen, setEditAccountOpen] = useState(needToSetupUserProfile);
 
   if (isLoading) {
     return (
@@ -175,11 +144,36 @@ const HomePage = () => {
     )
   }
 
+
+  if (needToSetupUserProfile) {
+    //console.log("User profile not set up.")
+  }
+
+  const handleEditAccountOpen = () => {
+    setEditAccountOpen(true);
+  }
+
+  const handleEditAccountClose = (event, reason) => {
+    if (needToSetupUserProfile) {
+      if (reason && reason === "backdropClick") {
+        enqueueSnackbar("Please complete profile setup to continue.")
+        return;
+      }
+    }
+    setEditAccountOpen(false);
+  }
+
+
+
+
+
+
+
   if (isNonMobileScreens) {
     // Desktop layout
     return (
       <>
-        <EditAccount open={editAccountOpen} onClose={handleEditAccountClose} />
+        <EditAccount open={editAccountOpen} onClose={handleEditAccountClose} firstTime={needToSetupUserProfile} />
         <Box>
           <Box
             width="100%"
@@ -222,7 +216,7 @@ const HomePage = () => {
     // Mobile layout
     return (
       <>
-        <EditAccount open={editAccountOpen} onClose={handleEditAccountClose} />
+        <EditAccount open={editAccountOpen} onClose={handleEditAccountClose} firstTime={needToSetupUserProfile} />
         <Box m="0 1rem">
           <Box
             width="100%"

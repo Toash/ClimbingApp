@@ -36,6 +36,13 @@ export default function useAuthenticatedUser() {
                     headers: { Authorization: `Bearer ${idToken}` },
                 }
             );
+
+            // we have a cid, but when trying to get the user from the database it does not exist.
+            // this means that we have to create a new user, which will be handled elsewhere.
+            // if (response.status == 404 || response.status == 400) {
+            //     console.log("Could not find user")
+            //     return { userDoesNotExist: true } //  instead of returning the user object, return this instead.
+            // }
             const data = await response.json();
             return data;
         },

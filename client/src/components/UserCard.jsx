@@ -72,10 +72,13 @@ const UserCard = ({ userId }) => {
     let differentUser = currentUserData?.cid != userData?.cid;
 
     return (
-      <FlexBetween>
-        <FlexBetween gap="1rem">
+      <Box sx={{ display: "flex", gap: "2rem" }}>
+        <FlexBetween gap="1rem" sx={{ alignItems: "flex-start" }}>
+
           <UserImage s3key={userData.picturePath} size="55px" />
-          <Box>
+
+
+          <Box sx={{ mt: "0.25rem" }}>
             <Typography
               color={main}
               variant="h5"
@@ -88,19 +91,22 @@ const UserCard = ({ userId }) => {
             </Typography>
           </Box>
         </FlexBetween>
-        {currentUserIsSuccess && differentUser && (
-          <IconButton
-            onClick={() => patchFriendMutation.mutate({ currentUserId: currentUserData.cid, userId: userData.cid })}
-            sx={{ backgroundColor: primaryLight, p: "0.6rem" }}
-          >
-            {!!isFriend ? (
-              <PersonRemoveOutlined sx={{ color: primaryDark }} />
-            ) : (
-              <PersonAddOutlined sx={{ color: primaryDark }} />
-            )}
-          </IconButton>
-        )}
-      </FlexBetween>
+        {/* <Box>
+          {currentUserIsSuccess && differentUser && (
+            <IconButton
+              onClick={() => patchFriendMutation.mutate({ currentUserId: currentUserData.cid, userId: userData.cid })}
+              sx={{ backgroundColor: primaryLight, p: "0.6rem" }}
+            >
+              {!!isFriend ? (
+                <PersonRemoveOutlined sx={{ color: primaryDark }} />
+              ) : (
+                <PersonAddOutlined sx={{ color: primaryDark }} />
+              )}
+            </IconButton>
+          )}
+        </Box> */}
+      </Box>
+
     );
   }
 

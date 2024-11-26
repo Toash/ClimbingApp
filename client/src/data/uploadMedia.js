@@ -6,7 +6,7 @@ Uploads media into raw and compressed format. Videos are compressed if specified
 @param {boolean} compress will compress the media (only mp4 and mov supported)
 @returns {object} object containing the url (link to the media) and message.
 */
-export const uploadMedia = async ({ s3key, media, compress = false }) => {
+export const uploadMedia = async ({ s3key, media, compress = false, overwrite = false }) => {
 
   const videoExtensions = [".mp4", ".mov"]
 
@@ -19,7 +19,7 @@ export const uploadMedia = async ({ s3key, media, compress = false }) => {
     const response = await fetch(
       import.meta.env.VITE_APP_API_BASE_URL +
       "/media/presigned-upload?" +
-      new URLSearchParams({ s3key }).toString(),
+      new URLSearchParams({ s3key, overwrite }).toString(),
       {
         method: "GET",
       }

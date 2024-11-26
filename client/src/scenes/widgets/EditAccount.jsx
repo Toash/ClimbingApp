@@ -1,6 +1,7 @@
 import { Dialog, DialogTitle, FormControl, InputLabel, TextField, Input, Typography, useTheme, Divider, Button } from "@mui/material";
 import { Box } from "@mui/system";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import getCidFromToken from "auth/getCidFromToken.js";
 import { uploadMedia } from "data/uploadMedia.js";
 import useAuthenticatedUser from "data/useAuthenticatedUser.js";
 import { enqueueSnackbar } from "notistack";
@@ -47,12 +48,15 @@ export default function EditAccount({ open, onClose, firstTime, data }) {
             if (media) {
                 const extension = media.name.split(".").pop()
                 const s3key = `${userData.cid}/profile_picture.${extension}`;
-                const { url } = uploadMedia({ s3key, media })
-                formData.append("mediaPath", url)
+                const { url } = await uploadMedia({ s3key, media, overwrite: true })
+                formData.append("mediaPath", s3key)
+
             }
 
+            const cid = await getCidFromToken(localStorage.getItem("id_token"))
+
             // updates the user info
-            const response = await fetch(import.meta.env.VITE_APP_API_BASE_URL + `/users/${userData.cid}/edit`,
+            const response = await fetch(import.meta.env.VITE_APP_API_BASE_URL + `/users/${cid}/edit${firstTime ? "?create=true" : ""}`,
                 {
                     method: "PATCH",
                     headers: {
@@ -106,19 +110,21 @@ export default function EditAccount({ open, onClose, firstTime, data }) {
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
                         fullWidth
+                        required
                     ></TextField>
                     <TextField
                         label="Last Name"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
                         fullWidth
+                        required
                     ></TextField>
                 </Box>
 
                 <Box sx={{ cursor: "pointer", padding: "1rem", outline: `solid ${palette.primary.main}` }} {...getRootProps()}>
                     <Input {...getInputProps()} />
                     {
-                        <Typography>Drag and Drop or Click to Browse</Typography>
+                        media ? <Typography>{media.name}</Typography> : <Typography>Drag and Drop or Click to Browse</Typography>
                     }
                 </Box>
 
@@ -126,6 +132,7 @@ export default function EditAccount({ open, onClose, firstTime, data }) {
 
                 <Box>
                     <Button
+                        disabled={!(firstName && lastName)}
                         onClick={handleSubmit}
                         sx={{
                             color: palette.background.alt,

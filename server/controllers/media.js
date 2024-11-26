@@ -16,6 +16,7 @@ import { MediaConvertClient, CreateJobCommand, GetJobCommand, JobStatus, InputRo
 export const getPresignedPutUrl = async (req, res) => {
   console.log("Received request to generate presigned URL");
   const s3key = req.query.s3key;
+  const overwrite = req.query.overwrite;
 
   if (!s3key) {
     return res.status(400).json({ error: "Missing s3key in query params" });
@@ -34,27 +35,29 @@ export const getPresignedPutUrl = async (req, res) => {
   const fileName = s3key.substring(0, dotIndex);
   const fileExtension = s3key.substring(dotIndex);
 
-  /* 
-  handle duplicate files, we dont want multiple sources pointing to the same file because
-   if a source is deleted then so will the file, then the other sources will not be pointing to a file. 
-   */
-  while (exists) {
-    try {
-      const headCommand = new HeadObjectCommand({
-        Bucket: process.env.MEDIA_BUCKET,
-        Key: s3keyToUse,
-      });
-      await client.send(headCommand);
+  if (overwrite !== "true") {
+    /* 
+    handle duplicate files, we dont want multiple sources pointing to the same file because
+     if a source is deleted then so will the file, then the other sources will not be pointing to a file. 
+     */
+    while (exists) {
+      try {
+        const headCommand = new HeadObjectCommand({
+          Bucket: process.env.MEDIA_BUCKET,
+          Key: s3keyToUse,
+        });
+        await client.send(headCommand);
 
-      // file exists
-      version++;
-      s3keyToUse = `${fileName}_${version}${fileExtension}`;
-    } catch (error) {
-      if (error instanceof NotFound) {
-        exists = false;
-      } else {
-        console.error(error);
-        return res.status(500).json({ error: "Error checking file existence" });
+        // file exists
+        version++;
+        s3keyToUse = `${fileName}_${version}${fileExtension}`;
+      } catch (error) {
+        if (error instanceof NotFound) {
+          exists = false;
+        } else {
+          console.error(error);
+          return res.status(500).json({ error: "Error checking file existence" });
+        }
       }
     }
   }
