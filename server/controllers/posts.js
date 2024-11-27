@@ -136,45 +136,6 @@ export const logClimb = async (req, res) => {
   }
 };
 
-// export const editPost = async (req, res) => {
-//   try {
-//     const userId = req.query.userId;
-//     const { postId } = req.params;
-//     const { title, description, vGrade, attempts } = req.body;
-
-//     const validationErrors = validatePostInput({
-//       title,
-//       vGrade,
-//       attempts,
-//     });
-//     if (validationErrors) {
-//       return res
-//         .status(400)
-//         .json({ message: "Validation failed", errors: validationErrors });
-//     }
-
-//     const post = await Post.findById(postId);
-//     // TODO: get the edited fields and update the corresponding post.
-//     if (post) {
-//       post.title = title;
-//       post.description = description;
-//       post.vGrade = vGrade;
-//       post.attempts = attempts;
-
-//       const updatedPost = await post.save();
-
-//       //update user highscore
-//       await updateHiscore(userId);
-
-//       res.json(updatedPost);
-//     } else {
-//       res.status(404).send("Post not found");
-//     }
-//   } catch (err) {
-//     res.status(404).json({ message: err.message });
-//   }
-// };
-
 // deletes post and associated media if it exists.
 export const deletePost = async (req, res) => {
 
@@ -271,10 +232,28 @@ export const deletePost = async (req, res) => {
 };
 
 /* READ */
+
+// this assumes that the pageSize is always constant when calling the function again and again.
 export const getFeedPosts = async (req, res) => {
   try {
-    const posts = await Post.find().sort({ climbDate: -1 });
-    res.status(200).json(posts);
+
+    const { pageSize, pageNumber } = req.query;
+
+    if (Number(pageSize) <= 0 || Number(pageNumber) < 0) {
+      res.status(400).json({ message: "Page size must be positive and page number must be greater than 0." })
+    }
+
+    const totalPosts = await Post.countDocuments();
+
+    const posts = await Post.find().sort({ climbDate: -1 }).skip(Number(pageNumber) * Number(pageSize)).limit(Number(pageSize))
+
+    // calculate the next cursor.
+    const postsGotSoFar = (Number(pageNumber) + 1) * Number(pageSize);
+    const nextPageNumber = Number(totalPosts) > Number(postsGotSoFar) ? Number(pageNumber) + 1 : null;
+
+    // return nextCursor, the starting item number.
+    // nextPageNumber will be null when there is no more items left.
+    res.status(200).json({ data: posts, nextPageNumber });
   } catch (err) {
     res.status(404).json({ message: err.message });
   }

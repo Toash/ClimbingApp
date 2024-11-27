@@ -30,7 +30,7 @@ export default function EditAccount({ open, onClose, firstTime, data }) {
             <Typography>Loading...</Typography>
         )
     }
-    if (isError || !userData) {
+    if (isError && !userData) {
         return <Typography>Error loading user data. Please try again.</Typography>;
     }
     const [firstName, setFirstName] = useState(userData?.firstName || "");
