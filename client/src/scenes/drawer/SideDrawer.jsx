@@ -121,14 +121,14 @@ export default function SideDrawer() {
                                     <ListItemText primary={"Log Climb"} />
                                 </ListItemButton>
                             </ListItem>
-                            <ListItem key={"Log Project"} disablePadding>
+                            {/* <ListItem key={"Log Project"} disablePadding>
                                 <ListItemButton>
                                     <ListItemIcon>
                                         <StarIcon />
                                     </ListItemIcon>
                                     <ListItemText primary={"Log Project"} />
                                 </ListItemButton>
-                            </ListItem>
+                            </ListItem> */}
                         </>
                     }
                 </List>
