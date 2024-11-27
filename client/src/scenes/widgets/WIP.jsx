@@ -8,9 +8,7 @@ export default function WIP() {
                 Upcoming features:
             </DialogTitle>
             <DialogContent dividers>
-                <Typography gutterBottom>
-                    - Editing posts
-                </Typography>
+
                 <br />
                 <Typography gutterBottom>
                     - Logging sessions (keep track of hrs per week)

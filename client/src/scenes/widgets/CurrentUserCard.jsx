@@ -23,10 +23,7 @@ const CurrentUserCard = ({ handleEditAccount }) => {
     return (
       <WidgetWrapper width="100%">
         {/* FIRST ROW*/}
-        <FlexBetween
-          gap="0.5rem"
-          pb="1.1rem"
-        >
+        <FlexBetween>
           <FlexBetween gap="1rem">
             <UserImage s3key={data.picturePath}></UserImage>
             <Box>
@@ -44,8 +41,6 @@ const CurrentUserCard = ({ handleEditAccount }) => {
           </IconButton>
 
         </FlexBetween>
-
-        <Divider />
       </WidgetWrapper>
     );
   };

@@ -120,7 +120,7 @@ const Week = () => {
 
         return (
             <WidgetWrapper width="100%" >
-                <Typography
+                {/* <Typography
                     variant="h6"
                     align="center"
                     sx={{
@@ -128,7 +128,7 @@ const Week = () => {
                         color: palette.neutral.main,
                     }}
                 >Your week so far</Typography>
-                <Divider sx={{ marginTop: "1rem" }} />
+                <Divider sx={{ marginTop: "1rem" }} /> */}
                 <WeeklyClimbsTable />
                 <Divider sx={{ margin: "1rem 0" }} />
 

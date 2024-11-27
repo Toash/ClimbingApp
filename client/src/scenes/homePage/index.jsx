@@ -16,6 +16,7 @@ import useAuthenticatedUser from "data/useAuthenticatedUser.js";
 import goToLogin from "goToLogin.js";
 import getCidFromToken from "auth/getCidFromToken.js";
 import { enqueueSnackbar } from "notistack";
+import CollapsibleWidgetWrapper from "components/CollapsibleWidgetWrapper.jsx";
 
 const HomePage = () => {
 
@@ -191,7 +192,11 @@ const HomePage = () => {
               alignItems={"center"}
               gap="2rem"
             >
-              <Week style={{ width: "100%" }}></Week>
+
+              <CollapsibleWidgetWrapper label="Week" defaultExpanded>
+                <Week style={{ width: "100%" }} />
+              </CollapsibleWidgetWrapper>
+
               <Posts />
             </Box>
             {/* Flex basis defines the starting size, flex grow defines how much it grows past */}
@@ -237,10 +242,18 @@ const HomePage = () => {
               {isSuccess && (
                 <>
                   <CurrentUserCard handleEditAccount={handleEditAccountOpen} />
-                  <CurrentUserStats />
-                  <Week></Week>
+                  <CollapsibleWidgetWrapper label="Stats">
+
+                    <CurrentUserStats showTitle={false} />
+                  </CollapsibleWidgetWrapper>
+
+                  <CollapsibleWidgetWrapper label="Week">
+                    <Week></Week>
+                  </CollapsibleWidgetWrapper>
                 </>
               )}
+
+
               <Posts />
             </Box>
           </Box>

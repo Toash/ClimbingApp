@@ -3,7 +3,7 @@ import { CircularProgress, Divider, Typography, useTheme } from "@mui/material";
 import WidgetWrapper from "components/WidgetWrapper";
 import useAuthenticatedUser from "data/useAuthenticatedUser.js";
 
-function CurrentUserStats() {
+function CurrentUserStats({ showTitle = true }) {
 
   const { palette } = useTheme();
 
@@ -15,8 +15,10 @@ function CurrentUserStats() {
 
   if (isSuccess) {
     return (
+
       <WidgetWrapper width="100%">
-        <Typography
+
+        {showTitle && <>        <Typography
           variant="h6"
           sx={{
             fontSize: "2rem",
@@ -25,8 +27,7 @@ function CurrentUserStats() {
         >
           Stats
         </Typography>
-        <Divider sx={{ marginBottom: "1rem" }}></Divider>
-
+          <Divider sx={{ marginBottom: "1rem" }}></Divider></>}
         {data.vGrade && <Typography>
           {"Max Grade: " + data.vGrade}
         </Typography>}
