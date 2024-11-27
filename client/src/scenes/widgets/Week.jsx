@@ -8,6 +8,7 @@ import { startOfWeek, endOfWeek, format, isSameDay } from "date-fns";
 import getWeekDates from "utils/getWeekDates.js";
 import { PieChart } from "@mui/x-charts/PieChart";
 import { useMediaQuery } from "@mui/material";
+import { QUERY_KEYS } from "queryKeys";
 
 
 
@@ -19,7 +20,7 @@ const Week = () => {
     const { data: userData, isLoading: isUserLoading, isError: isUserError, isSuccess: loggedIn } = useAuthenticatedUser();
     const { data: weeklyPosts, isLoading: isPostsLoading, isError: isPostError, isSuccess: gotWeeklyPosts } = useQuery({
         enabled: !!userData?.cid,
-        queryKey: ["weeklyPosts"],
+        queryKey: QUERY_KEYS.WEEKLY_USER_POSTS,
         queryFn: async () => {
             const response = await fetch(import.meta.env.VITE_APP_API_BASE_URL + `/posts/user/${userData.cid}/weekly`)
             const data = await response.json();
@@ -132,37 +133,40 @@ const Week = () => {
                 <WeeklyClimbsTable />
                 <Divider sx={{ margin: "1rem 0" }} />
 
-                <Box sx={{ display: smallScreen ? "flex" : "flex-column", justifyContent: "space-evenly", overflow: "auto" }}>
-                    <Box>
-                        <Typography align="center" fontSize={"1rem"}> Styles </Typography>
-                        <Divider />
-                        <PieChart
-                            series={[{
-                                data: getStyleCountsForPie(),
-                                ...pieChartStyles
-                            }]}
-                            width={350}
-                            height={200}
 
-                        />
+                {
+                    gotWeeklyPosts && weeklyPosts.length > 0 &&
+                    < Box sx={{ display: smallScreen ? "flex" : "flex-column", justifyContent: "space-evenly", overflow: "auto" }}>
+                        <Box>
+                            <Typography align="center" fontSize={"1rem"}> Styles </Typography>
+                            <Divider />
+                            <PieChart
+                                series={[{
+                                    data: getStyleCountsForPie(),
+                                    ...pieChartStyles
+                                }]}
+                                width={350}
+                                height={200}
+
+                            />
+                        </Box>
+                        <Box>
+                            <Typography align="center" fontSize={"1rem"}> Holds used</Typography>
+                            <Divider />
+                            <PieChart
+                                series={[{
+                                    data: getHoldCountsForPie(),
+                                    ...pieChartStyles
+                                }]}
+                                width={350}
+                                height={200}
+                            />
+                        </Box>
                     </Box>
-                    <Box>
-                        <Typography align="center" fontSize={"1rem"}> Holds used</Typography>
-                        <Divider />
-                        <PieChart
-                            series={[{
-                                data: getHoldCountsForPie(),
-                                ...pieChartStyles
-                            }]}
-                            width={350}
-                            height={200}
-                        />
-                    </Box>
-
-                </Box>
+                }
 
 
-            </WidgetWrapper>)
+            </WidgetWrapper >)
     }
 
     function WeeklyClimbsTable() {

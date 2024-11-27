@@ -278,8 +278,19 @@ export const getHighestVGradePost = async (req, res) => {
   }
 };
 
+export const getUserPosts = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const posts = await Post.find({ cid: userId }).sort({ climbDate: -1 })
+    res.status(200).json(posts);
+
+  } catch (err) {
+    res.status(500).json({ message: err.message })
+  }
+}
+
 // Controller function to get posts for the current week
-export const getWeeklyPosts = async (req, res) => {
+export const getWeeklyUserPosts = async (req, res) => {
   try {
     const { userId } = req.params;
     const { startDate, endDate } = getWeekDates();

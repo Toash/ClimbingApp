@@ -7,5 +7,7 @@ export const QUERY_KEYS = {
     CURRENT_USER: ["currentUser"] as [string], // attrubites of current user.
     USER_BY_ID: (id: string) => ["otherUser", id], // attributes of another user.
 
-    POSTS: ["posts"]
+    POSTS: ["posts"],
+    USER_POSTS: ["userPosts"],
+    WEEKLY_USER_POSTS: ["weeklyUserPosts"]
 }

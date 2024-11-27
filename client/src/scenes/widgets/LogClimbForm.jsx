@@ -131,6 +131,8 @@ const LogClimbForm = ({ onPostButtonClicked, edit, data, compressMedia = false }
       onSuccess: (data) => {
         // we just changed the post so we need to get posts again.
         queryClient.invalidateQueries(QUERY_KEYS.POSTS)
+        queryClient.invalidateQueries(QUERY_KEYS.USER_POSTS)
+        queryClient.invalidateQueries(QUERY_KEYS.WEEKLY_USER_POSTS)
         setMedia(null);
         setTitle("");
         setVGrade(0);
