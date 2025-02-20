@@ -1,4 +1,6 @@
 # .gitignore
+.env
+node_modules
 
 server/backend-dependencies.zip
 server/dist
