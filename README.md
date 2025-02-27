@@ -1,6 +1,6 @@
 Live Link: https://boulderstat.com
 
-![demo image](https://imgur.com/a/LRcpN9g)
+![alt text](website.jpg)
 
 # Things that I learned
 
