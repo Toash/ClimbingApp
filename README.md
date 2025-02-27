@@ -1,5 +1,7 @@
 Live Link: https://boulderstat.com
 
+![demo image](https://imgur.com/a/LRcpN9g)
+
 # Things that I learned
 
 - For token authentication and refreshing, need to handle cases when access / id token becomes invalid, can wrap fetch function with a function that checks for unauthorized response, if so refresh the token. If using axios you can use intercepters instead to check for the unauthorized response and then refresh.
